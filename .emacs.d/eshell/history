@@ -1,0 +1,3 @@
+watch -d sensors
+vagrant ssh
+exit

@@ -1,0 +1,17 @@
+[user]
+    name = AAlvz
+    email = alfonso@alvz.mx
+[push]
+    default = current
+[pull]
+    default = current
+[core]
+    excludesfile = ~/.config/gitignore
+    editor = emacs -nw
+[alias]
+    s = status
+    b = branch
+    d = diff --color
+    l = log --graph --color
+[difftool]
+    prompt = false
