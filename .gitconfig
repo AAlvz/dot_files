@@ -13,5 +13,7 @@
     b = branch
     d = diff --color
     l = log --graph --color
+    lon = log --graph --color --oneline
+    reb = rebase --interactive
 [difftool]
     prompt = false
