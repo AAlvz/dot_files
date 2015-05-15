@@ -75,8 +75,42 @@ exec { "apt-get update":
 }
 
 exec {'dot_files':
+  creates   => "/home/${hostname}/.git",
   user     => 'aalvz',
   command  => "/bin/mkdir -p /home/${hostname}/tmp; /usr/bin/git clone https://github.com/AAlvz/dot_files.git /home/${hostname}/tmp; /bin/cp -a /home/${hostname}/tmp/. /home/${hostname}/ && /bin/rm -rf /home/${hostname}/tmp",
   require  => Package['git'],
   path     => ["/usr/bin", "/bin"],
+}
+
+file {"/home/${hostname}/.git/info/exclude":
+  content => "*",
+  ensure  => file,
+}
+
+package {'xsel':
+  ensure  => present,
+}
+
+exec {'download_chrome':
+  user     => "aalvz",
+  command  => "wget -O /tmp/google-chrome-stable_current_amd64.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb",
+  creates  => "/tmp/google-chrome-stable_current_amd64.deb",
+  path     => ["/usr/bin", "/bin"],
+}
+
+exec {'install_chrome':
+  user     => 'root',
+  command  => "sudo /usr/bin/dpkg -i /tmp/google-chrome-stable_current_amd64.deb",
+  path     => ["/usr/bin", "/bin"],
+  require  => [
+               Exec['download_chrome'],
+               Package['libappindicator1'],
+              ]
+}
+
+#chrome dependencies
+package{'libappindicator1':
+  ensure   => installed,
+  provider => "apt",
+  install_options => ["--allow-unauthenticated", "-f"],
 }
