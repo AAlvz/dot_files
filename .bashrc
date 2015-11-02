@@ -108,3 +108,6 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+# Caps lock as ctrl
+/bin/sh /home/$USER/scripts/keyboard/capslock_as_ctrl
