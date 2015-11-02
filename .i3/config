@@ -44,6 +44,7 @@ bindsym $mod+j focus left
 bindsym $mod+k focus down
 bindsym $mod+l focus up
 bindsym $mod+ntilde focus right
+bindsym $mod+semicolon focus right
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Left focus left
@@ -56,6 +57,7 @@ bindsym $mod+Shift+j move left
 bindsym $mod+Shift+k move down
 bindsym $mod+Shift+l move up
 bindsym $mod+Shift+ntilde move right
+bindsym $mod+shift+semicolon move right
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Shift+Left move left
@@ -132,6 +134,7 @@ mode "resize" {
         bindsym k resize grow height 10 px or 10 ppt
         bindsym l resize shrink height 10 px or 10 ppt
         bindsym ntilde resize grow width 10 px or 10 ppt
+        bindsym semicolon resize grow width 10 px or 10 ppt
 
         # same bindings, but for the arrow keys
         bindsym Left resize shrink width 10 px or 10 ppt
@@ -163,14 +166,15 @@ bindsym XF86AudioMute exec /usr/bin/pactl set-sink-mute @DEFAULT_SINK@ toggle
 
 #Lock screen
 bindsym Control+Mod1+l exec i3lock
-exec_always xautolock -time 25 -locker i3lock
-
-#Caps lock as ctrl
-#exec_always /usr/bin/loadkeys /usr/share/keymaps/capslock_as_ctrl
-exec_always /home/$USER/scripts/capslock_as_ctrl
+#exec xautolock -time 25 -locker i3lock
 
 # Take a screenshot upon pressing $mod+x (select an area)
 bindsym --release $mod+x exec --no-startup-id import /home/aalvz/Pictures/latest-screenshot.png
 
 #Take screenshot of the window
 bindsym $mod+Print exec scrot '%Y-%m-%d-%s_$wx$h.png' -e 'mv $f ~/Pictures/'
+
+#Caps lock as ctrl
+#exec_always /usr/bin/loadkeys /usr/share/keymaps/capslock_as_ctrl
+#exec --no-startup-id /home/aalvz/scripts/keyboard/capslock_as_ctrl
+#exec i3-sensible-terminal
