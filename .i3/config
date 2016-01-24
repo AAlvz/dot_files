@@ -47,10 +47,13 @@ bindsym $mod+ntilde focus right
 bindsym $mod+semicolon focus right
 
 # alternatively, you can use the cursor keys:
-bindsym $mod+Left focus left
+#bindsym $mod+Left focus left
+#bindsym $mod+Right focus right
+bindsym $mod+Left workspace prev
+bindsym $mod+Right workspace next
 bindsym $mod+Down focus down
 bindsym $mod+Up focus up
-bindsym $mod+Right focus right
+
 
 # move focused window
 bindsym $mod+Shift+j move left
@@ -102,6 +105,8 @@ bindsym $mod+7 workspace 7
 bindsym $mod+8 workspace 8
 bindsym $mod+9 workspace 9
 bindsym $mod+0 workspace 10
+
+bindsym $mod+workspace next
 
 # move focused container to workspace
 bindsym $mod+Shift+1 move container to workspace 1
@@ -160,7 +165,8 @@ bindsym XF86MonBrightnessUp exec xbacklight -inc 10
 bindsym XF86MonBrightnessDown exec xbacklight -dec 10
 
 # Pulse Audio controls
-bindsym XF86AudioRaiseVolume exec /usr/bin/pactl set-sink-volume 0 -- '+5%'
+#bindsym XF86AudioRaiseVolume exec /usr/bin/pactl set-sink-volume 0 -- '+5%'
+bindsym XF86AudioRaiseVolume exec /usr/bin/pactl set-sink-volume @DEFAULT_SINK@ -- '+5%'
 bindsym XF86AudioLowerVolume exec /usr/bin/pactl set-sink-volume @DEFAULT_SINK@ -- '-5%'
 bindsym XF86AudioMute exec /usr/bin/pactl set-sink-mute @DEFAULT_SINK@ toggle
 
@@ -169,12 +175,16 @@ bindsym Control+Mod1+l exec i3lock
 #exec xautolock -time 25 -locker i3lock
 
 # Take a screenshot upon pressing $mod+x (select an area)
-bindsym --release $mod+x exec --no-startup-id import /home/aalvz/Pictures/latest-screenshot.png
+#bindsym --release $mod+x exec --no-startup-id import /home/aalvz/Pictures/latest-screenshot.png
+bindsym --release $mod+x exec --no-startup-id scrot -s /home/aalvz/Pictures/latest-screenshot.png
 
 #Take screenshot of the window
 bindsym $mod+Print exec scrot '%Y-%m-%d-%s_$wx$h.png' -e 'mv $f ~/Pictures/'
 
 #Caps lock as ctrl
 #exec_always /usr/bin/loadkeys /usr/share/keymaps/capslock_as_ctrl
-#exec --no-startup-id /home/aalvz/scripts/keyboard/capslock_as_ctrl
-#exec i3-sensible-terminal
+exec --no-startup-id /home/$USER/scripts/keyboard/capslock_as_ctrl
+exec --no-startup-id feh --bg-fill Downloads/thesounds.JPG
+exec --no-startup-id i3-msg 'workspace 1; exec i3-sensible-terminal'
+exec --no-startup-id i3-msg 'workspace 2; exec i3-sensible-terminal'
+exec --no-startup-id i3-msg 'workspace 2; exec google-chrome'
