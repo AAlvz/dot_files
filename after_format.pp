@@ -1,7 +1,12 @@
 package {'sudo':
   ensure => 'installed',
 }
-
+package {'feh':
+  ensure => 'installed',
+}
+package {'scrot':
+  ensure => 'installed',
+}
 package { 'byobu':
   ensure => 'latest',
 }
