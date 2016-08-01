@@ -5,6 +5,11 @@
 (autoload 'puppet-mode "puppet-mode" "Major mode for editing puppet manifests")
 (add-to-list 'auto-mode-alist '("\\.pp$" . puppet-mode))
 
+;; Setup golang-mode
+;; (add-to-list 'load-path "/place/where/you/put/it/")
+(add-to-list 'auto-mode-alist '("\\.go$" . go-mode))
+(require 'go-mode-autoloads)
+
 ;; Setup yaml-mode
 (autoload 'yaml-mode "yaml-mode" "Major mode for editing YAML files")
 (add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
@@ -13,6 +18,13 @@
 ;; Setup ruby-mode
 (autoload 'ruby-mode "ruby-mode" "Major mode for editing ruby manifests")
 (add-to-list 'auto-mode-alist '("Vagrantfile$" . ruby-mode))
+
+;; Setup markdown-mode
+(autoload 'markdown-mode "markdown-mode"
+  "Major mode for editing Markdown files" t)
+(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 
 ;; Setup Swap Windows
 (autoload 'swap-windows "swap-windows" "Swap 2 windows")
@@ -73,3 +85,4 @@
       kept-old-versions 0   ;; Number of oldest versions to keep.
       delete-old-versions t ;; Don't ask to delete excess backup versions.
       backup-by-copying t)  ;; Copy all files, don't rename them.
+(put 'upcase-region 'disabled nil)
