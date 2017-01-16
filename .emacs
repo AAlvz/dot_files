@@ -65,9 +65,9 @@
 (global-set-key (kbd "C-x O") 'previous-multiframe-window)
 
 ;; Highlight characters over 80 and linees with spaces and tabs probably
-(require 'whitespace)
- (setq whitespace-style '(face empty tabs lines-tail trailing))
- (global-whitespace-mode t)
+;; (require 'whitespace)
+;;  (setq whitespace-style '(face empty tabs lines-tail trailing))
+;;  (global-whitespace-mode t)
 
 ;; No horrible tabs. (Tabs treated as spaces)
 (setq c-basic-indent 2)
