@@ -1,6 +1,5 @@
 ---
 - hosts: all
   roles:
-    - { role: base, sudo: yes, tags: base }
     - { role: text_editor, editor: vim }
 - include: sms.yml
