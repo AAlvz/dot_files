@@ -1,1 +1,4 @@
 
+[submodule "provisioning/roles/rest-sms"]
+	path = provisioning/roles/rest-sms
+	url = https://github.com/AgusRumayor/rest-sms
