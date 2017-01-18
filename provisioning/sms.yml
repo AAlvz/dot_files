@@ -1,7 +1,6 @@
 ---
-- hosts: startupstudio.web
+- hosts: sms.rest
   roles:
-    - { role: rails, tags: rails }
-    - { role: nginx, sudo: yes, tags: [nginx, landing] }
+    - { role: rest-sms }
 #    - { role: text_editor, editor: emacs24-nox }
 #    - { role: mysql, sudo: yes }
