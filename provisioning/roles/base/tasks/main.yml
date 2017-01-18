@@ -1,0 +1,126 @@
+- name: Ensure sudo is installed
+  apt:
+    name=sudo
+    state=present
+
+- name: Ensure git is installed
+  apt:
+    name=git
+    state=present
+
+- name: Create server_group
+  group:
+    name="{{ server_group }}"
+    state=present
+    system=yes
+
+- name: Create server_user
+  user:
+    name="{{ server_user }}"
+    state=present
+    group="{{ server_group }}"
+    shell=/bin/bash
+    createhome=yes
+
+- name: Ensure defined groups are present
+  group:
+    name="{{ item.value.group }}"
+    system=yes
+    state=present
+  with_dict: "{{ users }}"
+  when: users is defined
+  ignore_errors: yes
+
+- name: Ensure defined users are present
+  user:
+    name="{{ item.key }}"
+    state=present
+    group="{{ item.value.group }}"
+    shell=/bin/bash
+    generate_ssh_key="{{ item.value.generate_ssh_key }}"
+    ssh_key_bits=2048
+    ssh_key_file=.ssh/ansible_generated
+    createhome=yes
+    password="{{ item.value.password }}"
+    groups="{{ item.value.groups }}"
+  with_dict: "{{ users | default({})}}"
+  when: users is defined
+
+- name: prepare - create tinker path if necessary
+  file:
+    dest: "{{ item }}"
+    owner: "{{ server_user }}"
+    group: "{{ server_group }}"
+    mode: 0755
+    state: directory
+  sudo: yes
+  with_items:
+    - "/opt/tinker"
+    - "/opt/tinker/shared_files"
+    - "/home/{{ server_user }}/.ssh/"
+
+- name: prepare - create necessary files
+  file:
+    dest: "{{ item }}"
+    owner: "{{ server_user }}"
+    group: "{{ server_group }}"
+    state: touch
+  sudo: yes
+  with_items:
+    - "/home/{{ server_user }}/.ssh/config"
+
+- name: Add authorized_keys
+  authorized_key:
+    user="{{ item.0.name }}"
+    path="/home/{{ item.0.name }}/.ssh/authorized_keys"
+    key="{{ item.1 }}"
+  with_subelements:
+    - "{{ users | default({}) }}"
+    - authorized_keys
+  when: users is defined
+
+- include_vars: "{{ inventory_dir }}/host_files/{{ inventory_hostname }}/keys/private"
+  when: (private_key is defined and private_key)
+
+- name: Add private key
+  copy:
+    content: "{{ priv_k }}"
+    dest: "/home/{{ server_user }}/.ssh/{{ private_key_name }}"
+    mode: 0600
+    owner: "{{ server_user }}"
+    group: "{{ server_group }}"
+  when: (private_key is defined and private_key)
+  sudo: yes
+  sudo_user: "{{ server_user }}"
+
+- name: Add git configurations
+  template:
+    src=gitconfig
+    dest=~/.gitconfig
+    mode=0644
+  sudo: yes
+  sudo_user: "{{ server_user }}"
+  when: gitconfig is defined
+
+- name: Append ssh config for git
+  lineinfile:
+    dest: "/home/{{ server_user }}/.ssh/config"
+    line:  "Host github.com\n  IdentityFile  {{ gitconfig.ssh_key_path }}\n  IdentitiesOnly  yes"
+  sudo: yes
+  sudo_user: "{{ server_user }}"
+  when: (gitconfig is defined and gitconfig.ssh)
+
+- name: Add cron jobs
+  cron:
+    name="{{ item.key  }}"
+    minute="{{ item.value.minute | default('*') }}"
+    day="{{ item.value.day | default('*') }}"
+    weekday="{{ item.value.weekday | default('*') }}"
+    month="{{ item.value.month | default('*') }}"
+    hour="{{ item.value.hour | default('*') }}"
+    job="{{ item.value.job }}"
+    state=present
+    special_time="{{ item.value.special_time | default('*') }}"
+    user="{{ item.value.user | default('*') }}"
+  when: cronjobs is defined
+  with_dict: "{{ cronjobs | default({}) }}"

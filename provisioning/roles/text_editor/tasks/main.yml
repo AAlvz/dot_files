@@ -1,0 +1,4 @@
+---
+- name: Ensure editor is installed
+  apt: name={{ editor | default("emacs24-nox") }} state=present
+  sudo: true

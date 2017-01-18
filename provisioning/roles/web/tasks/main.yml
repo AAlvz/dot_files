@@ -1,0 +1,16 @@
+---
+- name: Folder in opt for repos
+  sudo: true
+  file:
+    path={{ repo_path }}
+    owner={{ server_user }}
+    group={{ server_group }}
+    mode=0755
+    state=directory
+
+- name: Clone git repo
+  git:
+    repo="{{ github_repo }}"
+    dest="{{ repo_path }}/{{ server_name }}"
+  sudo: yes
+  sudo_user: "{{ server_user }}"

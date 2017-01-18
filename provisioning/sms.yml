@@ -1,0 +1,7 @@
+---
+- hosts: startupstudio.web
+  roles:
+    - { role: rails, tags: rails }
+    - { role: nginx, sudo: yes, tags: [nginx, landing] }
+#    - { role: text_editor, editor: emacs24-nox }
+#    - { role: mysql, sudo: yes }

@@ -1,0 +1,24 @@
+---
+server_user: tinkerware
+server_group: tinkerware
+private_key: no
+private_key_name: ansible_private_key
+users: {}
+
+# users:
+#   tinkerware:
+#     name: tinkerware
+#     group: tinkerware
+#     ssh_key: yes
+#     groups: "sudo"
+#     password: $6$RuvJTX8llN1Vs$7Zgfg63xj5ICCrGUBgc6FcTcmiyB4vnBR65Q5FluigO35nnkem74kzigfeaCz8XJBAjlAWeUVvlUt5m7KHqv6.
+#     authorized_keys:
+#       - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDZ7DLbiAQ680hZlapMm7hsvuslplUd9PvDx1eoXjCHkDvMZPf2N6nH0ziOYWt9Z3h1GRGHu+3mfQ/FR12uQUqxLir+p0FoN4YUmN38LUrz/nlpqE8I1/izqXuiwId63p28logIM3Grb19w+5a0ubV248TAT+L0ch0IG60bCyrDYZ2gdpdxAnuObpSTEi+bQ3fSM2lF/h3tCrgprhlCUSH6SKvBeYAjovwjY+dJ4ZM2IOdpeSIoZc6yGA16jTKg6lVB926GeboqAO2MsUerHw8T2OPC0975oEpiUDh4TUVoMScP2eWdV4KsR0d11rYqIuEkSzeUfLVR2pP9oRxm2JkLQUqk5H/SqRxhw2NKMSzaC8vmTXWCD2l2Gm4y2X+fsGdjsTpfNXF+ayCFaKV+0pE0jBBjalXeAHi1/W1OJCWjl0ZUc9zSv+bn+GypxH4/g9vK8GMPjq7M4TjtEMexVGTntcpH44G3Tj1ziIcsidoj3UqD1HX+UWpEIRATyAKLd/d2lnQBWOvmuztuRghxGaMyNkEXowd6s/pfQii2/aU6lH50WsDlY+5Bwa/k6dN5iir4hSStK0SO0Zx6j969Zz6wLbITzZoq1ThW73ErWFwjuxdx1bcYzyCvTQx6Ck9wgrv5zZGJmYD6Dg2d730odHKwnWKRpEa97usQ/HwWMXH2UQ== tinkerware@ansible1"
+
+# gitconfig:
+#   user: tinkerware
+#   ssh: yes
+#   ssh_key_path: "/home/tinkerware/.ssh/ansible_id_rsa"
+#   option:
+#     user_email: tinkerwareio@gmail.com
+#     user_name: tinkerwarebot
