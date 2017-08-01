@@ -1,0 +1,10 @@
+---
+server_user: "tinkerware"
+server_group: "tinkerware"
+repo_path: "/opt/tinker/shared_files/tinkerware_web"
+github_repo: "https://github.com/Tinker-Ware/website"
+server_name: "tinkerware.io"
+nginx_vhosts:
+  - server_name: "tinkerware.io"
+    listen: "80"
+    root: "{{ repo_path }}/{{ server_name }}"

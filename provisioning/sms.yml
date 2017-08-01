@@ -1,0 +1,6 @@
+---
+- hosts: sms.rest
+  roles:
+    - { role: rest-sms }
+#    - { role: text_editor, editor: emacs24-nox }
+#    - { role: mysql, sudo: yes }

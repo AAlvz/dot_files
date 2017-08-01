@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  author: aalvz
+  description: Role to install static web pages
+  license: GNU GPLv3
+  min_ansible_version: 1.7
+  platforms:
+  - name: Debian
+    versions:
+    - jessie
+  categories:
+  - web
+dependencies:
+  - { role: nginx, sudo: yes }
