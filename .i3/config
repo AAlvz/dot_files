@@ -187,7 +187,7 @@ bindsym $mod+Print exec scrot '%Y-%m-%d-%s_$wx$h.png' -e 'mv $f ~/Pictures/'
 
 #Caps lock as ctrl
 #exec_always /usr/bin/loadkeys /usr/share/keymaps/capslock_as_ctrl
-#exec --no-startup-id setxkbmap -option grp:alt_shift_toggle us,es
+exec --no-startup-id setxkbmap -option grp:alt_space_toggle us,es
 exec --no-startup-id /home/$USER/scripts/keyboard/capslock_as_ctrl
 exec --no-startup-id feh --bg-max Pictures/background.jpg
 exec --no-startup-id i3-msg 'workspace 1; exec google-chrome'
