@@ -1,4 +1,11 @@
 ;; Tell emacs where is your personal elisp lib dir
+
+;; Added by Package.el.  This must come before configurations of
+;; installed packages.  Don't delete this line.  If you don't want it,
+;; just comment it out by adding a semicolon to the start of the line.
+;; You may delete these explanatory comments.
+(package-initialize)
+
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
 ;; Setup puppet-mode
@@ -18,6 +25,9 @@
 ;; Setup ruby-mode
 (autoload 'ruby-mode "ruby-mode" "Major mode for editing ruby manifests")
 (add-to-list 'auto-mode-alist '("Vagrantfile$" . ruby-mode))
+
+;; Setup idle-highlight-mode
+(autoload 'idle-highlight-mode "idle-highlight-mode" "Highlight word under cursor" t)
 
 ;; Setup markdown-mode
 (autoload 'markdown-mode "markdown-mode"
@@ -47,6 +57,19 @@
  (setq interprogram-paste-function 'xsel-paste-function)
 ))
 
+;; Copy/Paste to clipboard OSX
+(defun copy-from-osx ()
+  (shell-command-to-string "pbpaste"))
+
+(defun paste-to-osx (text &optional push)
+  (let ((process-connection-type nil))
+    (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+      (process-send-string proc text)
+      (process-send-eof proc))))
+
+(setq interprogram-cut-function 'paste-to-osx)
+(setq interprogram-paste-function 'copy-from-osx)
+
 ;; Autocomplete git commands
 (autoload 'bash-completion-dynamic-complete
   "bash-completion"
@@ -71,8 +94,14 @@
 
 ;; No horrible tabs. (Tabs treated as spaces)
 (setq c-basic-indent 2)
-(setq tab-width 4)
+(setq tab-width 2)
 (setq-default indent-tabs-mode nil)
+
+;; Toggle truncate lines
+(setq-default truncate-lines t)
+
+;; Disable electir indent mode by default
+(electric-indent-mode -1)
 
 ;; multiterm
 (require 'multi-term)
@@ -86,3 +115,18 @@
       delete-old-versions t ;; Don't ask to delete excess backup versions.
       backup-by-copying t)  ;; Copy all files, don't rename them.
 (put 'upcase-region 'disabled nil)
+
+;; Set Default Theme
+(load-theme 'tango-dark)
+
+;; Visualize where parenthesis open and close
+(show-paren-mode 1)
+
+;; Always enable hs-minor-mode
+(add-hook 'prog-mode-hook #'hs-minor-mode)
+
+;; Shortcut to hide blocks
+(global-set-key (kbd "C-c C-c") 'hs-hide-block)
+
+;; Shortcut to show blocks
+(global-set-key (kbd "C-c c") 'hs-show-block)
