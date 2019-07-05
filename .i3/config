@@ -195,5 +195,23 @@ exec --no-startup-id /home/$USER/scripts/keyboard/capslock_as_ctrl
 exec --no-startup-id feh --bg-max Pictures/background.jpg
 exec --no-startup-id i3-msg 'workspace 1; exec google-chrome'
 exec --no-startup-id i3-msg 'workspace 2; exec gnome-terminal --working-directory=`cat ~/.pwd`'
-exec --no-startup-id synclient TapButton1=1
-exec --no-startup-id synclient HorizTwoFingerScroll=1
+
+
+# ENABLE TAP CLICK AND TWO FINGERS RIGHT CLICK AND SCROLL.
+    # OPTION 1. 
+        # Install libinput and create config file in xorg
+        # apt-get install xserver-xorg-input-libinput
+        # echo 'Section "InputClass"
+        #         Identifier "libinput touchpad catchall"
+        #         MatchIsTouchpad "on"
+        #         MatchDevicePath "/dev/input/event*"
+        #         Driver "libinput"
+        #         Option "Tapping" "on"
+        # EndSection' > /etc/X11/xorg.conf.d/40-libinput.conf
+        # systemctl restart gdm3
+
+    #OPTION 2.
+        # Requires sudo apt-get install xserver-xorg-input-synaptics
+        #exec --no-startup-id synclient TapButton1=1
+        #exec --no-startup-id synclient HorizTwoFingerScroll=1
+
