@@ -1,0 +1,5 @@
+#/bin/sh
+
+/etc/init.d/network-manager stop
+update-rc.d network-manager disable
+/etc/init.d/wicd restart
