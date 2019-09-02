@@ -29,6 +29,10 @@
 ;; Setup idle-highlight-mode
 (autoload 'idle-highlight-mode "idle-highlight-mode" "Highlight word under cursor" t)
 
+(define-globalized-minor-mode global-idle-highlight-mode idle-highlight-mode
+  (lambda () (idle-highlight-mode 1)))
+(global-idle-highlight-mode 1)
+
 ;; Setup markdown-mode
 (autoload 'markdown-mode "markdown-mode"
   "Major mode for editing Markdown files" t)
@@ -130,3 +134,6 @@
 
 ;; Shortcut to show blocks
 (global-set-key (kbd "C-c c") 'hs-show-block)
+
+;; Shortcut to find-file-at-point
+(global-set-key (kbd "C-c C-f") 'find-file-at-point)
