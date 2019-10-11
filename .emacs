@@ -12,6 +12,10 @@
 (autoload 'puppet-mode "puppet-mode" "Major mode for editing puppet manifests")
 (add-to-list 'auto-mode-alist '("\\.pp$" . puppet-mode))
 
+;; Setup terraform-mode
+(autoload 'terraform-mode "terraform-mode" "Major mode for editing terraform scripts")
+(add-to-list 'auto-mode-alist '("\\.tf$" . terraform-mode))
+
 ;; Setup golang-mode
 ;; (add-to-list 'load-path "/place/where/you/put/it/")
 (add-to-list 'auto-mode-alist '("\\.go$" . go-mode))
@@ -137,3 +141,15 @@
 
 ;; Shortcut to find-file-at-point
 (global-set-key (kbd "C-c C-f") 'find-file-at-point)
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages (quote (cl-lib))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
