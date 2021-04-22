@@ -9,6 +9,7 @@
     excludesfile = ~/.config/gitignore
     editor = emacs -nw
 [alias]
+    c = commit -m
     s = status
     b = branch
     d = diff --color
