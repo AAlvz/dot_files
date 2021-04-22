@@ -10,6 +10,7 @@
     editor = emacs -nw
 [alias]
     c = commit -m
+    p = push origin
     s = status
     b = branch
     d = diff --color
