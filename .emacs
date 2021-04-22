@@ -8,6 +8,11 @@
 
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
+(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+                     ("melpa" . "https://melpa.org/packages/")))
+
+(setq vc-follow-symlinks t)
+
 ;; Setup puppet-mode
 (autoload 'puppet-mode "puppet-mode" "Major mode for editing puppet manifests")
 (add-to-list 'auto-mode-alist '("\\.pp$" . puppet-mode))
@@ -146,10 +151,19 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages (quote (cl-lib))))
+ '(package-selected-packages (quote (helm cl-lib))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+;; Shortcut to git grep
+;;(require 'helm-git-grep) ;; Not necessary if installed by package.el
+(global-set-key (kbd "C-c g") 'helm-grep-do-git-grep)
+;; Invoke `helm-grep-do-git-grep' from isearch.
+(define-key isearch-mode-map (kbd "C-c g") 'helm-git-grep-from-isearch)
+;; Invoke `helm-grep-do-git-grep' from other helm.
+(eval-after-load 'helm
+  '(define-key helm-map (kbd "C-c g") 'helm-git-grep-from-helm))
