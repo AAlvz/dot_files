@@ -181,9 +181,8 @@ bindsym Control+Mod1+l exec i3lock
 #exec xautolock -time 25 -locker i3lock
 
 # Take a screenshot upon pressing $mod+x (select an area)
-# REQUIRES `scrot`
-#bindsym --release $mod+x exec --no-startup-id import /home/aalvz/Pictures/latest-screenshot.png
-bindsym --release $mod+x exec --no-startup-id scrot -s ~/Pictures/latest-screenshot.png
+# REQUIRES `scrot` and `xclip`
+bindsym --release $mod+x exec --no-startup-id "scrot -s ~/Pictures/latest-screenshot.png -e 'xclip -selection c -t image/png < $f'"
 
 #Take screenshot of the window
 bindsym $mod+Print exec scrot '%Y-%m-%d-%s_$wx$h.png' -e 'mv $f ~/Pictures/'
