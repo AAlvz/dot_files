@@ -1,0 +1,15 @@
+! enable Alt bash options
+xterm*eightBitInput: false
+xterm*eightBitOutput: true
+XTerm*background: black
+! Adjust Font
+xterm*faceName: Monospace
+xterm*faceSize: 12
+
+
+! I like a LOT of scrollback...
+! xterm*savelines: 16384
+
+xterm*loginShell: true
+
+

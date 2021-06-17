@@ -10,6 +10,7 @@
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 
 set $mod Mod4
+set $alt Mod1
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
@@ -27,8 +28,11 @@ font pango:DejaVu Sans Mono 8
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec i3-sensible-terminal
+#bindsym $mod+Return exec i3-sensible-terminal
+bindsym $mod+Return exec xterm
 bindsym $mod+Shift+Return exec gnome-terminal --working-directory=`cat ~/.pwd`
+
+bindsym $mod+$alt+Shift+Control+s exec systemctl suspend
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -41,15 +45,19 @@ bindsym $mod+d exec dmenu_run
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 
 # change focus
-bindsym $mod+h focus left
-bindsym $mod+j focus down
-bindsym $mod+k focus up
-bindsym $mod+l focus right
-bindsym $mod+semicolon focus right
+# bindsym $mod+h focus left
+# bindsym $mod+j focus down
+# bindsym $mod+k focus up
+# bindsym $mod+l focus right
+# bindsym $mod+semicolon focus right
 
+bindsym $mod+n focus left
+bindsym $mod+Shift+n focus down
+bindsym $mod+Shift+o focus up
+bindsym $mod+o focus right
 
-bindsym $mod+n focus down
-bindsym $mod+p focus right
+# bindsym $mod+n focus down
+# bindsym $mod+p focus right
 
 # alternatively, you can use the cursor keys:
 #bindsym $mod+Left focus left
@@ -91,7 +99,7 @@ bindsym $mod+e layout toggle split
 bindsym $mod+Shift+space floating toggle
 
 # change focus between tiling / floating windows
-bindsym $mod+space focus mode_toggle
+# bindsym $mod+space focus mode_toggle
 
 # focus the parent container
 bindsym $mod+a focus parent
@@ -190,10 +198,17 @@ bindsym $mod+Print exec scrot '%Y-%m-%d-%s_$wx$h.png' -e 'mv $f ~/Pictures/'
 #Caps lock as ctrl
 #exec_always /usr/bin/loadkeys /usr/share/keymaps/capslock_as_ctrl
 exec --no-startup-id setxkbmap -option grp:alt_space_toggle us,es
-exec --no-startup-id /home/$USER/scripts/keyboard/capslock_as_ctrl
-exec --no-startup-id feh --bg-max Pictures/background.jpg
-exec --no-startup-id i3-msg 'workspace 1; exec google-chrome'
-exec --no-startup-id i3-msg 'workspace 2; exec gnome-terminal --working-directory=`cat ~/.pwd`'
+
+# exec "setxkbmap -layout us,es"
+# exec "setxkbmap -option 'grp:alt_space_toggle'"
+
+exec "xrandr --output DP-2-1 --mode 1920x1080 --right-of eDP-1"
+
+
+# exec --no-startup-id /home/$USER/scripts/keyboard/capslock_as_ctrl
+# exec --no-startup-id feh --bg-max Pictures/background.jpg
+# exec --no-startup-id i3-msg 'workspace 1; exec google-chrome'
+# exec --no-startup-id i3-msg 'workspace 2; exec gnome-terminal --working-directory=`cat ~/.pwd`'
 
 
 # ENABLE TAP CLICK AND TWO FINGERS RIGHT CLICK AND SCROLL.
