@@ -6,10 +6,16 @@ XTerm*background: black
 xterm*faceName: Monospace
 xterm*faceSize: 12
 
+! Copy to Clipboard
+xterm*selectToClipboard: true
+
 
 ! I like a LOT of scrollback...
 ! xterm*savelines: 16384
 
 xterm*loginShell: true
 
+!xrdb -merge ~/.Xresources
 
+*customization: -color
+xterm*termName: xterm-256color
