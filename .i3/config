@@ -52,8 +52,8 @@ bindsym $mod+d exec dmenu_run
 # bindsym $mod+semicolon focus right
 
 bindsym $mod+n focus left
-bindsym $mod+Shift+n focus down
-bindsym $mod+Shift+o focus up
+bindsym $mod+j focus down
+bindsym $mod+k focus up
 bindsym $mod+o focus right
 
 # bindsym $mod+n focus down
@@ -69,11 +69,15 @@ bindsym $mod+Up focus up
 
 
 # move focused window
-bindsym $mod+Shift+h move left
+# bindsym $mod+Shift+h move left
+# bindsym $mod+Shift+j move down
+# bindsym $mod+Shift+k move up
+# bindsym $mod+Shift+l move right
+# bindsym $mod+Shift+semicolon move right
+bindsym $mod+Shift+n move left
 bindsym $mod+Shift+j move down
 bindsym $mod+Shift+k move up
-bindsym $mod+Shift+l move right
-bindsym $mod+Shift+semicolon move right
+bindsym $mod+Shift+o move right
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Shift+Left move left
@@ -183,6 +187,13 @@ bindsym XF86MonBrightnessDown exec xbacklight -dec 10
 bindsym XF86AudioRaiseVolume exec /usr/bin/pactl -- set-sink-volume @DEFAULT_SINK@ '+2%'
 bindsym XF86AudioLowerVolume exec /usr/bin/pactl -- set-sink-volume @DEFAULT_SINK@ '-2%'
 bindsym XF86AudioMute exec /usr/bin/pactl set-sink-mute @DEFAULT_SINK@ toggle
+
+
+#Requires installing playerctl
+bindsym XF86AudioPlay exec playerctl play
+bindsym XF86AudioPause exec playerctl pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
 
 #Lock screen
 bindsym Control+Mod1+l exec i3lock
