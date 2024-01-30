@@ -1,0 +1,128 @@
+python3 main.py 
+sudo hwclock -s
+python3 main.py 
+./deploy.sh 
+./deploy.sh 
+./deploy.sh 
+./deploy.sh 
+ls -la
+chmod 755 deploy_scheduler.sh
+./deploy_scheduler.sh
+./deploy_scheduler.sh
+./deploy_scheduler.sh
+ls -la
+cp deploy.sh deploy_scheduler.sh requirements.txt ../delete_old_messages/
+cd ../delete_old_messages/
+cd ../delete_old_messages/
+./deploy.sh
+./deploy_scheduler.sh
+cp ../pulse_users/Procfile .
+ls -la
+ls -la ../pulse_users/
+cat users.json 
+rm users.json 
+ls -la
+./deploy.sh
+./deploy.sh
+python3 main.py 
+./deploy.sh
+./deploy.sh
+./deploy_scheduler.sh
+./deploy.sh
+./deploy.sh
+cd ../pulse_users/
+ls -la
+./deploy.sh
+./deploy.sh
+./mvp.py 
+python3 main.py 
+python3 main.py 
+pwd
+cd tribu/local/paypal/tribu-implementation/
+ls -la
+chmod 755 payment.py 
+./payment.py "I feel very happy today"
+./payment.py "I feel very happy today"
+whereis pyth3
+whereis python3
+./payment.py "I feel very happy today"
+./payment.py "I feel very happy today"
+python3 -m venv venv
+source venv/bin/activate
+cd tribu/local/paypal/tribu-implementation/
+ls -la
+pip install -r requirements.txt 
+pip install urllib2
+ls -la
+pip install -r requirements.txt 
+./payment.py 
+./payment.py 
+./payment.py 
+./payment.py 
+./payment.py 
+./payment.py 
+./payment.py 
+./payment.py 
+./payment.py 
+./payment.py 
+./payment.py 
+./payment.py 
+./payment.py 
+./payment.py 
+./payment.py 
+./payment.py 
+cp paypal-button.html ~/Docs_win/tribu/
+cp paypal-button.html ~/Docs_win/tribu/paypal-button2.html
+cp paypal-button.html ~/Docs_win/tribu/paypal-button2.html
+cp paypal-button.html ~/Docs_win/tribu/paypal-button2.html
+cp paypal-button.html ~/Docs_win/tribu/paypal-button2.html
+cp paypal-button.html ~/Docs_win/tribu/paypal-button2.html
+cp paypal-button.html ~/Docs_win/tribu/paypal-button2.html
+cp paypal-button.html ~/Docs_win/tribu/paypal-button2.html
+cp paypal-button.html ~/Docs_win/tribu/paypal-button2.html
+cp paypal-button.html ~/Docs_win/tribu/paypal-button2.html
+cp paypal-button.html ~/Docs_win/tribu/paypal-button2.html
+open paypal-button.html 
+cp paypal-button.html ~/Docs_win/tribu/paypal-button2.html
+cp paypal-button.html ~/Docs_win/tribu/paypal-button2.html
+cp paypal-button.html ~/Docs_win/tribu/paypal-button2.html
+cp paypal-button.html ~/Docs_win/tribu/paypal-button2.html
+ls -la
+chmod 755 printmatrixspiral.py 
+./printmatrixspiral.py 
+exit
+source .venv/bin/activate
+./.venv/bin/activate
+source .venv/bin/activate
+exit
+chmod 755 secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+./secret_code.py 
+exit

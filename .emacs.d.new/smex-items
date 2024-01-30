@@ -1,0 +1,47 @@
+
+;; ----- smex-history -----
+(
+ eshell
+ copilot-mode
+ copilot-login
+ copilot-complete
+ yaml-mode
+ package-install
+ package-refresh-contents
+)
+
+;; ----- smex-data -----
+(
+ (emacs-init-time . 3)
+ (flymake-menu . 1)
+ (flymake-goto-next-error . 13)
+ (describe-char . 2)
+ (elisp-flymake--batch-compile-for-flymake . 2)
+ (next-error . 1)
+ (python-mode . 3)
+ (help . 1)
+ (flymake-mode . 1)
+ (package-list-packages . 1)
+ (copilot-login . 6)
+ (upcase-char . 1)
+ (upcase-region . 2)
+ (json-pretty-print . 1)
+ (grep-find . 1)
+ (grep . 3)
+ (shell-command . 1)
+ (eshell . 12)
+ (copilot-complete . 3)
+ (copilot-next-completion . 4)
+ (term-mode . 3)
+ (downcase-region . 2)
+ (copilot-diagnose . 1)
+ (hs-hide-all . 6)
+ (hs-hide-block . 21)
+ (make-directory . 1)
+ (term . 1)
+ (shell . 1)
+ (package-install . 3)
+ (package-refresh-contents . 1)
+ (yaml-mode . 1)
+ (copilot-mode . 1)
+)

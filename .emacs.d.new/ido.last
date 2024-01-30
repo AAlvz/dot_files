@@ -1,0 +1,238 @@
+;;; -*- coding: utf-8 -*-
+
+;; ----- ido-last-directory-list -----
+(
+ ("/home/user/documents/tribu/infra/" . "cloud_run_services/")
+ ("/home/user/documents/neuralink/nlisp/grpc/examples/python/" . "helloworld/")
+ ("/home/user/documents/neuralink/nlisp/grpc/" . "examples/")
+ ("/home/user/documents/neuralink/nlisp/" . "proto/")
+ ("/home/user/documents/neuralink/nlisp/grpc/examples/" . "python/")
+ ("/home/user/documents/" . "tribu/")
+ ("/home/user/documents/neuralink/20230523-neuralink-image-service-prompt/20230523-neuralink-image-service-prompt/" . "proto/")
+ ("/home/user/tribu/local/old/" . "old-templates/")
+ ("/home/user/tribu/local/radars/" . "wellbeing/")
+ ("/home/user/tribu/local/send_pulse/functions/" . "get_latest_radars_with_score/")
+ ("/home/user/documents/tribu/local/" . "send_pulse/")
+ ("/home/user/documents/tribu/" . "infra/")
+ ("/home/user/tribu/local/send_pulse/" . "functions/")
+ ("/home/user/tribu/local/json_objects/with_data/" . "users/")
+ ("/home/user/tribu/local/json_objects/" . "with_data/")
+ ("/home/user/tribu/local/.venv/" . "bin/")
+ ("/home/user/tribu/local/views/" . "onboarding/")
+ ("/home/" . "user/")
+ ("/home/user/tribu/local/<Blob: tribu-project-onboarding-files, data/" . "installations/")
+ ("/home/user/tribu/local/data/installations/" . "none-T02JMSG1ZJB/")
+ ("/home/user/tribu/local/data/" . "pulses/")
+ ("/var/" . "log/")
+ ("/" . "usr/")
+ ("/home/user/" . ".emacs.d/")
+ ("/home/user/tribu/" . "infra/")
+ ("/home/user/.emacs.d/" . "lisp/")
+ ("/home/user/tribu/local/" . "templates/")
+)
+
+;; ----- ido-work-directory-list -----
+(
+ "/home/user/documents/neuralink/nlisp/"
+ "/home/user/documents/neuralink/nlisp/infra/cloudrun/"
+ "/home/user/documents/neuralink/nlisp/proto/"
+ "/home/user/documents/tribu/infra/cloud_run_services/"
+ "/home/user/documents/tribu/"
+ "/home/user/documents/neuralink/nlisp/grpc/examples/python/helloworld/"
+ "/home/user/documents/neuralink/nlisp/grpc/examples/protos/"
+ "/home/user/documents/tribu/infra/"
+ "/home/user/documents/tribu/local/"
+ "/home/user/documents/neuralink/20230523-neuralink-image-service-prompt/20230523-neuralink-image-service-prompt/proto/"
+ "/home/user/documents/neuralink/20230523-neuralink-image-service-prompt/20230523-neuralink-image-service-prompt/"
+ "/home/user/"
+ "/home/user/.emacs.d/lisp/"
+ "/home/user/.emacs.d/elpa/"
+ "/home/user/tribu/local/templates/"
+ "/home/user/tribu/local/"
+ "/home/user/tribu/local/send_pulse/functions/get_latest_radars_with_score/"
+ "/home/user/tribu/local/send_pulse/functions/get_next_pulse/"
+ "/home/user/tribu/local/send_pulse/functions/get_lastest_radars_with_score/"
+ "/home/user/tribu/local/send_pulse/functions/"
+ "/home/user/tribu/local/radars/"
+ "/home/user/tribu/infra/"
+ "/home/user/tribu/infra/cloud_run_services/"
+ "/home/user/tribu/local/tribu_config_files/"
+ "/home/user/tribu/"
+ "/home/user/tribu/local/send_pulse/"
+ "/home/user/tribu/local/old/old-templates/"
+ "/home/user/tribu/local/radars/wellbeing/"
+ "/home/user/tribu/local/send_pulse/functions/get_radar_progress/"
+ "/home/user/documents/tribu/local/send_pulse/templates/"
+ "/home/user/documents/tribu/local/templates/"
+ "/home/user/tribu/local/radars/employee/"
+ "/home/user/tribu/local/send_pulse/templates/"
+ "/home/user/tribu/local/data/"
+ "/home/user/tribu/local/pulses/"
+ "/home/user/tribu/local/views/"
+ "/home/user/tribu/local/views/onboarding/"
+ "/home/user/tribu/local/views/mvp2/"
+ "/home/user/tribu/local/data/pulses/"
+ "/home/user/tribu/local/data/users/"
+ "/home/user/tribu/local/json_objects/with_data/users/"
+ "/home/user/tribu/local/json_objects/with_data/"
+ "/home/user/.aws/"
+ "/home/user/tribu/local/data/installations/none-T02JMSG1ZJB/"
+ "/var/log/"
+ "/home/user/tribu/local/examples/"
+)
+
+;; ----- ido-work-file-list -----
+(
+ "call.sh"
+ "api_config.yaml"
+ "2createconfig.sh"
+ "image.proto"
+ "client"
+ "Dockerfile"
+ "service_production.yaml"
+ "4viewgwdetails.sh"
+ "3deployapigw.sh"
+ "1enableserrvices.sh"
+)
+
+;; ----- ido-dir-file-cache -----
+(
+ ("/home/user/.emacs.d/" (25809 20567 465857 311000) "./" "../" "ac-comphist.dat" "tutorial/" "ido.last" "codeium.el/" "ido.last~" "auto-save-list/" "lisp/" "elpa/" "eshell/" "smex-items")
+
+ ("/home/user/" (25809 20614 980855 689000) ".dbus/" "#merge_sort.py#" "./" ".#missingtribu.md" "../" ".#.emacs" "tribu/" ".boto" "ec2-user@ec2-35-172-182-128.compute-1.amazonaws.com" ".lesshst" ".mysql_history" "js.json" "aws/" ".local/" ".emacs.d/" "#missingtribu.md#" "test.py" ".bashrc" ".viminfo" ".python_history-01346.tmp" "Docs_win/" ".bash_logout" ".ssh/" "demo" ".profile" ".docker/" ".grpcurl/" ".aws/" ".emacs~" ".emacs" ".config/" ".emacs_saves/" ".motd_shown" ".cargo/" ".wget-hsts" "#demo#" "flink" "awscliv2.zip" ".bash_history" "bfitgym-mysql.txt" ".cache/" "test.json" "tests/" "assembly_ai/" ".gitconfig" ".sudo_as_admin_successful" ".landscape/" "hv-virginia.pem" ".bashrc.backup" "documents/" ".azure/" ".rustup/" ".python_history")
+
+ ("/home/user/documents/neuralink/nlisp/" (25784 12638 658349 249000) ".env" "./" "../" "output.jpg" "image_output.jpg" "requirements.txt" "call.sh" "rotate_image.py" "build" "Dockerfile" "3deployapigw.sh" "deploy" "image_pb2.py" "api_config.yaml" "ugly2.jgp" "service_production.yaml" "client" "infra/" ".github/" "image_pb2_grpc.py" "image.jpg" "prompt.md" "proto/" "service.yaml" "2createconfig.sh" "ugly.base64" ".git/" "grpcurl.bin" "server" "image_pb2.pyi" "ugly.jpg" "filtered_image.jpg" "image_rotated.jpg" "README.md" "test_images/" "__pycache__/" "ugly2.jpg" "api_descriptor.pb" ".gitignore" "generated_pb2/" "setup" "grpcurl/" ".venv/" "Dockerfile_client")
+
+ ("/home/user/documents/neuralink/nlisp/infra/cloudrun/" (25784 7572 955526 30000) "./" "4viewgwdetails.sh" "../" "3deployapigw.sh" "deploy" "api_config.yaml" "service.yaml" "2createconfig.sh" "1enableserrvices.sh")
+
+ ("/home/user/documents/tribu/infra/cloud_run_services/" (25759 6995 289277 620000) "./" "../" "service_production.yaml" "service_stage.yaml")
+
+ ("/home/user/documents/neuralink/" (25778 17546 353254 802000) "./" "../" "nlisp/" "20230523-neuralink-image-service-prompt.zip" "nlisp - Copy/" "challengebu/" "grpc/")
+
+ ("/home/user/documents/neuralink/nlisp/grpc/examples/python/helloworld/" (25777 37456 708568 534000) "async_greeter_server_with_reflection.py" "greeter_server.py" "./" "../" "helloworld_pb2.py" "greeter_server_with_reflection.py" "helloworld_pb2.pyi" "greeter_client_with_options.py" "async_greeter_client.py" "greeter_client.py" "async_greeter_client_with_options.py" "helloworld_pb2_grpc.py" "async_greeter_server.py" "greeter_client_reflection.py" "README.md" "__pycache__/" ".gitignore" "async_greeter_server_with_graceful_shutdown.py")
+
+ ("/home/user/documents/neuralink/nlisp/proto/" (25777 31844 252180 425000) "./" "../" "image.proto")
+
+ ("/home/user/documents/neuralink/nlisp/grpc/" (25775 1387 905983 879000) ".rspec" "./" ".bazelignore" "OWNERS" "../" "build_handwritten.yaml" "spm-cpp-include/" "CONTRIBUTING.md" "build_config.rb" "grpc.def" ".yardopts" "CODE-OF-CONDUCT.md" "tools/" "Package.swift" "requirements.bazel.txt" "requirements.txt" "gRPC-Core.podspec" "package.xml" "gRPC-ProtoRPC.podspec" "BUILDING.md" "Makefile" "gRPC-C++.podspec" "gRPC-RxLibrary.podspec" "setup.py" "bazel/" ".istanbul.yml" "SECURITY.md" "setup.cfg" "test/" ".clang-format" "grpc.gemspec" "Rakefile" ".bazelci/" ".gitmodules" ".pylintrc-examples" ".yapfignore" "summerofcode/" ".github/" "config.m4" "grpc.gyp" "Gemfile" "grpc.bzl" "GOVERNANCE.md" ".gitallowed" "NOTICE.txt" "build_autogenerated.yaml" "spm-core-include/" "gRPC.podspec" ".git/" ".pylintrc-tests" "cmake/" "examples/" "etc/" "fuzztest/" "_metadata.py" "templates/" ".gitattributes" "CMakeLists.txt" "README.md" "AUTHORS" "LICENSE" "doc/" "BUILD" ".gitignore" "config.w32" "PYTHON-MANIFEST.in" "include/" ".bazelrc" "composer.json" ".editorconfig" "CONCEPTS.md" ".pylintrc" "MANIFEST.md" "src/" "TROUBLESHOOTING.md" ".clang-tidy" "third_party/" "WORKSPACE" "MAINTAINERS.md")
+
+ ("/home/user/documents/neuralink/nlisp/grpc/examples/protos/" (25775 4767 976718 735000) "helloworld.proto" "./" "../" "README.md" "hellostreamingworld.proto" "BUILD" "keyvaluestore.proto" "route_guide.proto" "auth_sample.proto")
+
+ ("/home/user/documents/neuralink/nlisp/grpc/examples/" (25775 1387 525983 979000) "./" "../" "python/" "objective-c/" "php/" "android/" "README.md" "cpp/" "protos/" "node/" "ruby/")
+
+ ("/home/user/documents/neuralink/nlisp/grpc/examples/python/" (25775 1387 525983 979000) "./" "uds/" "../" "timeout/" "compression/" "multiprocessing/" "Makefile" "hellostreamingworld/" "metadata/" "debug/" "wait_for_ready/" "keep_alive/" "cancellation/" "no_codegen/" "retry/" "xds/" "route_guide/" "errors/" "async_streaming/" "multiplex/" "lb_policies/" "README.md" "health_checking/" "auth/" "data_transmission/" "interceptors/" "helloworld/")
+
+ ("/home/user/.aws/" (25722 9413 228532 0) "credentials" "config" "../" "./")
+
+ ("/home/user/tribu/local/send_pulse/templates/" (25722 24994 987379 269000) "./" "../" "onboarding_2_home_page_modal_template.json" "team_home_template.json" "reward_no_more_pulses_template.json" "individual_home_template.json" "individual_responses_details_template.json" "home_page_loading_template.json" "update_team_responses_of_radar_modal_template.json" "enable_radar_modal_template.json" "onboarding_2_first_radar_template.json" "loading_modal_template.json" "spotify_results_DRAFT.json" "team_new_start_template.json" "reward_finished_pulse_template.json" "show_team_responses_of_radar_modal_template.json" "welcome_message_template.json" "individual_tribu_invite_template.json" "send_question_with_answers_template.json")
+
+ ("/home/user/documents/tribu/local/templates/" (25722 24994 987379 269000) "./" "../" "onboarding_2_home_page_modal_template.json" "team_home_template.json" "reward_no_more_pulses_template.json" "individual_home_template.json" "individual_responses_details_template.json" "home_page_loading_template.json" "update_team_responses_of_radar_modal_template.json" "enable_radar_modal_template.json" "onboarding_2_first_radar_template.json" "loading_modal_template.json" "spotify_results_DRAFT.json" "team_new_start_template.json" "reward_finished_pulse_template.json" "show_team_responses_of_radar_modal_template.json" "welcome_message_template.json" "individual_tribu_invite_template.json" "send_question_with_answers_template.json")
+
+ ("/home/user/documents/tribu/local/send_pulse/templates/" (25722 24994 987379 269000) "./" "../" "onboarding_2_home_page_modal_template.json" "team_home_template.json" "reward_no_more_pulses_template.json" "individual_home_template.json" "individual_responses_details_template.json" "home_page_loading_template.json" "update_team_responses_of_radar_modal_template.json" "enable_radar_modal_template.json" "onboarding_2_first_radar_template.json" "loading_modal_template.json" "spotify_results_DRAFT.json" "team_new_start_template.json" "reward_finished_pulse_template.json" "show_team_responses_of_radar_modal_template.json" "welcome_message_template.json" "individual_tribu_invite_template.json" "send_question_with_answers_template.json")
+
+ ("/home/user/tribu/" (25759 4213 779834 388000) "env.bak" "./" "../" "local/" "requirements.txt" "env.tribu.dev" "resources/" "Dockerfile" "set_env.sh" "env" "env.template" "infra/" "service.yaml" ".git/" "env.tribu.prod" "env.tribu.light" ".dockerignore" "main.py" ".gitignore" "env.tribu.prod.bak" "env.tribu.stage")
+
+ ("/home/user/tribu/infra/cloud_run_services/" (25759 6995 289277 620000) "./" "../" "service_production.yaml" "service_stage.yaml")
+
+ ("/home/user/.emacs.d/elpa/" (25775 4154 788567 106000) "./" "../" "auto-complete-20220105.439/" "json-mode-0.2.signed" "nadvice-0.3/" "json-mode-0.2/" "helm-20210419.1836/" "archives/" "helm-core-20210419.1836/" "async-20210117.718/" "corfu-readme.txt" "protobuf-mode-20230506.330/" "popup-20210317.138/" "async-1.9.3/" "async-1.9.3.signed" "gnupg/" "nadvice-0.3.signed")
+
+ ("/home/user/documents/tribu/infra/" (25722 16155 602356 785000) "./" "tribu-project-954481070882.json" "../" "manifest_tribu_prod.json" "requirements.txt" "manifest_tribu_stage.json" "manifest_tribu_dev.json" "update_manifest.py" "cloudrun_env_vars_dev" "cloud_run_services/" "setup_env.sh" "cloudrun_env_vars_stage" "README.md" "aws_credentials" "aws_credentials_deploy" "refresh_config_token.py" "cloudrun_env_vars_prod" "tribu-project-4b5b3ad94a62.json" "manifest_tribu.json")
+
+ ("/home/user/documents/tribu/local/" (25746 14127 521119 216000) "requirements.txt" "rust_functions/" "Dockerfile" "send_pulse/" "utils/" "radars/" "templates/" "radar.py" "README.md" "main.py" "README_PULSES.md" "mvp.py" ".venv/" "data/" "../" "./")
+
+ ("/home/user/documents/tribu/" (25759 4213 779834 388000) "env.bak" "./" "../" "local/" "requirements.txt" "env.tribu.dev" "resources/" "Dockerfile" "set_env.sh" "env" "env.template" "infra/" "service.yaml" ".git/" "env.tribu.prod" "env.tribu.light" ".dockerignore" "main.py" ".gitignore" "env.tribu.prod.bak" "env.tribu.stage")
+
+ ("/home/user/documents/" (25774 58806 28393 875000) "./" "neuralink/" "dot_files/" "../" "tribu/" "cprogrambbr/" "aalvz.github.io/" "moneymatch/" "rust/" "tests/" "googlecloud/" "airflow-dags/")
+
+ ("/home/user/documents/neuralink/20230523-neuralink-image-service-prompt/20230523-neuralink-image-service-prompt/proto/" (25774 58806 78394 102000) "./" "../" "image.proto")
+
+ ("/home/user/documents/neuralink/20230523-neuralink-image-service-prompt/20230523-neuralink-image-service-prompt/" (25774 59493 508167 460000) "./" "../" "server.py" "client/" "client.py" "prompt.md" "proto/" "readme.md" ".git/" "server/")
+
+ ("/home/user/tribu/infra/" (25722 16155 602356 785000) "./" "tribu-project-954481070882.json" "../" "manifest_tribu_prod.json" "requirements.txt" "manifest_tribu_stage.json" "manifest_tribu_dev.json" "update_manifest.py" "cloudrun_env_vars_dev" "cloud_run_services/" "setup_env.sh" "cloudrun_env_vars_stage" "README.md" "aws_credentials" "aws_credentials_deploy" "refresh_config_token.py" "cloudrun_env_vars_prod" "tribu-project-4b5b3ad94a62.json" "manifest_tribu.json")
+
+ ("/home/user/tribu/local/" (25746 14127 521119 216000) "requirements.txt" "rust_functions/" "Dockerfile" "send_pulse/" "utils/" "radars/" "templates/" "radar.py" "README.md" "main.py" "README_PULSES.md" "mvp.py" ".venv/" "data/" "../" "./")
+
+ ("/home/user/tribu/local/templates/" (25722 24994 987379 269000) "./" "../" "onboarding_2_home_page_modal_template.json" "team_home_template.json" "reward_no_more_pulses_template.json" "individual_home_template.json" "individual_responses_details_template.json" "home_page_loading_template.json" "update_team_responses_of_radar_modal_template.json" "enable_radar_modal_template.json" "onboarding_2_first_radar_template.json" "loading_modal_template.json" "spotify_results_DRAFT.json" "team_new_start_template.json" "reward_finished_pulse_template.json" "show_team_responses_of_radar_modal_template.json" "welcome_message_template.json" "individual_tribu_invite_template.json" "send_question_with_answers_template.json")
+
+ ("/home/user/.emacs.d/elpa/auto-complete-20220105.439/" (25417 44093 455372 302000) "./" "../" "dict/" "auto-complete-config.elc" "auto-complete-pkg.el" "auto-complete.elc" "auto-complete-config.el" "auto-complete-autoloads.el" "auto-complete.el")
+
+ ("/home/user/tribu/local/radars/wellbeing/" (25718 26206 298931 284000) "./" "../" "micro-worklifeharmony.py" "micro-mindsafety.py" "micro-burnout.py" "micro-smartwork.py" "micro-goals.py")
+
+ ("/home/user/tribu/local/send_pulse/" (25720 58777 481380 790000) "Procfile" "./" "deploy.sh" "../" "__init__.py" "requirements.txt" "Dockerfile" "delete_old_messages.py" "service_job_stage.yaml" "leave_conversation.py" "functions/" "templates.old/" "list_conversations_of_user.py" "send_pulse_to_active_users.py" "service_job_prod.yaml" "test.sh" "templates/" "README.md" "main.py" "service_job_dev.yaml" "body-pulse.json")
+
+ ("/home/user/tribu/local/radars/" (25719 39185 650315 658000) "wellbeing.py" "./" "mindsafety.py" "../" "smartwork.py" "worklifeharmony.py" "spotify.py" "burnout.py" "goals.py" "wellbeing/")
+
+ ("/home/user/tribu/local/send_pulse/functions/" (25720 58777 481380 790000) "./" "../" "get_latest_radars_with_score/" "get_radar_progress/" "get_next_pulse/" "hello_world.py" "README.md" "main.py")
+
+ ("/home/user/tribu/local/send_pulse/functions/get_next_pulse/" (25720 58777 481380 790000) ".gcloudignore" "./" "deploy.sh" "../" "requirements.txt" "test.py" "old.env.yaml" "main.py")
+
+ ("/home/user/tribu/local/send_pulse/functions/get_latest_radars_with_score/" (25720 58777 481380 790000) ".gcloudignore" "./" "deploy.sh" "../" "requirements.txt" "test.py" "main.py")
+
+ ("/home/user/tribu/local/send_pulse/functions/get_lastest_radars_with_score/" (25720 39308 272580 302000) ".gcloudignore" "./" "deploy.sh" "../" "requirements.txt" "test.py" "__pycache__/" "main.py")
+
+ ("/home/user/tribu/local/tribu_config_files/" (25702 20884 90325 198000) "./" "../" ".tribu_config_T02JMSG1ZJB_U02Q4GLLLF8" ".tribu_config_T02JMSG1ZJB_U02K2H47YAE")
+
+ ("/home/user/tribu/local/old/old-templates/" (25643 2463 792372 197000) "individual_stats_tooling_template.json" "./" "../" "individual_goals_template.json" "individual_pulses_history_template.json" "invitation_message_template.json" "team_start_tribu_template.json" "team_goals_summary_template.json" "team_stats_toolkit_template.json" "team_stats_motivation_template.json")
+
+ ("/home/user/tribu/local/old/" (25643 2463 792372 197000) "./" "../" "old-mvps/" "old-templates/")
+
+ ("/home/user/tribu/local/data/" (25643 2463 782372 199000) "./" "preferred_rewards.json" "active_pulses_tribu.json" "../" "rewards.json" "installations/" "active_pulses.json" "pulses/" "users/" "teams.json" "states/")
+
+ ("/home/user/tribu/local/send_pulse/functions/get_radar_progress/" (25643 9364 920757 472000) ".gcloudignore" "./" "deploy.sh" "../" "requirements.txt" "test.py" "old.env.yaml" "__pycache__/" "main.py")
+
+ ("/home/user/tribu/local/radars/employee/" (25607 26077 855347 909000) "./" "../" "burnout.py" "goals.py")
+
+ ("/home/user/documents/tribu/local/send_pulse/" (25607 26504 871249 653000) "Procfile" "./" "deploy.sh" "../" "__init__.py" "requirements.txt" "Dockerfile" "delete_old_messages.py" "service_job_stage.yaml" "leave_conversation.py" "templates.old/" "list_conversations_of_user.py" "service_job_prod.yaml" "test.sh" "templates/" "README.md" "__pycache__/" "main.py" "service_job_dev.yaml" "body-pulse.json")
+
+ ("/home/user/tribu/local/pulses/" (25582 45189 445297 339000) "./" "../" "motivation_align-expectations.json" "goals.json" "motivation_goals-and-expectations.json" "goals-clarity.json" "motivation_goals-clarity.json" "motivation_welcome-pulse.json" "README.md")
+
+ ("/home/user/tribu/local/views/onboarding/" (25569 191 579979 767000) "1_first_dimension.json" "./" "../" "2_first_radar.json" "tribu_intro.json")
+
+ ("/home/user/tribu/local/views/" (25565 11277 834254 661000) "./" "../" "premium_templates.json" "premium_feature.json" "reward_template.json" "preferred_reward_ask.json" "mvp2/" "message_pulse_template.json" "home_view.json" "onboarding/" "individual/" "manager/")
+
+ ("/home/user/tribu/local/views/mvp2/" (25553 21879 538030 461000) "./" "../" "tribu_bye.json" "tribu_intro3_goal.json" "initial_view.json" "team_motivation_stats.json" "tribu_intro4_closure.json" "tribu_intro2.json" "team_toolkit_stats.json" "tribu_welcome.json" "tribu_intro.json")
+
+ ("/home/user/tribu/local/json_objects/with_data/" (25490 22181 353819 147000) "./" "preferred_rewards.json" "../" "rewards.json" "active_pulses.json" "pulses/" "users/" "teams.json" "data/")
+
+ ("/home/user/tribu/local/data/pulses/" (25491 28533 462702 141000) "./" "../" "motivation_welcome-pulse.json" "README.md")
+
+ ("/home/user/tribu/local/add_pulse/" (25486 11041 416771 276000) "./" "../" "requirements.txt" ".#main.py" "main.py")
+
+ ("/home/user/tribu/local/json_objects/with_data/users/" (25463 59318 176316 947000) "./" "../" "user_U02K2H47YAE.json" "#user_U02K2H47YAE.json#" "U02JVR4KMRU.json")
+
+ ("/home/user/tribu/local/data/users/" (25463 58918 826318 859000) "./" "../" "user_U02K2H47YAE.json" "user_1.json" "U02JVR4KMRA.json" "user_U02Q4GLLLF8.json" "user_U02JVR4KMRU.json" "U02JVR4KMRU.json" "user_U03EM9UD54Y.json")
+
+ ("/home/user/tribu/local/json_objects/" (25264 41325 948720 196000) "./" "../" "with_data/" "initial_structure/")
+
+ ("/usr/bin/" (25338 47531 261353 992000) "pl2pm" "gprof" "run-one-constantly" "gsdj" "curl" "ppmcolormask" "pyjwt3" "perlbug" "ssh" "bashbug" "cut" "tic" "dpkg-mergechangelogs" "pbmtextps" "fakeroot-sysv" "apt-add-repository" "sg_sat_set_features" "ppmtolj" "pbmmask" "networkctl" "ln" "padsp" "seq" "neotoppm" "json_pp" "uptime" "catchsegv" "aa-exec" "snapfuse" "tmux" "slogin" "pnmquant" "ppmmix" "vmware-alias-import" "lsblk" "ssh-keygen" "py3clean" "mdatopbm" "ps2pdf12" "yes" "lkbib" "cksum" "docker-compose-v1" "pnmtopalm" "vim.basic" "watch" "pidof" "chardet3" "btrfs" "nproc" "delpart" "dpkg-source" "rpcgen" "pbput" "c99" "pnmtorast" "expr" "lesspipe" "mysqladmin" "pgmramp" "gpgconf" "conch3" "gio" "x86_64-linux-gnu-readelf" "byobu-layout" "rnano" "import-im6.q16" "py3rsa-encrypt" "distro-info" "pnmenlarge" "byobu-launcher-install" "pnmtoxwd" "troff" "rst-buildhtml" "mysqlcheck" "ppmtojpeg" "pbmtoplot" "gpg-agent" "snice" "gcc-ar" "pmap" "ckbcomp" "deb-systemd-helper" "scsi_readcap" "byobu-screen" "setlogcons" "printerbanner" "pamoil" "base32" "sg_wr_mode" "editor" "pkill" "sputoppm" "ptargrep" "pnmfile" "mt" "sbvarsign" "loadunimap" "renice" "x86_64-linux-gnu-dwp" "dpkg-divert" "lspgpot" "byobu-enable-prompt" "xzdiff" "wbmptopbm" "[" "fwupdtool" "VGAuthService" "bzexe" "chvt" "pbmtozinc" "xfontsel" "ppmtoleaf" "setpriv" "pygettext3" "bzless" "ssh-copy-id" "od" "paste" "lsattr" "dd" "jsonpointer" "pnmtorle" "fc-cache" "rst2pseudoxml" "readlink" "sha256sum" "gcov" "sg_vpd" "echo" "sha224sum" "sg_bg_ctl" "animate-im6" "mailmail3" "montage-im6.q16" "spctoppm" "fmt" "sg_dd" "miniterm" "gropdf" "pngtopnm" "gpg-connect-agent" "ilbmtoppm" "pgmedge" "scsi_temperature" "gemtopnm" "grn" "zipdetails" "pbmtogo" "perl5.30-x86_64-linux-gnu" "ppmcolors" "rview" "gslp" "pinentry" "ppmdither" "compare-im6" "ping" "dvipdf" "xlsatoms" "debian-distro-info" "captoinfo" "sg_write_verify" "sg_rep_zones" "xzfgrep" "lsmod" "pr" "run-mailcap" "ptar" "findmnt" "pamdeinterlace" "conjure" "chsh" "run-this-one" "getconf" "pnmpsnr" "gsbj" "apt-get" "snap" "pkmon" "ppmtomap" "timeout" "conjure-im6" "sg_write_x" "wslview" "cloud-id" "unshare" "ppmspread" "watchgnupg" "rst2odt_prepstyles" "sbsiglist" "bzcat" "pbmlife" "tput" "lsof" "sg_map26" "ssh-import-id-lp" "byobu-keybindings" "systemd-cgls" "mtvtoppm" "resolvectl" "grolbp" "mysqlshow" "sg_ses_microcode" "mysqlrepair" "ionice" "dir" "pnmmontage" "ckeygen3" "sg_modes" "x86_64" "last" "zforce" "col1" "ubuntu-advantage" "tail" "b2sum" "roff2ps" "c89" "gpgparsemail" "eatmydata" "mknod" "view" "shuf" "pgmkernel" "byobu-launcher" "hostid" "objcopy" "pgmnoise" "chown" "fixtpps" "ssh-import-id" "xkill" "mysql_config_editor" "fixwfwps" "twist3" "leaftoppm" "x86_64-linux-gnu-gcc-ranlib" "dpkg-name" "mt-gnu" "update-mime-database" "lzcmp" "pcxtoppm" "elfedit" "savelog" "mcookie" "py3compile" "keep-one-running" "vdir" "pager" "vimtutor" "x86_64-linux-gnu-gcc-ar" "vm-support" "sg_sat_read_gplog" "iscsiadm" "killall" "pdfmom" "gcov-tool" "sg_copy_results" "lzless" "bioradtopgm" "imgtoppm" "byobu-disable-prompt" "pnmnorm" "aws" "viewres" "ppmtoyuvsplit" "byobu-ulevel" "gdiffmk" "sg_sat_phy_event" "pnmgamma" "apt-key" "lookbib" "paplay" "gpasswd" "on_ac_power" "id" "addpart" "boltctl" "pi1toppm" "dbus-monitor" "lsinitramfs" "convert-im6.q16" "fc-validate" "atrm" "sg_map" "mysqlpump" "col7" "pstree" "setterm" "x86_64-linux-gnu-python3-config" "uncompress" "ntfsfix" "look" "vimdiff" "lessecho" "byobu-enable" "scriptreplay" "ppmforge" "column" "pwd" "sg_senddiag" "automat-visualize3" "mktemp" "mk_modmap" "netcat" "debconf-apt-progress" "lessfile" "i386" "sg_requests" "sg_read_buffer" "ps2ps2" "ppmnorm" "infotocap" "pbmtoicon" "w" "zcmp" "git-upload-pack" "peekfd" "migrate-pubring-from-classic-gpg" "sg_read_long" "pnmtofits" "dbus-uuidgen" "vmware-toolbox-cmd" "bzip2" "info" "h2ph" "sha1sum" "base64" "fixwwps" "kmod" "man-recode" "ncal" "pygettext3.8" "convert-im6" "sha384sum" "setpci" "eps2eps" "ltrace" "manpath" "ssh-agent" "epsffit" "ghostscript" "mdig" "debconf-escape" "vmware-namespace-cmd" "x86_64-linux-gnu-strings" "ls" "print" "mmroff" "ischroot" "pjtoppm" "sosreport" "namei" "gdbus" "x86_64-linux-gnu-g++" "ntfsmove" "zdiff" "x86_64-linux-gnu-gcov-dump" "col6" "ps2ps" "screendump" "pic2graph" "gettext.sh" "unxz" "uname" "md5sum" "identify-im6.q16" "perl" "env" "hostnamectl" "xauth" "pftp" "stream-im6.q16" "run-one-until-failure" "ppmdist" "sos" "sprof" "rgb3toppm" "gpic" "xwininfo" "ntfscluster" "byobu-status-detail" "cpio" "x86_64-linux-gnu-ld.bfd" "brushtopbm" "rst2odt" "touch" "wslusc" "atq" "rst2xml" "rst2html5" "shasum" "rst2s5" "mysqlimport" "grolj4" "gzexe" "tbl" "logname" "pnmshear" "md5sum.textutils" "grap2graph" "znew" "sbsign" "kbdinfo" "rst2html4" "rgrep" "emacs-nox" "ppmtv" "ntfscmp" "sensible-pager" "enc2xs" "test" "wslsys" "py3rsa-decrypt" "sg_emc_trespass" "localectl" "ntfsusermap" "uuidparse" "btrfs-find-root" "xdg-user-dir" "unicode_start" "python3.8-config" "sg_referrals" "sg_zone" "pldd" "x86_64-linux-gnu-cpp" "systemd-cgtop" "dpkg-shlibdeps" "run-one" "pbmtoepson" "true" "dbxtool" "sg_compare_and_write" "sotruss" "shred" "lslocks" "pnmflip" "eqn2graph" "mapscrn" "yuvtoppm" "mountpoint" "ppmtoacad" "zdump" "sgp_dd" "routel" "prove" "xprop" "x86_64-linux-gnu-gcc-nm-9" "ppmquant" "hexdump" "gtbl" "gpgsm" "gpgcompose" "install-info" "file" "byobu-select-backend" "geqn" "ps2epsi" "xwdtopnm" "pa-info" "sgitopnm" "pygmentize" "nstat" "ppmntsc" "dbus-update-activation-environment" "snapctl" "x86_64-linux-gnu-ranlib" "yuvsplittoppm" "openvt" "xbmtopbm" "fwupdmgr" "sg_rbuf" "pstops" "usbhid-dump" "sg_rmsn" "getopt" "udisksctl" "head" "vigpg" "zegrep" "sbattach" "gpg-zip" "nohup" "debconf-copydb" "pnmcat" "montage" "ntfsinfo" "unexpand" "gold" "bzmore" "sh" "fitstopnm" "btrfs-image" "debconf-communicate" "time" "ppmmake" "git-receive-pack" "vcs-run" "systemd-path" "kernel-install" "whatis" "col3" "systemd-delta" "dbus-send" "dpkg-vendor" "fc-pattern" "unlink" "pf2afm" "pgmcrater" "hostname" "pbget" "setfont" "ntfswipe" "infocmp" "pod2text" "systemd-analyze" "false" "comm" "see" "pgmtofs" "fgconsole" "cloud-init-per" "pkcon" "sg_timestamp" "systemd-ask-password" "fuser" "ppmtoilbm" "debconf" "dirname" "runcon" "pico" "gcc-nm" "xzless" "symcryptrun" "pnmarith" "cpp-9" "ec2metadata" "pbmtoptx" "pbmtog3" "ebrowse" "atktopbm" "sg_get_config" "lzmainfo" "ppmtowinicon" "gperl" "fc-scan" "ld.bfd" "ppmtomitsu" "traceroute6" "giftopnm" "byobu-prompt" "bootctl" "pnmtosgi" "locale-check" "systemd-umount" "add-apt-repository" "install" "unattended-upgrade" "keyring" "setupcon" "sudoedit" "join" "411toppm" "pbmtolj" "neqn" "c89-gcc" "ppmtoxpm" "emacsclient" "pnmsmooth" "unattended-upgrades" "mesa-overlay-control.py" "apropos" "gcc-ranlib" "x86_64-linux-gnu-gcov-tool" "wslfetch" "pbmtoatk" "apt-extracttemplates" "paperconf" "dpkg-scansources" "pdb3.8" "expand" "pbmtowbmp" "sum" "pamstretch-gen" "hwe-support-status" "gcc-9" "ntfsdecrypt" "csplit" "fixfmps" "link" "sbigtopgm" "perlthanks" "zfgrep" "parec" "eqn" "debconf-show" "lzcat" "fold" "systemd-id128" "cftp3" "pgmnorm" "fixwpps" "sg_decode_sense" "mysqloptimize" "btrfs-map-logical" "sg_stream_ctl" "byobu-reconnect-sockets" "egrep" "sos-collector" "bmptopnm" "psfgettable" "ss" "fixdlsrps" "ucfq" "top" "fakeroot" "ctags.emacs" "pastebinit" "sg_test_rwbuf" "py3versions" "x86_64-linux-gnu-cpp-9" "select-editor" "hipstopgm" "chardetect3" "nc" "scsi_stop" "fixpspps" "wc" "dpkg-buildflags" "pnmtile" "pinentry-curses" "rst2xetex" "pnmtosir" "pdb3" "byobu-status" "mtrace" "whiptail" "rasttopnm" "zgrep" "rmdir" "mesg" "xz" "editres" "xxd" "sginfo" "faked-tcp" "lzdiff" "infobrowser" "unsquashfs" "pphs" "pbmreduce" "logger" "psbook" "roff2pdf" "pnmindex" "pamdice" "sg_opcodes" "compare" "apt-config" "unlzma" "conjure-im6.q16" "uuidgen" "dig" "gresource" "systemd-stdio-bridge" "gcov-tool-9" "pgmenhance" "bzip2recover" "pnminterp" "x86_64-linux-gnu-ld" "scsi_ready" "sbkeysync" "instmodsh" "hpftodit" "pnmconvol" "groff" "sleep" "indxbib" "dpkg-genbuildinfo" "systemd-escape" "ppmtorgb3" "pgmoil" "patch" "pnmtopng" "stat" "gapplication" "who" "rcp" "ucfr" "dbus-daemon" "lshw" "xlsfonts" "composite-im6" "pyhtmlizer3" "sg_raw" "printafm" "skill" "choom" "chcon" "ld" "objdump" "fakeroot-tcp" "pnmpad" "ppmtopj" "gpinyin" "grodvi" "dpkg-split" "refer" "sldtoppm" "encguess" "xargs" "glib-compile-schemas" "pip" "sg_get_lba_status" "linux64" "pwdx" "tempfile" "pstopnm" "mysql" "ginstall-info" "pydoc3" "pbmmake" "pamfile" "ubuntu-bug" "edit" "palmtopnm" "pnmtotiff" "htop" "ping6" "mtr-packet" "git-shell" "ppmtopcx" "ping4" "ip" "nawk" "colrm" "x86_64-linux-gnu-gcov-9" "hub-tool" "x86_64-linux-gnu-gcc-nm" "ctail" "ntfs-3g.probe" "dash" "fallocate" "psfxtable" "cp" "systemd-mount" "pnmscale" "x86_64-linux-gnu-gcc-ar-9" "ipcrm" "ex" "gsettings" "bzdiff" "lastlog" "make" "apport-collect" "make-first-existing-target" "reset" "thinkjettopbm" "pnmmargin" "pbmtopsg3" "col4" "sg_readcap" "lspci" "write" "dirmngr" "traceroute6.iputils" "sg_inq" "sensible-browser" "pax11publish" "telnet.netkit" "setarch" "ntfscat" "ubuntu-security-status" "pamon" "pnminterp-gen" "fusermount" "ppmbrighten" "xvinfo" "x86_64-linux-gnu-ld.gold" "cloud-init" "mtr" "fc-query" "pbmto10x" "ppmtopi1" "dpkg-scanpackages" "x86_64-linux-gnu-gprof" "bzgrep" "xmessage" "chgrp" "systemd-notify" "byobu-select-profile" "post-grohtml" "clear" "byobu-silent" "x86_64-linux-gnu-as" "xev" "x86_64-linux-gnu-gcc-ranlib-9" "luit" "stdbuf" "ps" "bunzip2" "x86_64-linux-gnu-objcopy" "mawk" "uniq" "listres" "passwd" "purge-old-kernels" "sg_reset" "xsubpp" "wdctl" "apt-ftparchive" "docker-credential-desktop.exe" "sg_ident" "toe" "fwupdate" "rev" "mysqldumpslow" "ppmrelief" "pnmtojpeg" "docker-compose" "openssl" "pbmtomda" "pnmremap" "sftp" "partx" "byobu-ctrl-a" "umount" "ppmfade" "sudoreplay" "addr2line" "tr" "ppmtompeg" "pydoc3.8" "pip3" "x86_64-linux-gnu-gcov-dump-9" "rescan-scsi-bus.sh" "ypdomainname" "ppmtotga" "byobu-ugraph" "splitfont" "pslog" "xdg-user-dirs-update" "gcc-nm-9" "size" "pbmtoppa" "roff2dvi" "iptables-xml" "pnmcut" "corelist" "rsh" "lsb_release" "pnmcolormap" "x86_64-linux-gnu-gold" "kill" "sg_sanitize" "ld.gold" "ppmhist" "dfu-tool" "routef" "do-release-upgrade" "xzgrep" "bzegrep" "nslookup" "unmkinitramfs" "col2" "chage" "X11/" "pic" "jsondiff" "imagetops" "mkfifo" "pkcheck" "sg_read_attr" "resizepart" "mandb" "strings" "whereis" "ngettext" "gcc" "dpkg-gensymbols" "split" "dpkg-statoverride" "xzegrep" "stream" "jpegtopnm" "dumpkeys" "static-sh" "ps2pdf14" "sg" "x86_64-linux-gnu-ar" "pnminvert" "screen" "btrfsck" "rstpep2html" "clear_console" "mkdir" "pfbtops" "setkeycodes" "gawk" "sg_format" "ppmrainbow" "perlivp" "lexgrog" "kmodsign" "pbmclean" "parecord" "ppmtobmp" "systemd-cat" "dpkg-deb" "ps2pdfwr" "jsonpatch-jsondiff" "vmware-vgauth-cmd" "aa-enabled" "x86_64-linux-gnu-objdump" "mysqlanalyze" "systemd-run" "tee" "udevadm" "grep" "du" "printenv" "pbmtoxbm" "pgmtexture" "x86_64-linux-gnu-gcc" "lcf" "rawtopgm" "systemd-detect-virt" "ubuntu-distro-info" "pnmdepth" "grotty" "x-www-browser" "gcc-ranlib-9" "pgmtolispm" "animate" "python3" "systemd-tty-ask-password-agent" "cmuwmtopbm" "macptopbm" "pbmtoascii" "btrfstune" "pacmd" "lispmtopgm" "ucf" "telnet" "libnetcfg" "lesskey" "tracepath" "find" "sensible-editor" "realpath" "flock" "rdma" "ximtoppm" "sgm_dd" "jsonschema" "numfmt" "rst2html" "lslogins" "ps2pdf" "gcov-9" "pnmhistmap" "pod2html" "pbmtobbnbg" "sg_luns" "chattr" "lz4c" "rrsync" "sg_turs" "linux-version" "sg_sync" "deallocvt" "pactl" "cat" "col9" "gxditview" "btrfs-select-super" "fiascotopnm" "extractres" "ppmqvga" "byobu-janitor" "mv" "byobu-disable" "lowntfs-3g" "ppmcie" "rm" "dmesg" "xlsclients" "vim.tiny" "pnmnlfilt" "sudo" "showchar" "fgrep" "fincore" "busctl" "gsnd" "tabs" "lorder" "cvtsudoers" "dpkg-distaddfile" "pre-grohtml" "zcat" "xzmore" "ppmdim" "ubuntu-core-launcher" "pbmpscale" "vmware-hgfsclient" "h2xs" "gzip" "pkttyagent" "diff" "c99-gcc" "pkexec" "loginctl" "ed" "plymouth" "pnmhisteq" "ul" "pkaction" "stty" "apt" "py3rsa-sign" "bc" "lzma" "sg_write_long" "addftinfo" "fc-conflist" "nroff" "trial3" "rst2latex" "gsdj500" "ctstat" "apport-bug" "vmware-rpctool" "apt-cdrom" "nl" "c++filt" "dircolors" "byobu-launcher-uninstall" "envsubst" "strip" "com.docker.cli" "whoami" "ntfsrecover" "linux-check-removal" "sg_sat_identify" "ldd" "cpan5.30-x86_64-linux-gnu" "strace" "xzcat" "grog" "chem" "oem-getlogs" "dbus-launch" "domainname" "g++-9" "eyuvtoppm" "pasuspender" "rvim" "tifftopnm" "dwp" "chfn" "pbmtomacp" "x86_64-linux-gnu-gcc-9" "dpkg-checkbuilddeps" "preconv" "wget" "iconv" "vmware-xferlogs" "ppmtouil" "wifi-status" "pgmhist" "landscape-sysinfo" "vim" "ipcs" "identify-im6" "g3topbm" "as" "users" "finalrd" "mysqldump" "appres" "pbmtoepsi" "sg_write_same" "pod2usage" "lz4" "bzfgrep" "roff2x" "display-im6.q16" "lsmem" "ppmtopuzz" "ssh-argv0" "ppmchange" "jsonpatch" "st4topgm" "tgatoppm" "import-im6" "groups" "sg_ses" "pathchk" "rawtoppm" "sirtopnm" "sg_safte" "ftp" "gcov-dump-9" "gpgv" "compare-im6.q16" "gpg" "df" "cpp" "rsync" "lastb" "systemd-inhibit" "lsns" "gio-querymodules" "login" "includeres" "linux32" "c_rehash" "lsusb" "pbmtocmuwm" "byobu-shell" "ps2ascii" "unicode_stop" "zeisstopnm" "psresize" "lzfgrep" "ctags" "pbmtomgr" "lz4cat" "bzcmp" "vmware-checkvm" "resizecons" "afmtodit" "sg_rdac" "sg_stpg" "calendar" "lsipc" "soelim" "su" "ppmtogif" "psselect" "x86_64-linux-gnu-g++-9" "fc-list" "colcrt" "debconf-set-selections" "systemd-sysusers" "pgmslice" "x86_64-linux-gnu-strip" "lzegrep" "dh_bash-completion" "nc.openbsd" "col8" "w.procps" "animate-im6.q16" "scsi_start" "setsid" "wslvar" "chmod" "tload" "pdf2dsc" "busybox" "apport-unpack" "pnmrotate" "podselect" "catman" "mysqlreport" "rlogin" "perl5.30.0" "sg_seek" "sg_scan" "pstree.x11" "podchecker" "date" "sg_logs" "byobu-tmux" "pamstretch" "fwupdtpmevlog" "vmstat" "systemctl" "bash" "strace-log-merge" "tfmtodit" "pgmbentley" "sg_persist" "faillog" "mount" "apt-mark" "mogrify-im6" "py3rsa-verify" "montage-im6" "rletopnm" "chrt" "fixpsditps" "git" "x86_64-linux-gnu-addr2line" "ppmflash" "dpkg-buildpackage" "getent" "anytopnm" "which" "mgrtopbm" "pnmscalefixed" "linux-update-symlinks" "deb-systemd-invoke" "x86_64-linux-gnu-nm" "pnmtofiasco" "nsenter" "sg_unmap" "ntfsls" "pamstack" "xdriinfo" "sort" "unlz4" "dbus-run-session" "col5" "zless" "pnmcomp" "pamcut" "wall" "networkd-dispatcher" "ranlib" "rename.ul" "x86_64-linux-gnu-size" "pbmpage" "eject" "sha512sum" "batch" "basename" "convert" "sg_reassign" "tar" "utmpdump" "gouldtoppm" "ppmtosixel" "dpkg-architecture" "showconsolefont" "vmhgfs-fuse" "slabtop" "bsd-write" "display-im6" "hd" "ebrowse.emacs" "c++" "bsd-from" "pbmtext" "manifest" "getkeycodes" "sg_read" "codepage" "pod2man" "pbmtopi3" "cmp" "identify" "pbputs" "newgrp" "dpkg-gencontrol" "getafm" "tkconch3" "cal" "pnmtops" "loadkeys" "faked-sysv" "sg_rtpg" "nice" "py3rsa-keygen" "pnmcrop" "tsort" "host" "apt-sortpkgs" "scsi_logging_level" "readelf" "mysqlslap" "setleds" "psfstriptable" "diff3" "xzcmp" "ppmpat" "byobu-config" "ssh-add" "check-language-support" "ppmlabel" "roff2html" "kbxutil" "NF" "www-browser" "pnmnoraw" "gs" "man" "asciitopgm" "roff2text" "cautious-launcher" "twistd3" "py3rsa-priv2pub" "composite" "tty" "gslj" "gpgtar" "run-one-until-success" "sg_write_buffer" "awk" "ssh-keyscan" "lscpu" "glilypond" "pnmpaste" "pdf2ps" "ppmshadow" "xdpyinfo" "sg_start" "pbmtoybm" "xvminitoppm" "ntfssecaudit" "sg_reset_wp" "qrttoppm" "red" "gemtopbm" "dirmngr-client" "pgmtoppm" "arch" "pinky" "factor" "lzgrep" "usbreset" "dpkg-trigger" "taskset" "myisam_ftdump" "ppmtopgm" "expiry" "psjoin" "free" "run-parts" "rbash" "dpkg-query" "apport-cli" "piconv" "pbmtopgm" "bmptoppm" "pnmalias" "mogrify-im6.q16" "ipcmk" "x86_64-linux-gnu-gcov" "ppmtoeyuv" "fstopgm" "dpkg-genchanges" "nano" "pbmtox10bm" "perldoc" "tset" "dpkg" "pdfroff" "btrfs-convert" "psnup" "etags" "showkey" "sg_read_block_limits" "ntfsfallocate" "ppmtoneo" "psidtopgm" "fwupdagent" "dpkg-maintscript-helper" "timedatectl" "vmtoolsd" "ybmtopbm" "nisdomainname" "pollinate" "sg_verify" "crontab" "fc-cat" "prlimit" "update-alternatives" "aws_completer" "grops" "pacat" "byobu-quiet" "growpart" "ppm3d" "dh_installxmlcatalogs" "git-upload-archive" "sbverify" "mksquashfs" "helpztags" "winicontoppm" "locale" "delv" "ppmquantall" "psfaddtable" "x86_64-linux-gnu-elfedit" "dbus-cleanup-sockets" "vi" "systemd-hwdb" "x86_64-linux-gnu-c++filt" "cc" "sync" "fixscribeps" "gpg-wks-server" "col" "wslpath" "fc-match" "lnstat" "lzmore" "pbmupc" "python3-config" "systemd-resolve" "pbmtonokia" "tac" "scp" "from" "cpan" "python3.8" "gunzip" "journalctl" "pgmtopbm" "more" "sg_prevent" "pnmtoddif" "rtstat" "ar" "dnsdomainname" "gcov-dump" "script" "stream-im6" "splain" "prtstat" "systemd-socket-activate" "gettext" "emacs" "gcc-ar-9" "pnmtoplainpnm" "tzselect" "display" "ulockmgr_server" "x86_64-linux-gnu-gcov-tool-9" "ntfs-3g" "emacsclient.emacs" "pi3topbm" "groffer" "zmore" "usb-devices" "icontopbm" "systemd-tmpfiles" "ps2pdf13" "ntfstruncate" "netkit-ftp" "compose" "mogrify" "byobu" "systemd" "ssh-import-id-gh" "ppmtoicr" "volname" "at" "nm" "xtotroff" "byobu-launch" "nsupdate" "ptx" "sdiff" "sed" "etags.emacs" "sg_xcopy" "rst2man" "gencat" "ua" "pnmtotiffcmyk" "composite-im6.q16" "x86_64-linux-gnu-python3.8-config" "apt-cache" "docker" "g++" "vmware-vmblock-fuse" "xpmtoppm" "kbd_mode" "setmetamode" "ps2txt" "import" "ptardiff" "wslupath" "printf" "scsi_mandat" "ppmtopict" "tree" "byobu-export" "ppmtoyuv" "pbmtogem" "localedef" "scsi_satl" "dpkg-parsechangelog" "truncate" "pgrep" "byobu-select-session" "pfbtopfa" "pnmsplit" "gpgsplit" "ppmshift" "systemd-machine-id-setup" "less" "psmerge" "xfd" "../" "./")
+
+ ("/usr/" (25201 26480 560027 353000) "./" "../" "local/" "libx32/" "lib32/" "bin/" "sbin/" "lib64/" "share/" "lib/" "games/" "libexec/" "include/" "src/")
+
+ ("/home/user/tribu/local/views/individual/" (25215 63979 662882 211000) "./" "../" "home_view_individual.json" "add_insights_modal.json")
+
+ ("/var/log/" (25424 21367 66883 735000) "./" "ubuntu-advantage.log" "../" "tribu_app.log" "landscape/" "alternatives.log" "dpkg.log" "btmp" "unattended-upgrades/" "lastlog" "wtmp" "private/" "fontconfig.log" "journal/" "dist-upgrade/" "apt/")
+
+ ("/home/user/tribu/local/.venv/bin/" (25205 34103 672597 189000) "activate.fish" "./" "../" "activate" "pip3.8" "python" "Activate.ps1" "pip" "activate.csh" "pip3" "easy_install" "python3" "normalizer" "easy_install-3.8")
+
+ ("/home/user/tribu/local/.venv/" (25201 26521 720027 315000) "./" "../" "bin/" "lib64/" "share/" "pyvenv.cfg" "lib/" "include/")
+
+ ("/home/user/tribu/local/<Blob: tribu-project-onboarding-files, data/installations/" (25421 54144 143921 586000) "./" "../" ", None>/")
+
+ ("/home/user/tribu/local/<Blob: tribu-project-onboarding-files, data/" (25421 54144 143921 586000) "./" "../" "installations/")
+
+ ("/home/user/tribu/local/data/installations/none-T02JMSG1ZJB/" (25416 13253 25267 191000) "./" "../" "bot-1665675979.998733" "installer-1665675979.998733" "bot-1665676229.031623" "installer-1665676229.031623" "installer-latest" "installer-U02K2H47YAE-latest" "bot-latest" "installer-U02K2H47YAE-1665676229.031623" "installer-U02K2H47YAE-1665675979.998733")
+
+ ("/home/user/tribu/local/data/installations/" (25416 13003 995270 429000) "./" "../" "none-T01CXUSB0SJ/" "none-T02JMSG1ZJB/")
+
+ ("/var/" (24862 53365 333778 205000) "mail/" "./" "log/" "../" "local/" "tmp/" "snap/" "run/" "cache/" "lib/" "opt/" "backups/" "crash/" "lock/" "spool/")
+
+ ("/home/" (24975 2949 41909 110000) "./" "../" "user/")
+
+ ("/home/user/.emacs.d/lisp/" (25417 43704 75374 403000) "./" "../" "puppet-mode.el" "cl-lib.el" "swap-windows.el" "smex.el" "terraform-mode.el" "buffer-move.el" "rx.el" "go-mode.el" "old.json" "yaml-mode.el" "markdown-mode.el" "package.el" "idle-highlight-mode.el" "go-mode-autoloads.el" "multi-term.el" "bash-completion.el")
+
+ ("/home/user/.emacs.d/auto-save-list/" (25417 42821 105379 167000) "./" ".saves-60-LAPTOP-MCEGUI5B~" "../" ".saves-109-LAPTOP-MCEGUI5B~" ".saves-356-LAPTOP-MCEGUI5B~" ".saves-172-LAPTOP-MCEGUI5B~" ".saves-619-LAPTOP-MCEGUI5B~" ".saves-8700-LAPTOP-MCEGUI5B~")
+
+ ("/home/user/tribu/local/examples/" (25238 33339 65770 699000) "#body2.json#" "./" "../" "enable-pulse-view-body.json" "body.json" "body2.json" "#action.json#" "payload-example3.json" "user_object.json" "polly_create_request.json" "slack-event.raw" "pollysupporttext" "view_submission_payload.json" "user-values.json" "payload-example.json" "generated_blocks.json" "slack-event.json" "enable-pulse-action.json" "config1response.json" "polly_list.json" "starttracking.json" "payload-example2.json" "meme-response-body.json" "config1responsechannel.json" "body_response.json")
+)
+
+;; ----- ido-unc-hosts-cache -----
+t
