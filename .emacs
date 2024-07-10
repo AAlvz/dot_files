@@ -10,123 +10,142 @@
 
 (package-initialize)
 (unless (package-installed-p 'use-package)
-(package-refresh-contents)
-(package-install 'use-package))
+  (package-refresh-contents)
+  (package-install 'use-package))
 (eval-when-compile
   (require 'use-package))
+
+(add-to-list 'load-path "~/.emacs.d/codeium.el/")
 (add-to-list 'load-path "~/.emacs.d/lisp/")
-
-;; kill buffer no prompt
-(global-set-key (kbd "C-x k") 'kill-buffer-and-window)
-
+(load "corfu-terminal")
+(load "popon")
+(load "subr-x")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;; ENABLE USEFUL DEFAULT FUNCTIONS. ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Set Default Theme
-(load-theme 'tango-dark)
-;;(load-theme 'wombat)
-;;(load-theme 'misterioso)
-;; Avoid warning
-(setq dired-use-ls-dired nil)
-;; complete in shell??
-(setq shell-completion-mode t)
-;; List of recently opened files
-(recentf-mode 1)
-;; History for commands. Also M-x
-(setq history-length 25)
+;; (load-theme 'tango-dark)
+;; (load-theme 'wombat)
+(load-theme 'misterioso) ;; SET DEFAULT THEME
+(setq dired-use-ls-dired nil) ;; Avoid warning
+(recentf-mode 1) ;; List of recently opened files
+(setq history-length 25) ;; History for commands. Also M-x
 (savehist-mode 1)
-;; Open file in the position you left it
-(save-place-mode 1)
-;; CxCn shortcut to go down or up to the same column
-(put 'set-goal-column 'disabled nil)
-;; Winner mode to remember past windows arrangements
-(winner-mode 1)
-;; Select the best mode for type of file
-(setq major-mode 'text-mode)
+(save-place-mode 1) ;; Open file in the position you left it
+(put 'set-goal-column 'disabled nil) ;; CxCn shortcut to go down or up to the same column
+(winner-mode 1) ;; Winner mode to remember past windows arrangements
+(setq major-mode 'text-mode);; Select the best mode for type of file
 (add-hook 'find-file-hook 'normal-mode)
-;; Visualize where parenthesis open and close
-(show-paren-mode 1)
-;; Show Line row Number
-(setq column-number-mode t)
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(display-line-numbers-mode)
-;; Auto insert closing bracket
-(electric-pair-mode 1)
-;; Idle highlight
-(use-package idle-highlight-mode
-  :config (setq idle-highlight-idle-time 0.2)
-  :hook ((prog-mode text-mode) . idle-highlight-mode))
-;; Setup Swap Windows
-(autoload 'swap-windows "swap-windows" "Swap 2 windows")
-(global-set-key (kbd "C-c s") 'swap-windows)
-;; Silently ensure newline at end of file
-(setq require-final-newline t)
-;;Highlight characters over 80 and linees with spaces and tabs probably
-(require 'whitespace)
- (setq whitespace-style '(face empty tabs lines-tail trailing))
- (global-whitespace-mode t)
-;; Disable electir indent mode by default
-(electric-indent-mode -1)
-;; Set Backups directory
-(setq backup-directory-alist `(("." . "~/.emacs_saves")))
+(show-paren-mode 1);; Visualize where parenthesis open and close
+(setq column-number-mode t);; Show Line row Number
+(global-display-line-numbers-mode)
+(electric-pair-mode 1);; Auto insert closing bracket
+(electric-indent-mode -1);; Disable electir indent mode by default
+(unless (display-graphic-p);; IMPORTANT. DO NOT REMOVE. SHOW POPUP COMLPETITION.
+  (corfu-terminal-mode +1))
+(setq corfu-auto t ;; Enable auto completion and configure quitting
+      corfu-quit-no-match 'separator) ;; or t
+(setq-local corfu-auto        t
+            corfu-auto-delay  0.2 ;; TOO SMALL - NOT RECOMMENDED
+            corfu-auto-prefix 0.9 ;; TOO SMALL - NOT RECOMMENDED
+            completion-styles '(basic))
+(with-eval-after-load 'consult
+  (setq consult-buffer-completion-style 'orderless))
+(setq require-final-newline t) ;; Silently ensure newline at end of file
+(require 'whitespace) ;;Highlight characters over 80 and linees with spaces and tabs probably
+(setq whitespace-style '(face empty tabs lines-tail trailing))
+(global-whitespace-mode t)
+(setq backup-directory-alist `(("." . "~/.emacs_saves"))) ;; Set Backups directory
 (setq version-control t     ;; Use version numbers for backups.
       kept-new-versions 10  ;; Number of newest versions to keep.
       kept-old-versions 5   ;; Number of oldest versions to keep.
       delete-old-versions t ;; Don't ask to delete excess backup versions.
       backup-by-copying t)  ;; Copy all files, don't rename them.
 (put 'upcase-region 'disabled nil)
-;; Always enable hs-minor-mode. Hide/show blocks
-(add-hook 'prog-mode-hook #'hs-minor-mode)
-;; Smex: Guidance for M-x
-(require 'smex)
-(global-set-key (kbd "M-x") 'smex)
-;; Switch to previous window
-(global-set-key (kbd "C-x O") 'previous-multiframe-window)
-
-;; Show time at the beginning of shell prompt
-(defun my-eshell-prompt ()
+(add-hook 'prog-mode-hook #'hs-minor-mode) ;; Always enable hs-minor-mode. Hide/show blocks
+(require 'idle-highlight-mode) ;; Enable idle-highlight mode by default in all buffers
+(add-hook 'after-change-major-mode-hook 'idle-highlight-mode)
+(set-face-attribute 'idle-highlight nil :background "#FFFFCC" :foreground "#333333");; Define custom colors for idle-highlight mode with less intense colors
+(defun my-eshell-prompt ();; Show time at the beginning of shell prompt
   (concat (format-time-string "[%H:%M:%S] " (current-time)) (eshell/pwd) " $ "))
 (setq eshell-prompt-function #'my-eshell-prompt)
 
-;;;;;;;;;;;;;;;;;;;;;
-;; ;; MAC COMMANDS ;;
-;;;;;;;;;;;;;;;;;;;;;
-;; ;; Copy/Paste to clipboard OSX
-(defun copy-from-osx ()
-  (shell-command-to-string "pbpaste"))
-(defun paste-to-osx (text &optional push)
-  (let ((process-connection-type nil))
-    (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
-      (process-send-string proc text)
-      (process-send-eof proc))))
-(setq interprogram-cut-function 'paste-to-osx)
-(setq interprogram-paste-function 'copy-from-osx)
-
-
 ;;;;;;;;;;;;;;;;;;;;
-;; ;; KEYBINDINGS ;;
-;;;;;;;;;;;;;;;;;;;;
-(global-set-key (kbd "C-c C-c") 'hs-hide-block);; Shortcut to hide blocks
-(global-set-key (kbd "C-c c") 'hs-show-block);; Shortcut to show blocks
-
-
-;;;;;;;;;;;;;;
-;; ;; CORFU ;;
-;;;;;;;;;;;;;;
-;; https://github.com/minad/corfu?tab=readme-ov-file
-
+;; CUSTOM CONFIGS ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package idle-highlight-mode ;; Idle highlight
+  :config (setq idle-highlight-idle-time 0.2)
+  :hook ((prog-mode text-mode) . idle-highlight-mode)
+)
+(use-package savehist ;; Persist history over Emacs restarts. Vertico sorts by history position.
+  :init
+  (savehist-mode)
+)
+(use-package vertico
+  :init
+  (vertico-mode)
+  ;; (setq vertico-scroll-margin 0)  ;; Different scroll margin
+  ;; (setq vertico-count 20)   ;; Show more candidates
+)
+(use-package marginalia ;; Enable rich annotations using the Marginalia package
+  ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
+  ;; available in the *Completions* buffer, add it to the
+  ;; `completion-list-mode-map'.
+  :bind (:map minibuffer-local-map ("M-A" . marginalia-cycle))
+  :init
+  (marginalia-mode)
+)
+(use-package codeium
+    :init
+    (add-to-list 'completion-at-point-functions #'codeium-completion-at-point)
+    :config
+    (setq use-dialog-box nil) ;; do not use popup boxes
+    (setq codeium-mode-line-enable
+        (lambda (api) (not (memq api '(CancelRequest Heartbeat AcceptCompletion)))))
+    (add-to-list 'mode-line-format '(:eval (car-safe codeium-mode-line)) t)
+    (setq codeium-api-enabled
+        (lambda (api)
+            (memq api '(GetCompletions Heartbeat CancelRequest GetAuthToken RegisterUser auth-redirect AcceptCompletion))))
+    (setq codeium-show-preview t)  ;; Enable candidate preview in Codeium
+    (run-with-idle-timer 0.5 nil #'codeium-completion-at-point)
+    ;; (defun my-codeium/document/text ()
+    ;;     (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (min (+ (point) 1000) (point-max))))
+    ;; (defun my-codeium/document/cursor_offset ()
+    ;;     (codeium-utf8-byte-length
+    ;;         (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (point))))
+    ;; (setq codeium/document/text 'my-codeium/document/text)
+    ;; (setq codeium/document/cursor_offset 'my-codeium/document/cursor_offset)
+)
+(use-package orderless
+  :init
+  ;; Configure a custom style dispatcher (see the Consult wiki)
+  ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
+  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+	;; read-buffer-completion-ignore-case t
+	;; consult-buffer-completion-style 'orderless
+        completion-category-overrides '((file (styles basic partial-completion))))
+ :custom
+  (completion-styles '(orderless))
+  ;; (orderless-matching-styles '(orderless-regexp))
+)
+(use-package emacs
+  :init
+  (setq completion-cycle-threshold 5)
+  ;; (setq tab-always-indent 'complete)
+)
 (use-package corfu
   ;; Optional customizations
-  :custom
+  ;; :custom
   ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-  (corfu-auto t)                 ;; Enable auto completion
+  ;; (corfu-auto nil)                 ;; Enable auto completion
   ;; (corfu-separator ?\s)          ;; Orderless field separator
   ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
   ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
-  (corfu-preview-current t)    ;; Disable current candidate preview   (corfu-preview-current nil)
-  (corfu-preselect 'prompt)      ;; Preselect the prompt
+  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
   ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
   ;; (corfu-scroll-margin 5)        ;; Use scroll margin
 
@@ -140,78 +159,47 @@
   ;; `global-corfu-modes' to exclude certain modes.
   :init
   (global-corfu-mode))
+(use-package wgrep
+  :ensure t
+  :bind ( :map grep-mode-map
+          ("e" . wgrep-change-to-wgrep-mode)
+          ("C-x C-q" . wgrep-change-to-wgrep-mode)
+          ("C-c C-c" . wgrep-finish-edit))
+)
 
-;; A few more useful configurations...
-(use-package emacs
-  :init
-  ;; TAB cycle if there are only few candidates
-  (setq completion-cycle-threshold 3)
 
-  ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
-  ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
-  ;; (setq read-extended-command-predicate
-  ;;       #'command-completion-default-include-p)
+(autoload 'swap-windows "swap-windows" "Swap 2 windows");; Setup Swap Windows
+(global-set-key (kbd "C-c s") 'swap-windows)
 
-  ;; Enable indentation+completion using the TAB key.
-  ;; `completion-at-point' is often bound to M-TAB.
-  (setq tab-always-indent 'complete))
 
-;; ;; Enable auto completion and configure quitting
-;; (setq corfu-auto t
-;;       corfu-quit-no-match 'separator) ;; or t
+;; ;;;;;;;;;;;;;;;;;;;;;
+;; ;; ;; MAC COMMANDS ;;
+;; ;;;;;;;;;;;;;;;;;;;;;
+;; ;; ;; Copy/Paste to clipboard OSX
+;; (defun copy-from-osx ()
+;;   (shell-command-to-string "pbpaste"))
+;; (defun paste-to-osx (text &optional push)
+;;   (let ((process-connection-type nil))
+;;     (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+;;       (process-send-string proc text)
+;;       (process-send-eof proc))))
+;; (setq interprogram-cut-function 'paste-to-osx)
+;; (setq interprogram-paste-function 'copy-from-osx)
 
-(use-package corfu
-  ;; TAB-and-Go customizations
-  :custom
-  (corfu-cycle t)           ;; Enable cycling for `corfu-next/previous'
-  (corfu-preselect 'prompt) ;; Always preselect the prompt
+;; ;; ;; ;;; UPDATED
+;; ;; ;; (defun copy-to-macos-clipboard (text &optional push)
+;; ;; ;;   (let ((process-connection-type nil))
+;; ;; ;;     (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+;; ;; ;;       (process-send-string proc text)
+;; ;; ;;       (process-send-eof proc))
+;; ;; ;;     (setq kill-ring (cons text kill-ring))))
+;; ;; ;;
+;; ;; ;; (defun paste-from-macos-clipboard ()
+;; ;; ;;   (shell-command-to-string "pbpaste"))
+;; ;; ;;
+;; ;; ;; (setq interprogram-cut-function 'copy-to-macos-clipboard)
+;; ;; ;;(setq interprogram-paste-function 'paste-from-macos-clipboard)
 
-  ;; Use TAB for cycling, default is `corfu-complete'.
-  :bind
-  (:map corfu-map
-        ("TAB" . corfu-next)
-        ([tab] . corfu-next)
-        ("S-TAB" . corfu-previous)
-        ([backtab] . corfu-previous))
-
-  :init
-  (global-corfu-mode))
-
-;; Complete in the minibuffer
-(defun corfu-enable-in-minibuffer ()
-  "Enable Corfu in the minibuffer."
-  (when (local-variable-p 'completion-at-point-functions)
-    ;; (setq-local corfu-auto nil) ;; Enable/disable auto completion
-    (setq-local corfu-echo-delay nil ;; Disable automatic echo and popup
-                corfu-popupinfo-delay nil)
-    (corfu-mode 1)))
-(add-hook 'minibuffer-setup-hook #'corfu-enable-in-minibuffer)
-
-;; ;;   :init
-;; ;;   (global-corfu-mode))
-
-;; ;; ;; Use Dabbrev with Corfu!
-;; ;; (use-package dabbrev
-;; ;;   ;; Swap M-/ and C-M-/
-;; ;;   :bind (("M-/" . dabbrev-completion)
-;; ;;          ("C-M-/" . dabbrev-expand))
-;; ;;   :config
-;; ;;   (add-to-list 'dabbrev-ignored-buffer-regexps "\\` ")
-;; ;;   ;; Since 29.1, use `dabbrev-ignored-buffer-regexps' on older.
-;; ;;   (add-to-list 'dabbrev-ignored-buffer-modes 'doc-view-mode)
-;; ;;   (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode))
-;; (custom-set-variables
-;;  ;; custom-set-variables was added by Custom.
-;;  ;; If you edit it by hand, you could mess it up, so be careful.
-;;  ;; Your init file should contain only one such instance.
-;;  ;; If there is more than one, they won't work right.
-;;  '(package-selected-packages '(idle-highlight-mode corfu)))
-;; (custom-set-faces
-;;  ;; custom-set-faces was added by Custom.
-;;  ;; If you edit it by hand, you could mess it up, so be careful.
-;;  ;; Your init file should contain only one such instance.
-;;  ;; If there is more than one, they won't work right.
-;;  )
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -219,7 +207,8 @@
  ;; If there is more than one, they won't work right.
  '(codeium/metadata/api_key "130eeb3a-3876-4c8b-914c-390437a120c0")
  '(package-selected-packages
-   '(avy consult marginalia orderless vertico auto-complete smex magit terraform-mode yaml-mode json-mode idle-highlight-mode codeium.el codeium corfu)))
+   '(regex-tool yaml-mode wgrep vertico terraform-mode pfuture orderless neotree nadvice multiple-cursors markdown-mode marginalia magit idle-highlight-mode hydra ht helm corfu-candidate-overlay consult cfrs ace-window)))
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -227,152 +216,189 @@
  ;; If there is more than one, they won't work right.
  )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ;;; codeium							    ;;
-;; ;;; https://github.com/Exafunction/codeium.el?tab=readme-ov-file ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; we recommend using use-package to organize your init.el
-(use-package codeium
-    ;; if you use straight
-    ;; :straight '(:type git :host github :repo "Exafunction/codeium.el")
-    ;; otherwise, make sure that the codeium.el file is on load-path
-
-    :init
-    ;; use globally
-    (add-to-list 'completion-at-point-functions #'codeium-completion-at-point)
-    ;; or on a hook
-    ;; (add-hook 'python-mode-hook
-    ;;     (lambda ()
-    ;;         (setq-local completion-at-point-functions '(codeium-completion-at-point))))
-
-    ;; if you want multiple completion backends, use cape (https://github.com/minad/cape):
-    ;; (add-hook 'python-mode-hook
-    ;;     (lambda ()
-    ;;         (setq-local completion-at-point-functions
-    ;;             (list (cape-super-capf #'codeium-completion-at-point #'lsp-completion-at-point)))))
-    ;; an async company-backend is coming soon!
-
-    ;; codeium-completion-at-point is autoloaded, but you can
-    ;; optionally set a timer, which might speed up things as the
-    ;; codeium local language server takes ~0.2s to start up
-    ;; (add-hook 'emacs-startup-hook
-    ;;  (lambda () (run-with-timer 0.1 nil #'codeium-init)))
-
-    ;; :defer t ;; lazy loading, if you want
-    :config
-    (setq use-dialog-box nil) ;; do not use popup boxes
-
-    ;; if you don't want to use customize to save the api-key
-    ;; (setq codeium/metadata/api_key "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
-
-    ;; get codeium status in the modeline
-    (setq codeium-mode-line-enable
-        (lambda (api) (not (memq api '(CancelRequest Heartbeat AcceptCompletion)))))
-    (add-to-list 'mode-line-format '(:eval (car-safe codeium-mode-line)) t)
-    ;; alternatively for a more extensive mode-line
-    ;; (add-to-list 'mode-line-format '(-50 "" codeium-mode-line) t)
-
-    ;; use M-x codeium-diagnose to see apis/fields that would be sent to the local language server
-    (setq codeium-api-enabled
-        (lambda (api)
-            (memq api '(GetCompletions Heartbeat CancelRequest GetAuthToken RegisterUser auth-redirect AcceptCompletion))))
-    ;; you can also set a config for a single buffer like this:
-    ;; (add-hook 'python-mode-hook
-    ;;     (lambda ()
-    ;;         (setq-local codeium/editor_options/tab_size 4)))
-
-    ;; You can overwrite all the codeium configs!
-    ;; for example, we recommend limiting the string sent to codeium for better performance
-    (defun my-codeium/document/text ()
-        (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (min (+ (point) 1000) (point-max))))
-    ;; if you change the text, you should also change the cursor_offset
-    ;; warning: this is measured by UTF-8 encoded bytes
-    (defun my-codeium/document/cursor_offset ()
-        (codeium-utf8-byte-length
-            (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (point))))
-    (setq codeium/document/text 'my-codeium/document/text)
-    (setq codeium/document/cursor_offset 'my-codeium/document/cursor_offset))
-
-;;;;;;;;;;;;;;;;
-;; ;; VERTICO ;; https://github.com/minad/vertico
-;;;;;;;;;;;;;;;;
-
-;; Enable vertico
-(use-package vertico
-  :init
-  (vertico-mode)
-
-  ;; Different scroll margin
-  ;; (setq vertico-scroll-margin 0)
-
-  ;; Show more candidates
-  ;; (setq vertico-count 20)
-
-  ;; Grow and shrink the Vertico minibuffer
-  ;; (setq vertico-resize t)
-
-  ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
-  ;; (setq vertico-cycle t)
-  )
-
-;; Persist history over Emacs restarts. Vertico sorts by history position.
-(use-package savehist
-  :init
-  (savehist-mode))
-
-;; A few more useful configurations...
-(use-package emacs
-  :init
-  ;; Add prompt indicator to `completing-read-multiple'.
-  ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
-  (defun crm-indicator (args)
-    (cons (format "[CRM%s] %s"
-                  (replace-regexp-in-string
-                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-                   crm-separator)
-                  (car args))
-          (cdr args)))
-  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
-
-  ;; Do not allow the cursor in the minibuffer prompt
-  (setq minibuffer-prompt-properties
-        '(read-only t cursor-intangible t face minibuffer-prompt))
-  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
-
-  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
-  ;; Vertico commands are hidden in normal buffers.
-  ;; (setq read-extended-command-predicate
-  ;;       #'command-completion-default-include-p)
-
-  ;; Enable recursive minibuffers
-  (setq enable-recursive-minibuffers t))
-
-;; Optionally use the `orderless' completion style.
-(use-package orderless
-  :init
-  ;; Configure a custom style dispatcher (see the Consult wiki)
-  ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
-  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
-  (setq completion-styles '(orderless basic)
-        completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))))
-
 ;;;;;;;;;;;;;;;;;;;;
-;; ;;; MARGINALIA ;;
-;;;;;;;;;;;;;;;;;;;;
-;; Enable rich annotations using the Marginalia package
-(use-package marginalia
-  ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
-  ;; available in the *Completions* buffer, add it to the
-  ;; `completion-list-mode-map'.
-  :bind (:map minibuffer-local-map
-         ("M-A" . marginalia-cycle))
+;; ;; KEYBINDINGS ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  ;; The :init section is always executed.
+;; DEFAULTS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; GO TO MATCHING PARENTHESIS. (overlay. already exists)
+;;;;;;;;;;;;;;;;;
+;; (global-set-key (kbd "C-M-f") 'forward-sexp)  ; Bind forward-sexp to C-c f
+;; (global-set-key (kbd "C-M-b") 'backward-sexp) ; Bind backward-sexp to C-c b
+;; (global-set-key (kbd "C-M-n") 'forward-sexp)  ; Bind forward-sexp to C-c f
+;; (global-set-key (kbd "C-M-p") 'backward-sexp) ; Bind backward-sexp to C-c b
+
+;; UPPERCASE REGION
+;; (global-set-key (kbd "C-x u") 'upcase-region)
+;; (global-set-key (kbd "C-x l") 'lowercase-region)
+
+;; CUSTOM
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(global-set-key (kbd "C-c C-c") 'hs-hide-block);; Shortcut to hide blocks
+(global-set-key (kbd "C-c c") 'hs-show-block);; Shortcut to show blocks
+(global-set-key (kbd "C-x k") 'kill-buffer-and-window) ;; kill buffer no prompt
+(global-set-key (kbd "C-x O") 'previous-multiframe-window) ;; Switch to previous window
+
+;; multiple cursors
+(require 'multiple-cursors)
+(global-set-key (kbd "C-c C-SPC") 'mc/edit-lines)
+(global-set-key (kbd "M-SPC") 'mc/edit-lines)
+(global-set-key (kbd "C-c C-n") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-a") 'mc/mark-all-like-this)
+
+;;;;;;;;;;;;;
+;; CONSULT ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Example configuration for Consult
+(use-package consult
+  ;; Replace bindings. Lazily loaded due by `use-package'.
+  :bind (;; C-c bindings in `mode-specific-map'
+         ("C-c M-x" . consult-mode-command)
+         ("C-c h" . consult-history)
+         ("C-c k" . consult-kmacro)
+         ("C-c m" . consult-man)
+         ("C-c i" . consult-info)
+         ([remap Info-search] . consult-info)
+         ;; C-x bindings in `ctl-x-map'
+         ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+         ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+         ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+         ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+         ("C-x t b" . consult-buffer-other-tab)    ;; orig. switch-to-buffer-other-tab
+         ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
+         ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
+         ;; Custom M-# bindings for fast register access
+         ("M-#" . consult-register-load)
+         ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+         ("C-M-#" . consult-register)
+         ;; Other custom bindings
+         ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+         ;; M-g bindings in `goto-map'
+         ("M-g e" . consult-compile-error)
+         ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
+         ("M-g g" . consult-goto-line)             ;; orig. goto-line
+         ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+         ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+         ("M-g m" . consult-mark)
+         ("M-g k" . consult-global-mark)
+         ("M-g i" . consult-imenu)
+         ("M-g I" . consult-imenu-multi)
+         ;; M-s bindings in `search-map'
+         ("M-s d" . consult-find)                  ;; Alternative: consult-fd
+         ("M-s c" . consult-locate)
+         ("M-s M-s" . consult-grep)                ;; Default: "M-s g"
+         ("C-c C-s" . consult-grep)                ;; Default: "M-s g"
+         ("M-s G" . consult-git-grep)
+         ("M-s r" . consult-ripgrep)
+         ("M-s l" . consult-line)
+         ;; ("C-s" . consult-line)
+         ("M-s L" . consult-line-multi)
+         ("M-s k" . consult-keep-lines)
+         ("M-s u" . consult-focus-lines)
+         ;; Isearch integration
+         ("M-s e" . consult-isearch-history)
+         :map isearch-mode-map
+         ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
+         ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
+         ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
+         ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+         ;; Minibuffer history
+         :map minibuffer-local-map
+         ("M-s" . consult-history)                 ;; orig. next-matching-history-element
+         ("M-r" . consult-history))                ;; orig. previous-matching-history-element
+
+  ;; Enable automatic preview at point in the *Completions* buffer. This is
+  ;; relevant when you use the default completion UI.
+  :hook (completion-list-mode . consult-preview-at-point-mode)
+
+  ;; The :init configuration is always executed (Not lazy)
   :init
 
-  ;; Marginalia must be activated in the :init section of use-package such that
-  ;; the mode gets enabled right away. Note that this forces loading the
-  ;; package.
-  (marginalia-mode))
+  ;; Optionally configure the register formatting. This improves the register
+  ;; preview for `consult-register', `consult-register-load',
+  ;; `consult-register-store' and the Emacs built-ins.
+  (setq register-preview-delay 0.5
+        register-preview-function #'consult-register-format)
+
+  ;; Optionally tweak the register preview window.
+  ;; This adds thin lines, sorting and hides the mode line of the window.
+  (advice-add #'register-preview :override #'consult-register-window)
+
+  ;; Use Consult to select xref locations with preview
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
+
+  ;; Configure other variables and modes in the :config section,
+  ;; after lazily loading the package.
+
+  :config
+
+  ;; TEST
+  ;; (setq consult-buffer-completion-style 'orderless)
+  ;; (setq consult-buffer-customize (lambda (input)
+  ;;                                  (list :orderless input)))
+
+  ;; (setq consult-buffer-customize (lambda (input)
+  ;;                                  (list :orderless input :regexp t)))
+
+
+  ;; ;; Optionally configure preview. The default value
+  ;; ;; is 'any, such that any key triggers the preview.
+  ;; (setq consult-preview-key 'any)
+  ;; (setq consult-preview-key "M-.")
+  ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
+
+  ;; For some commands and buffer sources it is useful to configure the
+  ;; :preview-key on a per-command basis using the `consult-customize' macro.
+  (consult-customize
+   consult-theme :preview-key '(:debounce 0.2 any)
+   consult-ripgrep consult-git-grep consult-grep
+   consult-bookmark consult-recent-file consult-xref
+   consult--source-bookmark consult--source-file-register
+   consult--source-recent-file consult--source-project-recent-file
+   ;; :preview-key "M-."
+   :preview-key '(:debounce 0.4 any))
+
+  ;; Optionally configure the narrowing key.
+  ;; Both < and C-+ work reasonably well.
+  (setq consult-narrow-key "<") ;; "C-+"
+
+  ;; Optionally make narrowing help available in the minibuffer.
+  ;; You may want to use `embark-prefix-help-command' or which-key instead.
+  ;; (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help)
+
+  ;; By default `consult-project-function' uses `project-root' from project.el.
+  ;; Optionally configure a different project root function.
+  ;;;; 1. project.el (the default)
+  ;; (setq consult-project-function #'consult--default-project--function)
+  ;;;; 2. vc.el (vc-root-dir)
+  ;; (setq consult-project-function (lambda (_) (vc-root-dir)))
+  ;;;; 3. locate-dominating-file
+  ;; (setq consult-project-function (lambda (_) (locate-dominating-file "." ".git")))
+  ;;;; 4. projectile.el (projectile-project-root)
+  ;; (autoload 'projectile-project-root "projectile")
+  ;; (setq consult-project-function (lambda (_) (projectile-project-root)))
+  ;;;; 5. No project support
+  ;; (setq consult-project-function nil)
+)
+
+;;; COnSULT END
+
+;;; MACROS
+(defun merge-request ()
+  (interactive)
+  (insert "$")
+  (other-window 1)
+  (tab-to-tab-stop)
+  (search-forward "https")
+  (browse-url (thing-at-point 'url)))
+
+(global-set-key (kbd "<f5>") 'merge-request)
+;; (global-set-key (kbd "C-c m r") 'swap-windows)
+;; (fset 'my-macro
+;;    [?\C-x ?o ?$ tab ?\C-s])
