@@ -1,4 +1,4 @@
-;; Swap windows 
+;; Swap windows
 (require 'cl)
 
 (defun swap-windows ()
