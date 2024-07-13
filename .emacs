@@ -3,7 +3,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'package)
 
-(setq package-archives '(("ELPA" . "http://tromey.com/elpa/")
+(setq package-archives '(;;("ELPA" . "http://tromey.com/elpa/")
                           ("gnu" . "http://elpa.gnu.org/packages/")
                           ("melpa" . "http://melpa.org/packages/")))
                           ;; ("marmalade" . "http://marmalade-repo.org/packages/")))
@@ -96,27 +96,37 @@
   :init
   (marginalia-mode)
 )
-(use-package codeium
-    :init
-    (add-to-list 'completion-at-point-functions #'codeium-completion-at-point)
-    :config
-    (setq use-dialog-box nil) ;; do not use popup boxes
-    (setq codeium-mode-line-enable
-        (lambda (api) (not (memq api '(CancelRequest Heartbeat AcceptCompletion)))))
-    (add-to-list 'mode-line-format '(:eval (car-safe codeium-mode-line)) t)
-    (setq codeium-api-enabled
-        (lambda (api)
-            (memq api '(GetCompletions Heartbeat CancelRequest GetAuthToken RegisterUser auth-redirect AcceptCompletion))))
-    (setq codeium-show-preview t)  ;; Enable candidate preview in Codeium
-    (run-with-idle-timer 0.5 nil #'codeium-completion-at-point)
-    ;; (defun my-codeium/document/text ()
-    ;;     (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (min (+ (point) 1000) (point-max))))
-    ;; (defun my-codeium/document/cursor_offset ()
-    ;;     (codeium-utf8-byte-length
-    ;;         (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (point))))
-    ;; (setq codeium/document/text 'my-codeium/document/text)
-    ;; (setq codeium/document/cursor_offset 'my-codeium/document/cursor_offset)
-)
+
+;;;;;;;;;;;;;;;;
+;; ;; COPILOT ;;
+;;;;;;;;;;;;;;;;
+;;(add-to-list 'load-path "~/.emacs.d/copilot.el")
+;;(require 'copilot)
+(load "copilot")
+(add-hook 'prog-mode-hook 'copilot-mode)
+(define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+(define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
+;; (use-package codeium
+;;     :init
+;;     (add-to-list 'completion-at-point-functions #'codeium-completion-at-point)
+;;     :config
+;;     (setq use-dialog-box nil) ;; do not use popup boxes
+;;     (setq codeium-mode-line-enable
+;;         (lambda (api) (not (memq api '(CancelRequest Heartbeat AcceptCompletion)))))
+;;     (add-to-list 'mode-line-format '(:eval (car-safe codeium-mode-line)) t)
+;;     (setq codeium-api-enabled
+;;         (lambda (api)
+;;             (memq api '(GetCompletions Heartbeat CancelRequest GetAuthToken RegisterUser auth-redirect AcceptCompletion))))
+;;     (setq codeium-show-preview t)  ;; Enable candidate preview in Codeium
+;;     (run-with-idle-timer 0.5 nil #'codeium-completion-at-point)
+;;     ;; (defun my-codeium/document/text ()
+;;     ;;     (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (min (+ (point) 1000) (point-max))))
+;;     ;; (defun my-codeium/document/cursor_offset ()
+;;     ;;     (codeium-utf8-byte-length
+;;     ;;         (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (point))))
+;;     ;; (setq codeium/document/text 'my-codeium/document/text)
+;;     ;; (setq codeium/document/cursor_offset 'my-codeium/document/cursor_offset)
+;; )
 (use-package orderless
   :init
   ;; Configure a custom style dispatcher (see the Consult wiki)
