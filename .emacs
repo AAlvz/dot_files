@@ -28,7 +28,6 @@
 ;; (load-theme 'tango-dark)
 ;; (load-theme 'wombat)
 (load-theme 'misterioso) ;; SET DEFAULT THEME
-(setq dired-use-ls-dired nil) ;; Avoid warning
 (recentf-mode 1) ;; List of recently opened files
 (setq history-length 25) ;; History for commands. Also M-x
 (savehist-mode 1)
@@ -65,6 +64,7 @@
 (put 'upcase-region 'disabled nil)
 (add-hook 'prog-mode-hook #'hs-minor-mode) ;; Always enable hs-minor-mode. Hide/show blocks
 (require 'idle-highlight-mode) ;; Enable idle-highlight mode by default in all buffers
+
 (add-hook 'after-change-major-mode-hook 'idle-highlight-mode)
 (set-face-attribute 'idle-highlight nil :background "#FFFFCC" :foreground "#333333");; Define custom colors for idle-highlight mode with less intense colors
 (defun my-eshell-prompt ();; Show time at the beginning of shell prompt
@@ -74,6 +74,9 @@
 ;;;;;;;;;;;;;;;;;;;;
 ;; CUSTOM CONFIGS ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
 (use-package idle-highlight-mode ;; Idle highlight
   :config (setq idle-highlight-idle-time 0.2)
   :hook ((prog-mode text-mode) . idle-highlight-mode)
@@ -207,7 +210,7 @@
  ;; If there is more than one, they won't work right.
  '(codeium/metadata/api_key "130eeb3a-3876-4c8b-914c-390437a120c0")
  '(package-selected-packages
-   '(regex-tool yaml-mode wgrep vertico terraform-mode pfuture orderless neotree nadvice multiple-cursors markdown-mode marginalia magit idle-highlight-mode hydra ht helm corfu-candidate-overlay consult cfrs ace-window)))
+   '(flycheck regex-tool yaml-mode wgrep vertico terraform-mode pfuture orderless neotree nadvice multiple-cursors markdown-mode marginalia magit idle-highlight-mode hydra ht helm corfu-candidate-overlay consult cfrs ace-window)))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
