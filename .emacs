@@ -36,6 +36,7 @@
 (winner-mode 1) ;; Winner mode to remember past windows arrangements
 (setq major-mode 'text-mode);; Select the best mode for type of file
 (add-hook 'find-file-hook 'normal-mode)
+(add-hook 'after-init-hook #'global-flycheck-mode) ;; Flycheck
 (show-paren-mode 1);; Visualize where parenthesis open and close
 (setq column-number-mode t);; Show Line row Number
 (global-display-line-numbers-mode)
