@@ -3,6 +3,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'package)
 
+;;; Code:
 (setq package-archives '(("ELPA" . "http://tromey.com/elpa/")
                           ("gnu" . "http://elpa.gnu.org/packages/")
                           ("melpa" . "http://melpa.org/packages/")))
@@ -17,7 +18,7 @@
 
 (add-to-list 'load-path "~/.emacs.d/codeium.el/")
 (add-to-list 'load-path "~/.emacs.d/lisp/")
-(load "corfu-terminal")
+;; (load "corfu-terminal")
 (load "popon")
 (load "subr-x")
 
@@ -27,6 +28,8 @@
 
 ;; (load-theme 'tango-dark)
 ;; (load-theme 'wombat)
+(windmove-default-keybindings)
+(xterm-mouse-mode)
 (load-theme 'misterioso) ;; SET DEFAULT THEME
 (recentf-mode 1) ;; List of recently opened files
 (setq history-length 25) ;; History for commands. Also M-x
@@ -37,19 +40,20 @@
 (setq major-mode 'text-mode);; Select the best mode for type of file
 (add-hook 'find-file-hook 'normal-mode)
 (add-hook 'after-init-hook #'global-flycheck-mode) ;; Flycheck
+(add-hook 'after-init-hook 'global-company-mode) ;; Company mode
 (show-paren-mode 1);; Visualize where parenthesis open and close
 (setq column-number-mode t);; Show Line row Number
 (global-display-line-numbers-mode)
 (electric-pair-mode 1);; Auto insert closing bracket
 (electric-indent-mode -1);; Disable electir indent mode by default
-(unless (display-graphic-p);; IMPORTANT. DO NOT REMOVE. SHOW POPUP COMLPETITION.
-  (corfu-terminal-mode +1))
-(setq corfu-auto t ;; Enable auto completion and configure quitting
-      corfu-quit-no-match 'separator) ;; or t
-(setq-local corfu-auto        t
-            corfu-auto-delay  0.2 ;; TOO SMALL - NOT RECOMMENDED
-            corfu-auto-prefix 0.9 ;; TOO SMALL - NOT RECOMMENDED
-            completion-styles '(basic))
+;; (unless (display-graphic-p);; IMPORTANT. DO NOT REMOVE. SHOW POPUP COMLPETITION.
+;;   (corfu-terminal-mode +1))
+;; (setq corfu-auto t ;; Enable auto completion and configure quitting
+;;       corfu-quit-no-match 'separator) ;; or t
+;; (setq-local corfu-auto        t
+;;             corfu-auto-delay  0.2 ;; TOO SMALL - NOT RECOMMENDED
+;;             corfu-auto-prefix 0.9 ;; TOO SMALL - NOT RECOMMENDED
+;;             completion-styles '(basic))
 (with-eval-after-load 'consult
   (setq consult-buffer-completion-style 'orderless))
 (setq require-final-newline t) ;; Silently ensure newline at end of file
@@ -75,6 +79,24 @@
 ;;;;;;;;;;;;;;;;;;;;
 ;; CUSTOM CONFIGS ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package company
+  ;; Instructions
+  ;; Completion will start automatically after you type a few letters. Use C-n and C-p to select, <return> to complete or <tab> to complete the common part. Search through the completions with C-s, C-r and C-o. Press M-(digit) to quickly complete with one of the first 10 candidates.
+
+  ;; Type M-x company-complete to initiate completion manually. Bind this command to a key combination of your choice (this is optional).
+    :defer 0.1
+    :config
+    (global-company-mode t)
+    (setq-default
+        company-idle-delay 0.05
+        company-require-match nil
+        company-minimum-prefix-length 0
+
+        ;; get only preview
+        company-frontends '(company-preview-frontend)
+        ;; also get a drop down
+        company-frontends '(company-pseudo-tooltip-frontend company-preview-frontend)
+        ))
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode))
@@ -140,29 +162,29 @@
   (setq completion-cycle-threshold 5)
   ;; (setq tab-always-indent 'complete)
 )
-(use-package corfu
-  ;; Optional customizations
-  ;; :custom
-  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-  ;; (corfu-auto nil)                 ;; Enable auto completion
-  ;; (corfu-separator ?\s)          ;; Orderless field separator
-  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
-  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
-  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
-  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
-  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
-  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
+;; (use-package corfu
+;;   ;; Optional customizations
+;;   ;; :custom
+;;   ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+;;   ;; (corfu-auto nil)                 ;; Enable auto completion
+;;   ;; (corfu-separator ?\s)          ;; Orderless field separator
+;;   ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+;;   ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+;;   ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+;;   ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
+;;   ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+;;   ;; (corfu-scroll-margin 5)        ;; Use scroll margin
 
-  ;; Enable Corfu only for certain modes.
-  ;; :hook ((prog-mode . corfu-mode)
-  ;;        (shell-mode . corfu-mode)
-  ;;        (eshell-mode . corfu-mode))
+;;   ;; Enable Corfu only for certain modes.
+;;   ;; :hook ((prog-mode . corfu-mode)
+;;   ;;        (shell-mode . corfu-mode)
+;;   ;;        (eshell-mode . corfu-mode))
 
-  ;; Recommended: Enable Corfu globally.  This is recommended since Dabbrev can
-  ;; be used globally (M-/).  See also the customization variable
-  ;; `global-corfu-modes' to exclude certain modes.
-  :init
-  (global-corfu-mode))
+;;   ;; Recommended: Enable Corfu globally.  This is recommended since Dabbrev can
+;;   ;; be used globally (M-/).  See also the customization variable
+;;   ;; `global-corfu-modes' to exclude certain modes.
+;;   :init
+;;   (global-corfu-mode))
 (use-package wgrep
   :ensure t
   :bind ( :map grep-mode-map
@@ -170,10 +192,21 @@
           ("C-x C-q" . wgrep-change-to-wgrep-mode)
           ("C-c C-c" . wgrep-finish-edit))
 )
+(use-package lsp-mode
+  :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-c l")
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         (python-mode . lsp)
+	 (yaml-mode . lsp))
+  :commands lsp)
+
 
 
 (autoload 'swap-windows "swap-windows" "Swap 2 windows");; Setup Swap Windows
 (global-set-key (kbd "C-c s") 'swap-windows)
+(global-set-key (kbd "C-c C-v") 'browse-url)
+(global-set-key (kbd "C-.") 'neotree-refresh)
 
 
 ;; ;;;;;;;;;;;;;;;;;;;;;
@@ -211,7 +244,7 @@
  ;; If there is more than one, they won't work right.
  '(codeium/metadata/api_key "130eeb3a-3876-4c8b-914c-390437a120c0")
  '(package-selected-packages
-   '(flycheck regex-tool yaml-mode wgrep vertico terraform-mode pfuture orderless neotree nadvice multiple-cursors markdown-mode marginalia magit idle-highlight-mode hydra ht helm corfu-candidate-overlay consult cfrs ace-window)))
+   '(markdown-ts-mode markdown-preview-mode impatient-showdown company lsp-mode flycheck-yamllint flycheck regex-tool yaml-mode wgrep vertico terraform-mode pfuture orderless neotree nadvice multiple-cursors markdown-mode marginalia magit idle-highlight-mode hydra ht helm corfu-candidate-overlay consult cfrs ace-window)))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -245,6 +278,7 @@
 (global-set-key (kbd "C-c c") 'hs-show-block);; Shortcut to show blocks
 (global-set-key (kbd "C-x k") 'kill-buffer-and-window) ;; kill buffer no prompt
 (global-set-key (kbd "C-x O") 'previous-multiframe-window) ;; Switch to previous window
+(global-set-key (kbd "C-<return>") 'shell) ;; Switch to previous window
 
 ;; multiple cursors
 (require 'multiple-cursors)
@@ -406,3 +440,4 @@
 ;; (global-set-key (kbd "C-c m r") 'swap-windows)
 ;; (fset 'my-macro
 ;;    [?\C-x ?o ?$ tab ?\C-s])
+;;; .emacs ends here
