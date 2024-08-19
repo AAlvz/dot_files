@@ -200,13 +200,21 @@
          (python-mode . lsp)
 	 (yaml-mode . lsp))
   :commands lsp)
+(use-package treemacs
+  :ensure t
+  :bind
+  (:map global-map
+        ("C-c C-." . treemacs)
+	("C-." . treemacs-select-window))
+  :config
+  (setq treemacs-is-never-other-window t))
 
 
 
 (autoload 'swap-windows "swap-windows" "Swap 2 windows");; Setup Swap Windows
 (global-set-key (kbd "C-c s") 'swap-windows)
 (global-set-key (kbd "C-c C-v") 'browse-url)
-(global-set-key (kbd "C-.") 'neotree-refresh)
+;; (global-set-key (kbd "C-.") 'neotree-refresh)
 
 
 ;; ;;;;;;;;;;;;;;;;;;;;;
@@ -244,7 +252,7 @@
  ;; If there is more than one, they won't work right.
  '(codeium/metadata/api_key "130eeb3a-3876-4c8b-914c-390437a120c0")
  '(package-selected-packages
-   '(markdown-ts-mode markdown-preview-mode impatient-showdown company lsp-mode flycheck-yamllint flycheck regex-tool yaml-mode wgrep vertico terraform-mode pfuture orderless neotree nadvice multiple-cursors markdown-mode marginalia magit idle-highlight-mode hydra ht helm corfu-candidate-overlay consult cfrs ace-window)))
+   '(treemacs vterm markdown-ts-mode markdown-preview-mode impatient-showdown company lsp-mode flycheck-yamllint flycheck regex-tool yaml-mode wgrep vertico terraform-mode pfuture orderless neotree nadvice multiple-cursors markdown-mode marginalia magit idle-highlight-mode hydra ht helm corfu-candidate-overlay consult cfrs ace-window)))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -276,9 +284,21 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (global-set-key (kbd "C-c C-c") 'hs-hide-block);; Shortcut to hide blocks
 (global-set-key (kbd "C-c c") 'hs-show-block);; Shortcut to show blocks
-(global-set-key (kbd "C-x k") 'kill-buffer-and-window) ;; kill buffer no prompt
+;; (global-set-key (kbd "C-x k") 'kill-buffer-and-window) ;; kill buffer no prompt
+(global-set-key (kbd "C-x K") 'recentf-open-most-recent-file) ;; Open last killed file
 (global-set-key (kbd "C-x O") 'previous-multiframe-window) ;; Switch to previous window
+;;(global-set-key (kbd "<C-tab>") 'next-buffer) ;; Switch to previous window
+;; (global-set-key (kbd "C-<tab>") 'next-buffer)
 (global-set-key (kbd "C-<return>") 'shell) ;; Switch to previous window
+(global-set-key (kbd "C-x C-r") 'consult-recent-file) ;; Consult recent file
+
+(global-set-key (kbd "C-c n") 'next-buffer) ;; move to next buffer
+(global-set-key (kbd "C-c e") 'previous-buffer) ;; move to prev buffer
+(global-set-key (kbd "M-e") 'windmove-up) ;; move to prev buffer
+(global-set-key (kbd "M-n") 'windmove-down) ;; move to prev buffer
+(global-set-key (kbd "M-h") 'windmove-left) ;; move to prev buffer
+(global-set-key (kbd "M-i") 'windmove-right) ;; move to prev buffer
+
 
 ;; multiple cursors
 (require 'multiple-cursors)
