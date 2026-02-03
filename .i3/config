@@ -28,8 +28,7 @@ font pango:DejaVu Sans Mono 8
 floating_modifier $mod
 
 # start a terminal
-#bindsym $mod+Return exec i3-sensible-terminal
-bindsym $mod+Return exec xterm
+bindsym $mod+Return exec i3-sensible-terminal
 bindsym $mod+Shift+Return exec gnome-terminal --working-directory=`cat ~/.pwd`
 
 bindsym $mod+$alt+Shift+Control+s exec systemctl suspend
@@ -51,10 +50,11 @@ bindsym $mod+d exec dmenu_run
 # bindsym $mod+l focus right
 # bindsym $mod+semicolon focus right
 
-bindsym $mod+n focus left
-bindsym $mod+j focus down
-bindsym $mod+k focus up
-bindsym $mod+o focus right
+# Colemak home row navigation (h/n/e/i)
+bindsym $mod+h focus left
+bindsym $mod+n focus down
+bindsym $mod+e focus up
+bindsym $mod+i focus right
 
 # bindsym $mod+n focus down
 # bindsym $mod+p focus right
@@ -74,10 +74,11 @@ bindsym $mod+Up focus up
 # bindsym $mod+Shift+k move up
 # bindsym $mod+Shift+l move right
 # bindsym $mod+Shift+semicolon move right
-bindsym $mod+Shift+n move left
-bindsym $mod+Shift+j move down
-bindsym $mod+Shift+k move up
-bindsym $mod+Shift+o move right
+# Colemak home row move (h/n/e/i)
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+n move down
+bindsym $mod+Shift+e move up
+bindsym $mod+Shift+i move right
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Shift+Left move left
@@ -97,7 +98,8 @@ bindsym $mod+f fullscreen
 # change container layout (stacked, tabbed, toggle split)
 bindsym $mod+s layout stacking
 bindsym $mod+w layout tabbed
-bindsym $mod+e layout toggle split
+# bindsym $mod+e layout toggle split  # conflicts with Colemak navigation
+bindsym $mod+t layout toggle split  # reassigned from $mod+e for Colemak
 
 # toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
@@ -123,7 +125,7 @@ bindsym $mod+8 workspace 8
 bindsym $mod+9 workspace 9
 bindsym $mod+0 workspace 10
 
-bindsym $mod+workspace next
+# bindsym $mod+workspace next  # malformed - "workspace" is not a valid key
 
 # move focused container to workspace
 bindsym $mod+Shift+1 move container to workspace 1
@@ -142,7 +144,8 @@ bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+# bindsym $mod+Shift+e exec "..."  # conflicts with Colemak navigation
+bindsym $mod+Shift+x exec "i3-nagbar -t warning -m 'Exit i3?' -b 'Yes' 'i3-msg exit'"  # reassigned from $mod+Shift+e for Colemak
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -208,7 +211,8 @@ bindsym $mod+Print exec scrot '%Y-%m-%d-%s_$wx$h.png' -e 'mv $f ~/Pictures/'
 
 #Caps lock as ctrl
 #exec_always /usr/bin/loadkeys /usr/share/keymaps/capslock_as_ctrl
-exec --no-startup-id setxkbmap -option grp:alt_space_toggle us,es
+#exec --no-startup-id setxkbmap -option grp:alt_space_toggle us,es
+exec --no-startup-id setxkbmap us colemak -option ctrl:nocaps
 
 # exec "setxkbmap -layout us,es"
 # exec "setxkbmap -option 'grp:alt_space_toggle'"
