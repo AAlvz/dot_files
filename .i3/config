@@ -210,12 +210,9 @@ bindsym Control+Mod1+l exec i3lock
 # Copy PRIMARY selection to CLIPBOARD (highlight → $mod+c → Ctrl+V anywhere)
 bindsym $mod+c exec --no-startup-id "xclip -o | xclip -sel clip"
 
-# Take a screenshot upon pressing $mod+x (select an area)
-# REQUIRES `scrot` and `xclip`
-bindsym --release $mod+x exec --no-startup-id "scrot -s ~/Pictures/latest-screenshot.png -e 'xclip -selection c -t image/png < $f'"
-
-#Take screenshot of the window
-bindsym $mod+Print exec scrot '%Y-%m-%d-%s_$wx$h.png' -e 'mv $f ~/Pictures/'
+# Screenshots with flameshot (select area, annotate, copy to clipboard)
+bindsym $mod+x exec --no-startup-id flameshot gui
+bindsym Print exec --no-startup-id flameshot full -c -p ~/Pictures/
 
 #Caps lock as ctrl
 #exec_always /usr/bin/loadkeys /usr/share/keymaps/capslock_as_ctrl
