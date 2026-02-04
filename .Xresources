@@ -6,8 +6,7 @@ XTerm*background: black
 xterm*faceName: Monospace
 xterm*faceSize: 16
 
-! Copy to Clipboard
-xterm*selectToClipboard: true
+! Use PRIMARY selection (traditional X11 - highlight to copy, middle-click to paste)
 
 
 ! I like a LOT of scrollback...
