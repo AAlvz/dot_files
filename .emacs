@@ -4,19 +4,22 @@
 (require 'package)
 
 ;;; Code:
-(setq package-archives '(("ELPA" . "http://tromey.com/elpa/")
-                          ("gnu" . "http://elpa.gnu.org/packages/")
-                          ("melpa" . "http://melpa.org/packages/")))
+(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+                          ("melpa" . "https://melpa.org/packages/")))
                           ;; ("marmalade" . "http://marmalade-repo.org/packages/")))
 
 (package-initialize)
+(unless package-archive-contents
+  (package-refresh-contents))
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
 (eval-when-compile
   (require 'use-package))
 
-(add-to-list 'load-path "~/.emacs.d/codeium.el/")
+;; Codeium - only load if directory exists
+(when (file-directory-p "~/.emacs.d/codeium.el/")
+  (add-to-list 'load-path "~/.emacs.d/codeium.el/"))
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 ;; (load "corfu-terminal")
 (load "popon")
@@ -39,8 +42,8 @@
 (winner-mode 1) ;; Winner mode to remember past windows arrangements
 (setq major-mode 'text-mode);; Select the best mode for type of file
 (add-hook 'find-file-hook 'normal-mode)
-(add-hook 'after-init-hook #'global-flycheck-mode) ;; Flycheck
-(add-hook 'after-init-hook 'global-company-mode) ;; Company mode
+;; flycheck is enabled via use-package below
+;; company-mode is enabled via use-package below
 (show-paren-mode 1);; Visualize where parenthesis open and close
 (setq column-number-mode t);; Show Line row Number
 (global-display-line-numbers-mode)
@@ -60,6 +63,17 @@
 (require 'whitespace) ;;Highlight characters over 80 and linees with spaces and tabs probably
 (setq whitespace-style '(face empty tabs lines-tail trailing))
 (global-whitespace-mode t)
+;; X11 clipboard integration - copy with M-w pastes to system clipboard
+(setq select-enable-clipboard t)  ;; Use CLIPBOARD (Ctrl+V paste)
+(setq select-enable-primary t)    ;; Also use PRIMARY (middle-click paste)
+(setq x-select-enable-clipboard-manager t) ;; Work with clipboard managers
+
+;; For terminal mode (-nw): use xclip package to access system clipboard
+(use-package xclip
+  :ensure t
+  :config
+  (xclip-mode 1))
+
 (setq backup-directory-alist `(("." . "~/.emacs_saves"))) ;; Set Backups directory
 (setq version-control t     ;; Use version numbers for backups.
       kept-new-versions 10  ;; Number of newest versions to keep.
@@ -122,27 +136,22 @@
   :init
   (marginalia-mode)
 )
-(use-package codeium
+;; Codeium - only load if installed
+;; To install: git clone https://github.com/Exafunction/codeium.el ~/.emacs.d/codeium.el
+(when (file-directory-p "~/.emacs.d/codeium.el/")
+  (use-package codeium
     :init
     (add-to-list 'completion-at-point-functions #'codeium-completion-at-point)
     :config
-    (setq use-dialog-box nil) ;; do not use popup boxes
+    (setq use-dialog-box nil)
     (setq codeium-mode-line-enable
         (lambda (api) (not (memq api '(CancelRequest Heartbeat AcceptCompletion)))))
     (add-to-list 'mode-line-format '(:eval (car-safe codeium-mode-line)) t)
     (setq codeium-api-enabled
         (lambda (api)
             (memq api '(GetCompletions Heartbeat CancelRequest GetAuthToken RegisterUser auth-redirect AcceptCompletion))))
-    (setq codeium-show-preview t)  ;; Enable candidate preview in Codeium
-    (run-with-idle-timer 0.5 nil #'codeium-completion-at-point)
-    ;; (defun my-codeium/document/text ()
-    ;;     (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (min (+ (point) 1000) (point-max))))
-    ;; (defun my-codeium/document/cursor_offset ()
-    ;;     (codeium-utf8-byte-length
-    ;;         (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (point))))
-    ;; (setq codeium/document/text 'my-codeium/document/text)
-    ;; (setq codeium/document/cursor_offset 'my-codeium/document/cursor_offset)
-)
+    (setq codeium-show-preview t)
+    (run-with-idle-timer 0.5 nil #'codeium-completion-at-point)))
 (use-package orderless
   :init
   ;; Configure a custom style dispatcher (see the Consult wiki)

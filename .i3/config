@@ -28,8 +28,8 @@ font pango:DejaVu Sans Mono 8
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec i3-sensible-terminal
-bindsym $mod+Shift+Return exec gnome-terminal --working-directory=`cat ~/.pwd`
+bindsym $mod+Return exec xterm
+bindsym $mod+Shift+Return exec xterm -e "cd $(cat ~/.pwd) && bash"
 
 bindsym $mod+$alt+Shift+Control+s exec systemctl suspend
 
@@ -218,6 +218,7 @@ bindsym $mod+Print exec scrot '%Y-%m-%d-%s_$wx$h.png' -e 'mv $f ~/Pictures/'
 #exec_always /usr/bin/loadkeys /usr/share/keymaps/capslock_as_ctrl
 #exec --no-startup-id setxkbmap -option grp:alt_space_toggle us,es
 exec_always --no-startup-id setxkbmap us colemak -option ctrl:nocaps
+exec --no-startup-id xrdb -merge ~/.Xresources
 
 # exec "setxkbmap -layout us,es"
 # exec "setxkbmap -option 'grp:alt_space_toggle'"
@@ -228,7 +229,7 @@ exec "xrandr --output DP-2-1 --mode 1920x1080 --right-of eDP-1"
 # exec --no-startup-id /home/$USER/scripts/keyboard/capslock_as_ctrl
 # exec --no-startup-id feh --bg-max Pictures/background.jpg
 exec --no-startup-id i3-msg 'workspace 1; exec google-chrome'
-exec --no-startup-id i3-msg 'workspace 2; exec gnome-terminal --working-directory=`cat ~/.pwd`'
+exec --no-startup-id i3-msg 'workspace 2; exec xterm'
 
 
 # ENABLE TAP CLICK AND TWO FINGERS RIGHT CLICK AND SCROLL.
