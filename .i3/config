@@ -207,6 +207,9 @@ bindsym F6 exec playerctl next
 bindsym Control+Mod1+l exec i3lock
 #exec xautolock -time 25 -locker i3lock
 
+# Copy PRIMARY selection to CLIPBOARD (highlight → $mod+c → Ctrl+V anywhere)
+bindsym $mod+c exec --no-startup-id "xclip -o | xclip -sel clip"
+
 # Take a screenshot upon pressing $mod+x (select an area)
 # REQUIRES `scrot` and `xclip`
 bindsym --release $mod+x exec --no-startup-id "scrot -s ~/Pictures/latest-screenshot.png -e 'xclip -selection c -t image/png < $f'"
