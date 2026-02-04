@@ -191,13 +191,18 @@ bindsym F11 exec brightnessctl set 5%-
 bindsym XF86AudioRaiseVolume exec /usr/bin/pactl -- set-sink-volume @DEFAULT_SINK@ '+2%'
 bindsym XF86AudioLowerVolume exec /usr/bin/pactl -- set-sink-volume @DEFAULT_SINK@ '-2%'
 bindsym XF86AudioMute exec /usr/bin/pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym F1 exec /usr/bin/pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym F2 exec /usr/bin/pactl -- set-sink-volume @DEFAULT_SINK@ '-2%'
+bindsym F3 exec /usr/bin/pactl -- set-sink-volume @DEFAULT_SINK@ '+2%'
 
-
-#Requires installing playerctl
-bindsym XF86AudioPlay exec playerctl play
+# Media controls (requires: sudo apt install playerctl)
+bindsym XF86AudioPlay exec playerctl play-pause
 bindsym XF86AudioPause exec playerctl pause
 bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
+bindsym F4 exec playerctl previous
+bindsym F5 exec playerctl play-pause
+bindsym F6 exec playerctl next
 
 #Lock screen
 bindsym Control+Mod1+l exec i3lock
