@@ -26,7 +26,7 @@ cd() {
 export TERM=xterm-256color
 
 alias c='claude'
-alias e='emacsclient -a emacs'
+alias e='emacsclient -c -a emacs'
 alias k='kubectl'
 
 # Use emacsclient for everything — opens in running Emacs, falls back to new Emacs
