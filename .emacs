@@ -1,12 +1,17 @@
+;;; init --- Alfonso's Emacs -*- lexical-binding: t; -*-
+
+;; Start server so emacsclient can connect to this instance
+(server-start)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;; Initialize packages ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'package)
 
 ;;; Code:
-(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-                          ("melpa" . "https://melpa.org/packages/")))
-                          ;; ("marmalade" . "http://marmalade-repo.org/packages/")))
+(setq package-archives '(("gnu"    . "https://elpa.gnu.org/packages/")
+                          ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                          ("melpa"  . "https://melpa.org/packages/")))
 
 (package-initialize)
 (unless package-archive-contents
@@ -48,7 +53,8 @@
 (setq column-number-mode t);; Show Line row Number
 (global-display-line-numbers-mode)
 (electric-pair-mode 1);; Auto insert closing bracket
-(electric-indent-mode -1);; Disable electir indent mode by default
+(electric-indent-mode 1);; Disable electir indent mode by default
+
 ;; (unless (display-graphic-p);; IMPORTANT. DO NOT REMOVE. SHOW POPUP COMLPETITION.
 ;;   (corfu-terminal-mode +1))
 ;; (setq corfu-auto t ;; Enable auto completion and configure quitting
@@ -86,13 +92,32 @@
 
 (add-hook 'after-change-major-mode-hook 'idle-highlight-mode)
 (set-face-attribute 'idle-highlight nil :background "#FFFFCC" :foreground "#333333");; Define custom colors for idle-highlight mode with less intense colors
-(defun my-eshell-prompt ();; Show time at the beginning of shell prompt
-  (concat (format-time-string "[%H:%M:%S] " (current-time)) (eshell/pwd) " $ "))
-(setq eshell-prompt-function #'my-eshell-prompt)
+
+;; (setq grep-find-template "grep -C2 -ri --color=auto -nH --null -e "EnvKey" --exclude-dir={node_modules,.terraform,.git} .")
+
+
+;;  ;; Show time at the beginning of the shell prompt
+;; (defun my-eshell-prompt ()
+;;   ;; Get the last directory
+;;   (let ((last-directory (file-name-nondirectory (shell/pwd))))
+;;     (concat (format-time-string "\n[%H:%M:%S] " (current-time))
+;;             last-directory
+;;             " $ "))) ;; You can adjust the character as needed
+
+;; (setq eshell-prompt-function #'my-eshell-prompt)
+
+
+;; (defun my-eshell-prompt ();; Show time at the beginning of shell prompt
+;;   (concat (format-time-string "[%H:%M:%S] " (current-time)) (eshell/pwd) " $ "))
+;; (setq eshell-prompt-function #'my-eshell-prompt)
+
+;; (setq eshell-prompt-function #'my-eshell-prompt)
 
 ;;;;;;;;;;;;;;;;;;;;
 ;; CUSTOM CONFIGS ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package kubernetes)
+
 (use-package company
   ;; Instructions
   ;; Completion will start automatically after you type a few letters. Use C-n and C-p to select, <return> to complete or <tab> to complete the common part. Search through the completions with C-s, C-r and C-o. Press M-(digit) to quickly complete with one of the first 10 candidates.
@@ -102,7 +127,7 @@
     :config
     (global-company-mode t)
     (setq-default
-        company-idle-delay 0.05
+        company-idle-delay 0.9
         company-require-match nil
         company-minimum-prefix-length 0
 
@@ -166,11 +191,47 @@
   (completion-styles '(orderless))
   ;; (orderless-matching-styles '(orderless-regexp))
 )
+
 (use-package emacs
   :init
+  ;; Set completion cycle threshold
   (setq completion-cycle-threshold 5)
-  ;; (setq tab-always-indent 'complete)
+
+  ;; Set default indentation settings
+  (setq-default indent-tabs-mode nil)  ; Use spaces instead of tabs
+  (setq-default tab-width 4)            ; Set tab width to 4 spaces
+  (setq-default standard-indent 4)      ; Set default indentation to 4 spaces
+
+  ;; (setq indent-line-function 'insert-tab)
+  ;; (setq comint-buffer-maximum-size 10000)  ; or any size you prefer
+  ;; (setq comint-scroll-to-bottom-on-input t)   ; Scroll to the bottom when typing
+  ;; (setq comint-scroll-to-bottom-on-output t)
+  ;; (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
+
+
+  ;; Ensure that all modes respect these settings
+  (add-hook 'prog-mode-hook
+            (lambda ()
+              (setq indent-tabs-mode nil)  ; Use spaces
+              (setq tab-width 4)            ; Set tab width to 4
+              (setq standard-indent 4)))    ; Indentation level to 4 spaces
+
+  (add-hook 'text-mode-hook
+            (lambda ()
+              (setq indent-tabs-mode nil)   ; Use spaces
+              (setq tab-width 4)             ; Set tab width to 4
+              (setq standard-indent 4)))     ; Indentation level to 4 spaces
 )
+
+;; (use-package emacs
+;;   :init
+;;   (setq completion-cycle-threshold 5)
+;;   (setq-default indent-tabs-mode nil)
+;;   (setq-default tab-width 4)
+;;   (setq indent-line-function 'insert-tab)
+
+;;   ;; (setq tab-always-indent 'complete)
+;; )
 ;; (use-package corfu
 ;;   ;; Optional customizations
 ;;   ;; :custom
@@ -201,22 +262,30 @@
           ("C-x C-q" . wgrep-change-to-wgrep-mode)
           ("C-c C-c" . wgrep-finish-edit))
 )
-(use-package lsp-mode
-  :init
-  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-  (setq lsp-keymap-prefix "C-c l")
-  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-         (python-mode . lsp)
-	 (yaml-mode . lsp))
-  :commands lsp)
+
+
+;; (use-package lsp-mode
+;;   :init (setq lsp-keymap-prefix "C-c l")
+;;   :hook ((python-mode . lsp)
+;;          (python-ts-mode . lsp)
+;;          (yaml-mode . lsp))
+;;   :commands lsp)
+
+;; (use-package lsp-pyright
+;;   :after lsp-mode
+;;   :hook ((python-mode . (lambda () (require 'lsp-pyright)))
+;;          (python-ts-mode . (lambda () (require 'lsp-pyright)))))
+
 (use-package treemacs
   :ensure t
   :bind
   (:map global-map
         ("C-c C-." . treemacs)
-	("C-." . treemacs-select-window))
-  :config
-  (setq treemacs-is-never-other-window t))
+	;; ("C-." . treemacs-select-window)
+	)
+)
+  ;; :config
+  ;; (setq treemacs-is-never-other-window t))
 
 
 
@@ -261,7 +330,15 @@
  ;; If there is more than one, they won't work right.
  '(codeium/metadata/api_key "130eeb3a-3876-4c8b-914c-390437a120c0")
  '(package-selected-packages
-   '(treemacs vterm markdown-ts-mode markdown-preview-mode impatient-showdown company lsp-mode flycheck-yamllint flycheck regex-tool yaml-mode wgrep vertico terraform-mode pfuture orderless neotree nadvice multiple-cursors markdown-mode marginalia magit idle-highlight-mode hydra ht helm corfu-candidate-overlay consult cfrs ace-window)))
+   '(ace-window blacken cfrs company consult consult-lsp
+                corfu-candidate-overlay dart-mode flycheck
+                flycheck-yamllint go-mode helm ht hydra
+                idle-highlight-mode impatient-showdown kubernetes
+                lsp-pyright magit marginalia markdown-mode
+                markdown-preview-mode markdown-ts-mode
+                multiple-cursors nadvice neotree orderless pfuture
+                python-mode regex-tool terraform-doc terraform-mode
+                tree-sitter treemacs vertico vterm wgrep yaml-mode)))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -296,9 +373,12 @@
 ;; (global-set-key (kbd "C-x k") 'kill-buffer-and-window) ;; kill buffer no prompt
 (global-set-key (kbd "C-x K") 'recentf-open-most-recent-file) ;; Open last killed file
 (global-set-key (kbd "C-x O") 'previous-multiframe-window) ;; Switch to previous window
+(global-set-key (kbd "C-.") 'next-multiframe-window) ;; Switch to previous window
+(global-set-key (kbd "C-,") 'previous-multiframe-window) ;; Switch to previous window
 ;;(global-set-key (kbd "<C-tab>") 'next-buffer) ;; Switch to previous window
 ;; (global-set-key (kbd "C-<tab>") 'next-buffer)
-(global-set-key (kbd "C-<return>") 'shell) ;; Switch to previous window
+;;(global-set-key (kbd "C-<return>") 'vterm) ;; Run shell
+(global-set-key (kbd "C-<return>") 'vterm) ;; Run shell
 (global-set-key (kbd "C-x C-r") 'consult-recent-file) ;; Consult recent file
 
 (global-set-key (kbd "C-c n") 'next-buffer) ;; move to next buffer
@@ -470,3 +550,15 @@
 ;; (fset 'my-macro
 ;;    [?\C-x ?o ?$ tab ?\C-s])
 ;;; .emacs ends here
+
+
+;;; ESHELL
+(setenv "OKTA_TEAM" "devops-sso")
+(setenv "GOPATH" (expand-file-name "~/go-projects"))
+(setenv "PATH" (concat (getenv "PATH") ":" (expand-file-name "~/go-projects/bin")))
+(setenv "LS_OPTIONS" "--color=auto")
+
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (exec-path-from-shell-initialize))
