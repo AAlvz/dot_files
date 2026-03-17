@@ -220,6 +220,8 @@ bindsym Print exec --no-startup-id flameshot full -c -p ~/Pictures/
 exec_always --no-startup-id setxkbmap us colemak -option ctrl:nocaps
 exec --no-startup-id xrdb -merge ~/.Xresources
 
+exec --no-startup-id conky -c ~/.config/conky/clock.conf
+
 # exec "setxkbmap -layout us,es"
 # exec "setxkbmap -option 'grp:alt_space_toggle'"
 
@@ -230,6 +232,7 @@ exec "xrandr --output DP-2-1 --mode 1920x1080 --right-of eDP-1"
 # exec --no-startup-id feh --bg-max Pictures/background.jpg
 exec --no-startup-id i3-msg 'workspace 1; exec google-chrome'
 exec --no-startup-id i3-msg 'workspace 2; exec xterm'
+
 
 
 # ENABLE TAP CLICK AND TWO FINGERS RIGHT CLICK AND SCROLL.
