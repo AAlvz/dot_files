@@ -32,6 +32,18 @@
 (windmove-default-keybindings)
 (xterm-mouse-mode)
 (load-theme 'misterioso)
+
+;; Active window: bright blue mode line
+(set-face-attribute 'mode-line nil
+                    :background "#2257A0"
+                    :foreground "#FFFFFF"
+                    :box '(:line-width 2 :color "#2257A0"))
+;; Inactive windows: dim gray mode line
+(set-face-attribute 'mode-line-inactive nil
+                    :background "#3E3E3E"
+                    :foreground "#808080"
+                    :box '(:line-width 2 :color "#3E3E3E"))
+
 (recentf-mode 1)
 (setq history-length 25)
 (savehist-mode 1)
@@ -53,7 +65,8 @@
 ;; Whitespace: highlight tabs, trailing spaces, long lines
 (require 'whitespace)
 (setq whitespace-style '(face empty tabs lines-tail trailing))
-(global-whitespace-mode t)
+(add-hook 'prog-mode-hook #'whitespace-mode)
+(add-hook 'text-mode-hook #'whitespace-mode)
 
 ;; Clipboard integration (works on macOS GUI, X11, and terminal via xclip)
 (setq select-enable-clipboard t)
@@ -87,9 +100,11 @@
 ;; Use-packages  ;;
 ;;;;;;;;;;;;;;;;;;;
 
-(use-package kubernetes)
+(use-package kubernetes
+  :ensure t)
 
 (use-package company
+  :ensure t
   :defer 0.1
   :config
   (global-company-mode t)
@@ -104,6 +119,7 @@
   :init (global-flycheck-mode))
 
 (use-package idle-highlight-mode
+  :ensure t
   :config (setq idle-highlight-idle-time 0.2)
   :hook ((prog-mode text-mode) . idle-highlight-mode))
 
@@ -111,9 +127,11 @@
   :init (savehist-mode))
 
 (use-package vertico
+  :ensure t
   :init (vertico-mode))
 
 (use-package marginalia
+  :ensure t
   :bind (:map minibuffer-local-map ("M-A" . marginalia-cycle))
   :init (marginalia-mode))
 
@@ -136,6 +154,7 @@
 ;;     (run-with-idle-timer 0.5 nil #'codeium-completion-at-point)))
 
 (use-package orderless
+  :ensure t
   :init
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
@@ -178,6 +197,14 @@
 ;;   :after lsp-mode
 ;;   :hook ((python-mode . (lambda () (require 'lsp-pyright)))
 ;;          (python-ts-mode . (lambda () (require 'lsp-pyright)))))
+
+(use-package vterm
+  :ensure t
+  :custom
+  (vterm-always-compile-module t))
+
+(use-package cmake-mode
+  :ensure t)
 
 (use-package treemacs
   :ensure t
@@ -223,6 +250,7 @@
 ;;;;;;;;;;;;
 
 (use-package consult
+  :ensure t
   :bind (("C-c M-x" . consult-mode-command)
          ("C-c h" . consult-history)
          ("C-c k" . consult-kmacro)
@@ -280,8 +308,6 @@
    consult-theme :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep
    consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-file-register
-   consult--source-recent-file consult--source-project-recent-file
    :preview-key '(:debounce 0.4 any))
   (setq consult-narrow-key "<"))
 
@@ -318,14 +344,11 @@
 
 (custom-set-variables
  '(package-selected-packages
-   '(ace-window blacken cfrs company consult consult-lsp
-                dart-mode flycheck flycheck-yamllint go-mode helm ht hydra
-                idle-highlight-mode impatient-showdown kubernetes
-                lsp-pyright magit marginalia markdown-mode
-                markdown-preview-mode markdown-ts-mode
-                multiple-cursors nadvice neotree orderless pfuture
-                python-mode regex-tool terraform-doc terraform-mode
-                tree-sitter treemacs vertico vterm wgrep xclip yaml-mode)))
+   '(ace-window cfrs cmake-mode company consult exec-path-from-shell
+                flycheck helm ht hydra idle-highlight-mode kubernetes
+                marginalia multiple-cursors nadvice neotree orderless
+                pfuture regex-tool terraform-mode treemacs vertico
+                vterm wgrep xclip yaml-mode)))
 
 (custom-set-faces)
 
