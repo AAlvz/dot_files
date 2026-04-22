@@ -26,13 +26,14 @@ cd() {
 export TERM=xterm-256color
 
 alias c='claude'
-alias e='emacsclient -c -a emacs'
+alias e='emacsclient -nw -a ""'
+alias kill-emacs='emacsclient -e "(kill-emacs)"'
 alias k='kubectl'
 
 # Use emacsclient for everything — opens in running Emacs, falls back to new Emacs
-export EDITOR="emacsclient -a emacs"
-export VISUAL="emacsclient -a emacs"
-export KUBE_EDITOR="emacsclient -a emacs"
+export EDITOR="emacsclient -nw -a ''"
+export VISUAL="emacsclient -nw -a ''"
+export KUBE_EDITOR="emacsclient -nw -a ''"
 alias tp='terragrunt plan'
 export LS_OPTIONS='--color=auto'
 alias ls='ls $LS_OPTIONS'
@@ -58,10 +59,10 @@ alias kgp='kubectl get pods'
 alias knotrunning='kubectl get pods --all-namespaces --field-selector=status.phase!=Running -o wide'
 alias kn='kubectl config set-context --current --namespace '
 
-# Added by Antigravity
-export PATH="/Users/alfonsoa/.antigravity/antigravity/bin:$PATH"
-eval "$(rbenv init -)"
+# # Added by Antigravity
+# export PATH="/Users/alfonsoa/.antigravity/antigravity/bin:$PATH"
+# eval "$(rbenv init -)"
 
-alias dk='se dk'
+# alias dk='se dk'
 
 export PATH="$HOME/.local/bin:$PATH"
