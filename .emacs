@@ -1,7 +1,9 @@
 ;;; init --- Alfonso's Emacs -*- lexical-binding: t; -*-
 
 ;; Start server so emacsclient can connect to this instance
-(server-start)
+(require 'server)
+(unless (server-running-p)
+  (server-start))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Initialize packages   ;;
@@ -11,6 +13,10 @@
 (setq package-archives '(("gnu"    . "https://elpa.gnu.org/packages/")
                           ("nongnu" . "https://elpa.nongnu.org/nongnu/")
                           ("melpa"  . "https://melpa.org/packages/")))
+
+(setq package-archive-priorities '(("melpa" . 10)
+                                    ("gnu" . 5)
+                                    ("nongnu" . 3)))
 
 (package-initialize)
 (unless package-archive-contents
@@ -205,7 +211,13 @@
 (use-package vterm
   :ensure t
   :custom
-  (vterm-always-compile-module t))
+  (vterm-always-compile-module t)
+  :hook
+  (vterm-mode . (lambda () (display-line-numbers-mode -1)))
+  :config
+  (dotimes (i 10)
+    (define-key vterm-mode-map (kbd (format "M-%d" i)) nil))
+  (define-key vterm-mode-map (kbd "M-TAB") nil))
 
 (use-package cmake-mode
   :ensure t)
@@ -214,6 +226,31 @@
   :ensure t
   :bind (:map global-map ("C-c C-." . treemacs)))
 
+(tab-bar-mode 1)
+(setq tab-bar-tab-hints t)
+(setq tab-bar-close-button-show nil)
+(setq tab-bar-new-tab-to 'rightmost)
+
+(defun tab-bar-select-or-create-tab (&optional tab-number)
+  "Switch to tab TAB-NUMBER, creating tabs up to that number if needed."
+  (interactive
+   (list (let ((key (event-basic-type last-command-event)))
+           (if (and (characterp key) (>= key ?0) (<= key ?9))
+               (- key ?0)
+             0))))
+  (let ((tab-count (length (tab-bar-tabs))))
+    (if (<= tab-number tab-count)
+        (tab-bar-select-tab tab-number)
+      (dotimes (_ (- tab-number tab-count))
+        (tab-bar-new-tab))
+      (tab-bar-select-tab tab-number))))
+
+(dotimes (i 9)
+  (global-set-key (kbd (format "M-%d" (1+ i)))
+                  'tab-bar-select-or-create-tab))
+(global-set-key (kbd "M-0") 'tab-bar-close-tab)
+(global-set-key (kbd "M-TAB") 'tab-recent)
+
 ;;;;;;;;;;;;;;;;
 ;; Keybindings ;;
 ;;;;;;;;;;;;;;;;
@@ -221,7 +258,17 @@
 ;; Window management
 (autoload 'swap-windows "swap-windows" "Swap 2 windows")
 (global-set-key (kbd "C-c s") 'swap-windows)
-(global-set-key (kbd "C-c C-v") 'browse-url)
+(defun browse-url-from-clipboard ()
+  "Extract and open the first URL found in the clipboard."
+  (interactive)
+  (let* ((raw (string-trim (or (gui-get-selection 'CLIPBOARD)
+                               (current-kill 0 t) "")))
+         (url (when (string-match "https?://[^ \t\n\r\"<>]*[^ \t\n\r\"<>().,;]" raw)
+                (match-string 0 raw))))
+    (if url
+        (browse-url url)
+      (message "No URL found in clipboard: %s" (substring raw 0 (min 80 (length raw)))))))
+(global-set-key (kbd "C-c C-v") 'browse-url-from-clipboard)
 (global-set-key (kbd "C-x O") 'previous-multiframe-window)
 (global-set-key (kbd "C-.") 'next-multiframe-window)
 (global-set-key (kbd "C-,") 'previous-multiframe-window)
@@ -339,6 +386,8 @@
 
 (use-package exec-path-from-shell
   :ensure t
+  :custom
+  (exec-path-from-shell-arguments '("-l"))
   :config
   (exec-path-from-shell-initialize))
 
@@ -347,13 +396,21 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(ace-window cfrs cmake-mode company consult exec-path-from-shell
-                flycheck helm ht hydra idle-highlight-mode kubernetes
-                marginalia multiple-cursors nadvice neotree orderless
-                pfuture regex-tool terraform-mode treemacs vertico
-                vterm wgrep xclip yaml-mode)))
+   '(cmake-mode company consult exec-path-from-shell flycheck
+                idle-highlight-mode kubernetes magit marginalia
+                multiple-cursors orderless treemacs vertico vterm
+                wgrep xclip)))
 
-(custom-set-faces)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
 
 ;;; .emacs ends here
