@@ -217,7 +217,8 @@
   :config
   (dotimes (i 10)
     (define-key vterm-mode-map (kbd (format "M-%d" i)) nil))
-  (define-key vterm-mode-map (kbd "M-TAB") nil))
+  (define-key vterm-mode-map (kbd "M-TAB") nil)
+  (define-key vterm-mode-map (kbd "C-g") 'vterm-send-escape))
 
 (use-package cmake-mode
   :ensure t)
@@ -258,17 +259,20 @@
 ;; Window management
 (autoload 'swap-windows "swap-windows" "Swap 2 windows")
 (global-set-key (kbd "C-c s") 'swap-windows)
-(defun browse-url-from-clipboard ()
-  "Extract and open the first URL found in the clipboard."
+(defun browse-url-smart ()
+  "Open URL at point, or extract one from clipboard."
   (interactive)
-  (let* ((raw (string-trim (or (gui-get-selection 'CLIPBOARD)
-                               (current-kill 0 t) "")))
-         (url (when (string-match "https?://[^ \t\n\r\"<>]*[^ \t\n\r\"<>().,;]" raw)
-                (match-string 0 raw))))
-    (if url
-        (browse-url url)
-      (message "No URL found in clipboard: %s" (substring raw 0 (min 80 (length raw)))))))
-(global-set-key (kbd "C-c C-v") 'browse-url-from-clipboard)
+  (let ((url-at-point (thing-at-point 'url t)))
+    (cond
+     (url-at-point (browse-url url-at-point))
+     (t (let* ((raw (string-trim (or (gui-get-selection 'CLIPBOARD)
+                                     (current-kill 0 t) "")))
+               (url (when (string-match "https?://[^ \t\n\r\"<>]*[^ \t\n\r\"<>().,;]" raw)
+                      (match-string 0 raw))))
+          (if url
+              (browse-url url)
+            (message "No URL found at point or in clipboard")))))))
+(global-set-key (kbd "C-c C-v") 'browse-url-smart)
 (global-set-key (kbd "C-x O") 'previous-multiframe-window)
 (global-set-key (kbd "C-.") 'next-multiframe-window)
 (global-set-key (kbd "C-,") 'previous-multiframe-window)
