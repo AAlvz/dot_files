@@ -37,6 +37,9 @@
 
 (windmove-default-keybindings)
 (xterm-mouse-mode)
+(setq mouse-wheel-scroll-amount '(3 ((shift) . 1)))
+(setq mouse-wheel-progressive-speed nil)
+(setq scroll-conservatively 101)
 (load-theme 'misterioso)
 
 ;; Active window: bright blue mode line
@@ -218,7 +221,9 @@
   (dotimes (i 10)
     (define-key vterm-mode-map (kbd (format "M-%d" i)) nil))
   (define-key vterm-mode-map (kbd "M-TAB") nil)
-  (define-key vterm-mode-map (kbd "C-g") 'vterm-send-escape))
+  (define-key vterm-mode-map (kbd "C-g") 'vterm-send-escape)
+  (define-key vterm-mode-map (kbd "<wheel-up>")   #'scroll-down-command)
+  (define-key vterm-mode-map (kbd "<wheel-down>") #'scroll-up-command))
 
 (use-package cmake-mode
   :ensure t)
