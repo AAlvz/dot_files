@@ -25,6 +25,8 @@ cd() {
 
 export TERM=xterm-256color
 
+#alias c='claude --ax-screen-reader'
+export CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1
 alias c='claude'
 alias e='emacsclient -nw -a ""'
 alias kill-emacs='emacsclient -e "(kill-emacs)"'
@@ -66,3 +68,10 @@ alias kn='kubectl config set-context --current --namespace '
 # alias dk='se dk'
 
 export PATH="$HOME/.local/bin:$PATH"
+
+# Emacs-style line editing (enables Alt+., Alt+b, Alt+f, etc.)
+bindkey -e
+bindkey '\e.' insert-last-word
+
+# Autosuggestions
+source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
