@@ -211,16 +211,27 @@
 ;;   :hook ((python-mode . (lambda () (require 'lsp-pyright)))
 ;;          (python-ts-mode . (lambda () (require 'lsp-pyright)))))
 
+(defun my/vterm-kill-ring-pop ()
+  "Browse kill ring with completing-read and send selection to vterm."
+  (interactive)
+  (let ((text (completing-read "Kill ring: "
+                               (cl-remove-duplicates kill-ring :test #'equal :from-end t)
+                               nil t)))
+    (when (and text (not (string-empty-p text)))
+      (vterm-send-string text))))
+
 (use-package vterm
   :ensure t
   :custom
   (vterm-always-compile-module t)
+  (vterm-max-scrollback 100000)
   :hook
   (vterm-mode . (lambda () (display-line-numbers-mode -1)))
   :config
   (dotimes (i 10)
     (define-key vterm-mode-map (kbd (format "M-%d" i)) nil))
   (define-key vterm-mode-map (kbd "M-TAB") nil)
+  (define-key vterm-mode-map (kbd "M-y") #'my/vterm-kill-ring-pop)
   (define-key vterm-mode-map (kbd "C-g") 'vterm-send-escape)
   (define-key vterm-mode-map (kbd "<wheel-up>")   #'scroll-down-command)
   (define-key vterm-mode-map (kbd "<wheel-down>") #'scroll-up-command))
