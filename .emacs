@@ -290,8 +290,6 @@
             (message "No URL found at point or in clipboard")))))))
 (global-set-key (kbd "C-c C-v") 'browse-url-smart)
 (global-set-key (kbd "C-x O") 'previous-multiframe-window)
-(global-set-key (kbd "C-.") 'next-multiframe-window)
-(global-set-key (kbd "C-,") 'previous-multiframe-window)
 (global-set-key (kbd "M-e") 'windmove-up)
 (global-set-key (kbd "M-n") 'windmove-down)
 (global-set-key (kbd "M-h") 'windmove-left)
@@ -299,6 +297,7 @@
 
 ;; Buffers & navigation
 (global-set-key (kbd "C-c n") 'next-buffer)
+(global-set-key (kbd "C-c p") 'previous-buffer)
 (global-set-key (kbd "C-c e") 'previous-buffer)
 (global-set-key (kbd "C-x K") 'recentf-open-most-recent-file)
 (global-set-key (kbd "C-x C-r") 'consult-recent-file)
@@ -350,8 +349,8 @@
          ("M-g I" . consult-imenu-multi)
          ("M-s d" . consult-find)
          ("M-s c" . consult-locate)
-         ("M-s M-s" . consult-grep)
-         ("C-c C-s" . consult-grep)
+         ("M-s M-s" . consult-ripgrep)
+         ("C-c C-s" . consult-ripgrep)
          ("M-s G" . consult-git-grep)
          ("M-s r" . consult-ripgrep)
          ("M-s l" . consult-line)
@@ -381,6 +380,25 @@
    consult-bookmark consult-recent-file consult-xref
    :preview-key '(:debounce 0.4 any))
   (setq consult-narrow-key "<"))
+
+(use-package embark
+  :ensure t
+  :bind (("C-." . embark-act)
+         ("C-h B" . embark-bindings))
+  :init
+  (setq prefix-help-command #'embark-prefix-help-command))
+
+(use-package embark-consult
+  :ensure t
+  :hook (embark-collect-mode . consult-preview-at-point-mode))
+
+(use-package avy
+  :ensure t
+  :bind ("C-," . avy-goto-char-timer))
+
+(use-package which-key
+  :ensure t
+  :config (which-key-mode))
 
 ;;;;;;;;;;;
 ;; Macros ;;
@@ -421,10 +439,10 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(cmake-mode company consult exec-path-from-shell flycheck
-                idle-highlight-mode kubernetes magit marginalia
-                multiple-cursors orderless treemacs vertico vterm
-                wgrep xclip)))
+   '(avy cmake-mode company consult embark embark-consult
+         exec-path-from-shell flycheck idle-highlight-mode kubernetes
+         magit marginalia multiple-cursors orderless treemacs vertico
+         vterm wgrep which-key xclip)))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
