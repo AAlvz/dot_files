@@ -312,6 +312,34 @@
   (interactive)
   (my/vterm-scroll-forward 3))
 
+;; `vterm-copy-mode' alone is not enough.  All it does to hold the screen
+;; still is send XOFF down the pty (`vterm-send-stop'), and a program in raw
+;; mode -- Claude Code, htop, anything full-screen -- has IXON off, so XOFF
+;; is never honoured.  Output keeps arriving, `vterm--filter' keeps calling
+;; `vterm--update', and every redraw drags point back to the cursor.  That is
+;; why scrolling looked dead even inside copy mode.
+;;
+;; Nothing upstream guards the redraw, so put the window back where it was
+;; after each one while copy mode is on.  Output still streams into the
+;; buffer underneath; the view just stops chasing it.
+(defun my/vterm-hold-view-during-redraw (orig buffer)
+  "Call ORIG on BUFFER, restoring the scroll position if browsing scrollback."
+  (if (not (and (buffer-live-p buffer)
+                (buffer-local-value 'vterm-copy-mode buffer)))
+      (funcall orig buffer)
+    (let ((pt (with-current-buffer buffer (point)))
+          (starts (mapcar (lambda (w) (cons w (window-start w)))
+                          (get-buffer-window-list buffer nil t))))
+      (funcall orig buffer)
+      (with-current-buffer buffer
+        (setq pt (min pt (point-max)))
+        (goto-char pt)
+        (pcase-dolist (`(,win . ,start) starts)
+          (when (window-live-p win)
+            (set-window-start win (min start (point-max)) t)
+            (set-window-point win pt)))))))
+(advice-add 'vterm--delayed-redraw :around #'my/vterm-hold-view-during-redraw)
+
 (use-package vterm
   :ensure t
   :custom
