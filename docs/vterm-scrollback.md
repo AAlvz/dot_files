@@ -6,19 +6,31 @@ running inside a vterm buffer. Nothing worked — not the wheel, not any key.
 
 Started 2026-08-26. Keep this file updated if the problem comes back.
 
-## Read this first: Claude Code's own output is not scrollable, ever
+## Read this first: Claude Code's own output is scrollable now — one env var
 
-Six real faults were found and fixed, and scrollback now works in vterm. But
-none of it makes the **Claude Code conversation** scrollable, because those
-lines are never written to the buffer in the first place.
+Six faults on the Emacs side were fixed first (below). They made *ordinary*
+vterm scrollback work — bash, `git log`, build output — but they did not make
+the **Claude Code conversation** scrollable, because Claude Code drew on the
+terminal's alternate screen and libvterm never pushes lines scrolled off the
+alternate screen into scrollback. That was the seventh fault, and the fix is on
+the shell side, not the Emacs side:
 
-Claude Code runs on the terminal's alternate screen, and libvterm never pushes
-lines scrolled off the alternate screen into scrollback. Measured in the live
-session: the `*vterm*` buffer held **38 lines in a 43-line window** after a long
+    export CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1    # .shell_common
+
+Measured before: `*vterm*` held **38 lines in a 43-line window** after a long
 conversation, with `vterm-max-scrollback` at 100000. "The top line is always 1"
-is the buffer honestly reporting that there is nothing above.
+was the buffer honestly reporting that there was nothing above.
 
-Demonstrated directly in a scratch vterm:
+Measured after, in a live session with the variable set: **111 buffer lines in a
+26-line window** — 85 lines of real scrollback, growing as the conversation
+streamed.
+
+Claude Code reads the variable at startup, so it only applies to sessions
+launched from a shell that already exports it. After changing it, open a new
+vterm (or `source ~/.shell_common`) before starting `claude`. To check from
+inside a session: `echo $CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN`.
+
+The libvterm measurements behind all this still hold, and are worth keeping:
 
 | Action | Buffer lines |
 |--------|--------------|
@@ -29,17 +41,14 @@ Demonstrated directly in a scratch vterm:
 
 100 lines emitted inside the alternate screen grew the buffer by one. The same
 100 lines on the primary screen grew it by 59. `\e[3J` was also ruled out as a
-cause — it does not clear this vterm's scrollback.
+cause — it does not clear this vterm's scrollback. So any program that *does*
+use the alternate screen (htop, `less` without `-X`) is still unscrollable in
+vterm by design; Claude Code is scrollable only because it now stays off it.
 
-So: nothing on the Emacs side can recover Claude Code history. It does not
-exist in Emacs. What does work:
+Independent of all of the above, the session transcript on disk stays complete
+and is updated live: `~/.claude/projects/<project>/<session-id>.jsonl`.
 
-- **Every other vterm use** — bash, `git log`, `less`, build output. Scrollback
-  accumulates normally there and the fixes below apply.
-- **The session transcript on disk**, which is complete and updated live:
-  `~/.claude/projects/<project>/<session-id>.jsonl`.
-
-## The six faults
+## The seven faults
 
 They stacked. Any one of them alone was enough to leave scrollback unreachable,
 which is why fixing them one at a time kept looking like no progress.
@@ -52,6 +61,7 @@ which is why fixing them one at a time kept looking like no progress.
 | 4 | `vterm-copy-mode` could not hold the screen either | `0b7d95c` |
 | 5 | Reloading `.emacs` from a vterm broke that buffer's `major-mode` | `ef24587` |
 | 6 | Reloading also switched line numbers back on in open vterms | `102d866` |
+| 7 | Claude Code drew on the alternate screen, so it left no scrollback | `90f629f` |
 
 ### 1. Wheel bound to event names a tty never sends
 

@@ -171,13 +171,16 @@ cd ~/Documents/tribu && git pull
 
 ## vterm scrollback
 
-Scrolling back through vterm history was broken by five stacked faults and took
+Scrolling back through vterm history was broken by seven stacked faults and took
 several rounds to fix. Before touching the vterm or mouse blocks in `.emacs`,
 read [docs/vterm-scrollback.md](docs/vterm-scrollback.md) — it records the
 causes, the dead ends already ruled out, and what is still open.
 
 Two things from it that bite immediately:
 
+- Claude Code's own conversation is scrollable only because `.shell_common` exports
+  `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1`. A `claude` started from a shell without it
+  draws on the alternate screen and leaves no scrollback at all.
 - `M-:` does not work inside a vterm (it types into the running program). Use `M-x`.
 - Never plain-`setq` a permanently buffer-local variable in `.emacs` — reloading
   the file from inside a vterm then clobbers that buffer. Use `setq-default`.
