@@ -36,8 +36,28 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (windmove-default-keybindings)
-(xterm-mouse-mode)
-(setq mouse-wheel-scroll-amount '(3 ((shift) . 1)))
+
+;; Mouse & scrolling on a text terminal (Windows Terminal, xterm, ...).
+;; A tty never sends `wheel-up'/`wheel-down' -- those are GUI-only event
+;; names.  xt-mouse turns wheel ticks into `mouse-4'/`mouse-5', so that is
+;; what has to be bound (see the vterm block below).
+;;
+;; Emacs also asks the terminal to report *every* mouse motion (\e[?1003h).
+;; That floods Emacs with events, and terminals that set the motion bit on
+;; wheel reports make Emacs decode a wheel tick as `mouse-movement', which is
+;; discarded -- the wheel then does nothing at all.  Ask for 1002 instead
+;; (motion only while a button is held); drag-select still works.  The advice
+;; has to be installed before the mode sends the sequence to the terminal.
+(defun my/xterm-mouse-no-motion-tracking (seq)
+  "Swap any-motion tracking (1003) for button-motion tracking (1002) in SEQ."
+  (replace-regexp-in-string "\\[\\?1003" "[?1002" seq))
+(advice-add 'xterm-mouse-tracking-enable-sequence :filter-return
+            #'my/xterm-mouse-no-motion-tracking)
+(advice-add 'xterm-mouse-tracking-disable-sequence :filter-return
+            #'my/xterm-mouse-no-motion-tracking)
+(xterm-mouse-mode 1)
+;; Set through customize so mwheel rebuilds its key bindings for the new value.
+(customize-set-variable 'mouse-wheel-scroll-amount '(3 ((shift) . 1)))
 (setq mouse-wheel-progressive-speed nil)
 (setq scroll-conservatively 101)
 (load-theme 'misterioso)
@@ -253,6 +273,45 @@
     (when (and text (not (string-empty-p text)))
       (vterm-send-string text))))
 
+;; Browsing vterm scrollback.  Every obvious route out of the box is a dead
+;; end: vterm forwards C-v, M-v and PageUp straight to the shell, and Windows
+;; Terminal swallows Shift-PageUp for its own scrollback, so it never reaches
+;; Emacs.  Worse, plain scrolling looks broken even when it works -- vterm
+;; moves point back to the cursor on every byte of output, so a redrawing TUI
+;; (Claude Code, htop, a spinner) yanks the window back to the prompt at once.
+;;
+;; `vterm-copy-mode' is the way out: it detaches the buffer from the live
+;; terminal, so the view stays where it is put.  Scroll back and we enter it
+;; automatically; scroll forward past the end and we leave it again.
+(defun my/vterm-scroll-back (&optional lines)
+  "Scroll LINES back through vterm scrollback, a screenful by default."
+  (interactive)
+  (unless (bound-and-true-p vterm-copy-mode)
+    (vterm-copy-mode 1))
+  (condition-case nil
+      (scroll-down-command lines)
+    (beginning-of-buffer (goto-char (point-min)))))
+
+(defun my/vterm-scroll-forward (&optional lines)
+  "Scroll LINES forward, reattaching to the live terminal at the prompt."
+  (interactive)
+  (condition-case nil
+      (scroll-up-command lines)
+    (end-of-buffer
+     (goto-char (point-max))
+     (when (bound-and-true-p vterm-copy-mode)
+       (vterm-copy-mode -1)))))
+
+(defun my/vterm-wheel-up ()
+  "Scroll back three lines, for one tick of the mouse wheel."
+  (interactive)
+  (my/vterm-scroll-back 3))
+
+(defun my/vterm-wheel-down ()
+  "Scroll forward three lines, for one tick of the mouse wheel."
+  (interactive)
+  (my/vterm-scroll-forward 3))
+
 (use-package vterm
   :ensure t
   :custom
@@ -266,8 +325,28 @@
   (define-key vterm-mode-map (kbd "M-TAB") nil)
   (define-key vterm-mode-map (kbd "M-y") #'my/vterm-kill-ring-pop)
   (define-key vterm-mode-map (kbd "C-g") 'vterm-send-escape)
-  (define-key vterm-mode-map (kbd "<wheel-up>")   #'scroll-down-command)
-  (define-key vterm-mode-map (kbd "<wheel-down>") #'scroll-up-command))
+  ;; Keyboard: Alt-PageUp/PageDown.  Windows Terminal leaves these alone,
+  ;; unlike Shift-PageUp, and vterm does not forward them to the shell.
+  (define-key vterm-mode-map (kbd "M-<prior>") #'my/vterm-scroll-back)
+  (define-key vterm-mode-map (kbd "M-<next>")  #'my/vterm-scroll-forward)
+  (define-key vterm-mode-map (kbd "S-<prior>") #'my/vterm-scroll-back)
+  (define-key vterm-mode-map (kbd "S-<next>")  #'my/vterm-scroll-forward)
+  ;; Wheel: mouse-4/mouse-5 on a tty, wheel-up/wheel-down under a GUI.
+  (define-key vterm-mode-map (kbd "<mouse-4>")    #'my/vterm-wheel-up)
+  (define-key vterm-mode-map (kbd "<mouse-5>")    #'my/vterm-wheel-down)
+  (define-key vterm-mode-map (kbd "<wheel-up>")   #'my/vterm-wheel-up)
+  (define-key vterm-mode-map (kbd "<wheel-down>") #'my/vterm-wheel-down)
+  ;; The same keys have to keep working once copy mode is on, or scrolling
+  ;; back would be a one-way trip.  `q' leaves copy mode without copying.
+  (define-key vterm-copy-mode-map (kbd "M-<prior>")   #'my/vterm-scroll-back)
+  (define-key vterm-copy-mode-map (kbd "M-<next>")    #'my/vterm-scroll-forward)
+  (define-key vterm-copy-mode-map (kbd "S-<prior>")   #'my/vterm-scroll-back)
+  (define-key vterm-copy-mode-map (kbd "S-<next>")    #'my/vterm-scroll-forward)
+  (define-key vterm-copy-mode-map (kbd "<mouse-4>")   #'my/vterm-wheel-up)
+  (define-key vterm-copy-mode-map (kbd "<mouse-5>")   #'my/vterm-wheel-down)
+  (define-key vterm-copy-mode-map (kbd "<wheel-up>")  #'my/vterm-wheel-up)
+  (define-key vterm-copy-mode-map (kbd "<wheel-down>") #'my/vterm-wheel-down)
+  (define-key vterm-copy-mode-map (kbd "q") #'vterm-copy-mode))
 
 (use-package cmake-mode
   :ensure t)
@@ -334,14 +413,28 @@
 (global-set-key (kbd "C-c e") 'previous-buffer)
 (global-set-key (kbd "C-x K") 'recentf-open-most-recent-file)
 (global-set-key (kbd "C-x C-r") 'consult-recent-file)
-;; Terminal Emacs (emacsclient -nw) cannot tell C-<return> from RET: both arrive
-;; as CR. Windows Terminal is configured to send the xterm modifyOtherKeys
-;; sequence for ctrl+enter instead (see settings.json, User.sendInput.ctrlEnter);
-;; decode it back here. tty-setup-hook runs per text terminal, which is what
-;; emacsclient -nw needs -- input-decode-map is terminal-local.
+;; Text terminals cannot encode most Ctrl/Shift chords: C-<return> and RET both
+;; arrive as a bare CR, and C-< has no encoding at all. Terminals that support
+;; xterm's modifyOtherKeys send "ESC [ 27 ; <modifier> ; <keycode> ~" instead,
+;; so decode those back into real Emacs key events here.
+;;
+;; This stays cross-platform: a terminal that never emits these sequences simply
+;; never triggers the entries, so the block is inert on macOS and native Linux.
+;; The emitting side is configured per terminal emulator, not per dotfile --
+;; on Windows Terminal see User.sendInput.* in its settings.json.
+(defvar my/tty-key-sequences
+  '(("\e[27;5;13~" . "C-<return>")   ; ctrl+enter  -> vterm
+    ("\e[27;6;44~" . "C-<"))         ; ctrl+shift+, -> mc/mark-previous-like-this
+  "Alist of modifyOtherKeys escape sequences to the key each should produce.")
+
 (defun my/tty-setup-extra-keys ()
   "Teach text terminals the key sequences GUI Emacs gets for free."
-  (define-key input-decode-map "\e[27;5;13~" (kbd "C-<return>")))
+  (dolist (pair my/tty-key-sequences)
+    (define-key input-decode-map (car pair) (kbd (cdr pair)))))
+
+;; tty-setup-hook runs once per text terminal, which is what emacsclient needs:
+;; input-decode-map is terminal-local, so a global setq would only reach the
+;; first frame.
 (add-hook 'tty-setup-hook #'my/tty-setup-extra-keys)
 
 (global-set-key (kbd "C-<return>") 'vterm)
@@ -357,6 +450,11 @@
 (global-set-key (kbd "C-c C-n") 'mc/mark-next-like-this)
 (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
 (global-set-key (kbd "C-c C-a") 'mc/mark-all-like-this)
+;; Terminal-safe fallbacks for chords a terminal may not deliver. C-< needs the
+;; modifyOtherKeys setup above; Alt+Tab never reaches Emacs on Windows at all,
+;; since the OS claims it before the terminal sees it.
+(global-set-key (kbd "C-c C-p") 'mc/mark-previous-like-this) ; = C-<
+(global-set-key (kbd "C-c TAB") 'tab-recent)                 ; = M-TAB
 
 ;;;;;;;;;;;;
 ;; Consult ;;
