@@ -86,6 +86,39 @@
   :config
   (xclip-mode 1))
 
+;; WSL clipboard bridge - self-activating, inert on macOS and native Linux.
+;; Under WSLg the xclip setup above already reaches the Windows clipboard; these
+;; helpers are the fallback for WSL without WSLg, or before xclip is installed.
+(defconst my/wsl-p
+  (and (eq system-type 'gnu/linux)
+       (or (getenv "WSL_DISTRO_NAME")
+           (and (file-readable-p "/proc/version")
+                (with-temp-buffer
+                  (insert-file-contents "/proc/version")
+                  (string-match-p "[Mm]icrosoft" (buffer-string)))))
+       t)
+  "Non-nil when running under the Windows Subsystem for Linux.")
+
+(when my/wsl-p
+  (defun wsl-copy (start end)
+    "Copy region between START and END to the Windows clipboard via clip.exe."
+    (interactive "r")
+    (copy-region-as-kill start end)
+    ;; Send to clip.exe without popping up a *Shell Command Output* window.
+    (call-process-region start end "clip.exe")
+    (message "Copied to Windows clipboard"))
+
+  (defun wsl-paste-from-clipboard ()
+    "Insert the Windows clipboard contents, stripping CRLF line endings."
+    (interactive)
+    (insert (replace-regexp-in-string
+             "\r" ""
+             (shell-command-to-string
+              "powershell.exe -NoProfile -Command Get-Clipboard"))))
+
+  (global-set-key (kbd "C-c x") #'wsl-copy)
+  (global-set-key (kbd "C-c v") #'wsl-paste-from-clipboard))
+
 ;; Backups
 (setq backup-directory-alist `(("." . "~/.emacs_saves")))
 (setq version-control t
