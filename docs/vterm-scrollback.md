@@ -8,7 +8,7 @@ Started 2026-08-26. Keep this file updated if the problem comes back.
 
 ## Read this first: Claude Code's own output is not scrollable, ever
 
-Five real faults were found and fixed, and scrollback now works in vterm. But
+Six real faults were found and fixed, and scrollback now works in vterm. But
 none of it makes the **Claude Code conversation** scrollable, because those
 lines are never written to the buffer in the first place.
 
@@ -39,7 +39,7 @@ exist in Emacs. What does work:
 - **The session transcript on disk**, which is complete and updated live:
   `~/.claude/projects/<project>/<session-id>.jsonl`.
 
-## The five faults
+## The six faults
 
 They stacked. Any one of them alone was enough to leave scrollback unreachable,
 which is why fixing them one at a time kept looking like no progress.
@@ -51,7 +51,7 @@ which is why fixing them one at a time kept looking like no progress.
 | 3 | Redraw dragged the window back on every byte of output | `0b7d95c` |
 | 4 | `vterm-copy-mode` could not hold the screen either | `0b7d95c` |
 | 5 | Reloading `.emacs` from a vterm broke that buffer's `major-mode` | `ef24587` |
-| 6 | Reloading also switched line numbers back on in open vterms | `line-numbers commit` |
+| 6 | Reloading also switched line numbers back on in open vterms | `102d866` |
 
 ### 1. Wheel bound to event names a tty never sends
 
@@ -116,6 +116,17 @@ so this hazard is not lurking anywhere else — but check again before adding on
 
     (local-variable-if-set-p 'some-var)   ; non-nil means don't plain-setq it
 
+### 6. Reload switched line numbers back on in open vterms
+
+The `vterm-mode` hook that disables `display-line-numbers-mode` only runs when a
+vterm buffer is created. Reloading re-ran `global-display-line-numbers-mode`,
+which switched them on in terminals that were already open. The globalized mode
+now skips vterm buffers outright, via `:before-while` advice on
+`display-line-numbers--turn-on`, so reloads are clean.
+
+It was the line numbers that finally cracked the case: they showed the top
+visible line was 1, which is what identified the missing scrollback.
+
 ## Dead ends — already ruled out, don't re-tread
 
 - **Mouse events not reaching Emacs.** They do. `xterm-mouse-mode` is on, the
@@ -158,14 +169,6 @@ Against a vterm printing a line every 50 ms, standing in for a repainting TUI:
   reloaded — scrolling that pre-existing buffer held at `1609`.
 - Finally in the real session (pid 3167): 229 lines of scrollback, scrolled back
   to `window-start 2769`, held across 3 s of streaming output.
-
-### 6. Reload switched line numbers back on in open vterms
-
-The `vterm-mode` hook that disables `display-line-numbers-mode` only runs when a
-vterm buffer is created. Reloading re-ran `global-display-line-numbers-mode`,
-which switched them on in terminals that were already open. The globalized mode
-now skips vterm buffers outright, via `:before-while` advice on
-`display-line-numbers--turn-on`, so reloads are clean.
 
 ## Still open
 
