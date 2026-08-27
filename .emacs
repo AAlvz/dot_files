@@ -334,6 +334,16 @@
 (global-set-key (kbd "C-c e") 'previous-buffer)
 (global-set-key (kbd "C-x K") 'recentf-open-most-recent-file)
 (global-set-key (kbd "C-x C-r") 'consult-recent-file)
+;; Terminal Emacs (emacsclient -nw) cannot tell C-<return> from RET: both arrive
+;; as CR. Windows Terminal is configured to send the xterm modifyOtherKeys
+;; sequence for ctrl+enter instead (see settings.json, User.sendInput.ctrlEnter);
+;; decode it back here. tty-setup-hook runs per text terminal, which is what
+;; emacsclient -nw needs -- input-decode-map is terminal-local.
+(defun my/tty-setup-extra-keys ()
+  "Teach text terminals the key sequences GUI Emacs gets for free."
+  (define-key input-decode-map "\e[27;5;13~" (kbd "C-<return>")))
+(add-hook 'tty-setup-hook #'my/tty-setup-extra-keys)
+
 (global-set-key (kbd "C-<return>") 'vterm)
 
 ;; Code folding
