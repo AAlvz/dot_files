@@ -1,0 +1,99 @@
+# .shell_common — shared shell config for bash and zsh, macOS and Linux/WSL.
+#
+# This is the single source of truth for aliases, environment, and helpers.
+# Both .zshrc and .bashrc source it. Keep it POSIX-compatible: no bashisms,
+# no zshisms. Shell-specific setup (zsh bindkey, bash completion) stays in
+# the respective rc file; machine-specific setup goes in ~/.shell_local.
+
+# ---------------------------------------------------------------- platform --
+# Detect once, reuse below, so the rest of the file stays branch-free.
+case "$(uname -s)" in
+  Darwin) SHELL_OS=macos ;;
+  Linux)  if grep -qi microsoft /proc/version 2>/dev/null; then
+            SHELL_OS=wsl
+          else
+            SHELL_OS=linux
+          fi ;;
+  *)      SHELL_OS=unknown ;;
+esac
+export SHELL_OS
+
+# ---------------------------------------------------------------------- ls --
+# GNU ls uses --color; BSD/macOS ls uses -G. Pick whichever this box has so
+# the `ls` alias and the cd() helper below work identically on both.
+if ls --color=auto / >/dev/null 2>&1; then
+  LS_COLOR_FLAG='--color=auto'
+else
+  LS_COLOR_FLAG='-G'
+fi
+export LS_COLOR_FLAG
+alias ls="ls $LS_COLOR_FLAG"
+alias ll="ls -lah $LS_COLOR_FLAG"
+alias l='ls -CF'
+alias grep='grep --color=auto'
+
+# cd and list, portably.
+cd() {
+  builtin cd "$@" && ls -la $LS_COLOR_FLAG
+}
+
+# ------------------------------------------------------------------- editor --
+# emacsclient reuses a running Emacs; -a "" starts a daemon if none exists.
+# Identical on every platform, which is the whole point.
+export EDITOR='emacsclient -nw -a ""'
+export VISUAL="$EDITOR"
+export KUBE_EDITOR="$EDITOR"
+alias e='emacsclient -nw -a ""'
+alias kill-emacs='emacsclient -e "(kill-emacs)"'
+
+# --------------------------------------------------------------------- path --
+export GOPATH="$HOME/go-projects"
+PATH="$PATH:$GOPATH/bin"
+PATH="$HOME/.local/bin:$PATH"
+export PATH
+
+# ---------------------------------------------------------------------- env --
+export TERM=xterm-256color
+export CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1
+export OKTA_TEAM=devops-sso
+
+# ------------------------------------------------------------------ aliases --
+alias c='claude'
+alias k='kubectl'
+alias tp='terragrunt plan'
+
+# kubernetes
+alias kga='kubectl get all -n'
+alias kgn='kubectl get ns'
+alias kg='kubectl get ns | grep '
+alias kgp='kubectl get pods'
+alias kn='kubectl config set-context --current --namespace '
+alias knotrunning='kubectl get pods --all-namespaces --field-selector=status.phase!=Running -o wide'
+
+# Cluster shortcuts live in .dev_environment/bash_functions (work laptop only),
+# so define the aliases that call them only when that file is actually present.
+if [ -f "$HOME/.dev_environment/bash_functions" ]; then
+  . "$HOME/.dev_environment/bash_functions"
+  alias stage='k8s_se_stage_2'
+  alias prod='k8s_se_prod_2'
+  alias ops='k8s_zgny_ops'
+  alias oestage='k8s_oe_stage'
+  alias oes='k8s_oe_stage'
+  alias oeprod='k8s_oe_prod'
+  alias oep='k8s_oe_prod'
+fi
+
+# ------------------------------------------------------------------ per-OS --
+if [ "$SHELL_OS" = macos ]; then
+  alias emacsu='/Applications/Emacs.app/Contents/MacOS/Emacs'
+fi
+
+if [ "$SHELL_OS" = wsl ] || [ "$SHELL_OS" = linux ]; then
+  # Copy the terminal's PRIMARY selection to the CLIPBOARD.
+  alias clip='xclip -o | xclip -sel clip && echo "Copied to clipboard"'
+fi
+
+# ------------------------------------------------------------- machine-local --
+# Untracked, per-machine: SDK paths, nvm, cargo, credentials. Never committed,
+# so the tracked config above stays identical on every box.
+[ -f "$HOME/.shell_local" ] && . "$HOME/.shell_local"

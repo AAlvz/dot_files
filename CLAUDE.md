@@ -13,19 +13,39 @@ git clone git@github.com:AAlvz/dot_files.git ~/dot_files
 
 ### 2. Symlink dotfiles
 ```bash
-# macOS
+# Every machine (.shell_common is the shared shell config — link it first)
+ln -sf ~/dot_files/.shell_common ~/.shell_common
 ln -sf ~/dot_files/.emacs ~/.emacs
-ln -sf ~/dot_files/.zshrc ~/.zshrc
 ln -sf ~/dot_files/.gitconfig ~/.gitconfig
 
-# Linux (additional)
+# macOS (zsh)
+ln -sf ~/dot_files/.zshrc ~/.zshrc
+
+# Linux / WSL (bash)
 ln -sf ~/dot_files/.bashrc ~/.bashrc
 ln -sf ~/dot_files/.bash_aliases ~/.bash_aliases
 ln -sf ~/dot_files/.bash_profile ~/.bash_profile
-ln -sf ~/dot_files/.Xresources ~/.Xresources
 ln -sf ~/dot_files/.vimrc ~/.vimrc
+
+# Linux desktop only (not WSL)
+ln -sf ~/dot_files/.Xresources ~/.Xresources
 mkdir -p ~/.i3 && ln -sf ~/dot_files/.i3/config ~/.i3/config
 ```
+
+**One config, every machine.** `.shell_common` holds all shared shell setup —
+aliases, `EDITOR`, PATH, kubectl helpers — and is sourced by both `.zshrc` and
+`.bashrc`, so macOS/zsh and Linux/WSL/bash behave identically. Do not add
+portable config to `.zshrc` or `.bashrc`; it belongs in `.shell_common`.
+
+Anything that exists on only one machine (SDK paths, nvm, cargo, credentials)
+goes in untracked per-machine files, which `.shell_common` and the rc files
+source if present:
+
+| File | Sourced by | Purpose |
+|------|-----------|---------|
+| `~/.shell_local` | `.shell_common` (both shells) | Machine-specific, shell-agnostic |
+| `~/.bashrc.local` | `.bashrc` | Machine-specific bash only |
+| `~/.zshrc.local` | `.zshrc` | Machine-specific zsh only |
 
 ### 3. Emacs setup
 ```bash
@@ -50,8 +70,11 @@ C2 is the Ubuntu XPS 13 used to run the Tribu app. Connection details:
 |---------|------|----|------|-----------------|
 | C1 (Mac) | Editing, git, Claude Code | 192.168.1.90 | alfonsoa | mac2 |
 | C2 (Ubuntu XPS 13) | Running Tribu app, dev server | 192.168.1.88 | user | alfonso |
+| C3 (`LAPTOP-MCEGUI5B`) | WSL2 Ubuntu-20.04 under Windows Terminal; local editing | WSL NAT (not on the LAN) | user | — |
 
-Both directions have key-based SSH auth configured. IPs may change if DHCP reassigns — check with `hostname -I` (Linux) or `ipconfig getifaddr en0` (macOS).
+C3 is a standalone WSL machine: it is **not** part of the C1/C2 SSH pair and has no LAN-reachable address, so it syncs through git only. It runs **bash**, not zsh — zsh is not installed there.
+
+Both directions between C1 and C2 have key-based SSH auth configured. IPs may change if DHCP reassigns — check with `hostname -I` (Linux) or `ipconfig getifaddr en0` (macOS).
 
 **From C1 (Mac) → C2:**
 ```bash
@@ -128,7 +151,8 @@ cd ~/Documents/tribu && git pull
 ## Repository structure
 
 - `.emacs` — Main Emacs config (symlinked from `~/.emacs`)
-- `.zshrc` — Zsh config for macOS (symlinked from `~/.zshrc`)
+- `.shell_common` — **Shared shell config for bash and zsh, all platforms.** Portable aliases/env go here
+- `.zshrc` — Zsh entry point (macOS); sources `.shell_common`, plus zsh-only setup
 - `.emacs.d/lisp/` — Manual elisp packages (popon, subr-x, swap-windows, etc.)
 - `.emacs.d/elpa/` — Auto-installed packages (not manually managed)
 - `.i3/` — i3 window manager config (Linux)
@@ -147,6 +171,15 @@ cd ~/Documents/tribu && git pull
 ## Cross-platform notes
 
 - The `.emacs` file works on both macOS and Linux without OS-specific tweaks
+- **Terminal keybindings:** text terminals cannot encode chords like `C-<return>` or `C-<` —
+  they arrive as plain `RET`, or as nothing. `.emacs` decodes xterm `modifyOtherKeys`
+  sequences (`ESC [ 27 ; mod ; code ~`) back into real key events via `my/tty-key-sequences`
+  and `tty-setup-hook`. The block is inert on terminals that never send those sequences, so
+  it stays cross-platform. The *emitting* side is configured in the terminal emulator, not in
+  this repo — on Windows Terminal, `sendInput` actions in its `settings.json`
+  (`User.sendInput.ctrlEnter`, `User.sendInput.ctrlShiftComma`). Every such chord also has a
+  terminal-safe fallback (`C-c C-p`, `C-c TAB`) that works with no terminal config at all.
+  Note `M-TAB` can never reach Emacs on Windows: the OS claims Alt+Tab first
 - Clipboard: `select-enable-clipboard` handles macOS GUI and X11 natively; `xclip` package handles terminal mode on Linux (harmless on macOS)
 - `exec-path-from-shell` ensures GUI Emacs inherits shell PATH on both OSes
 - Codeium is commented out but kept as a ready-to-uncomment block (requires cloning the repo into `~/.emacs.d/codeium.el/`)

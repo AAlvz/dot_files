@@ -111,3 +111,10 @@ fi
 
 # Caps lock as ctrl
 #/bin/sh /home/$USER/scripts/keyboard/capslock_as_ctrl
+
+# Shared config for bash and zsh (aliases, editor, PATH). Single source of
+# truth, sourced last so it wins over the distro defaults above.
+[ -f "$HOME/.shell_common" ] && . "$HOME/.shell_common"
+
+# Machine-specific, untracked: SDK paths, nvm, cargo, credentials.
+[ -f "$HOME/.bashrc.local" ] && . "$HOME/.bashrc.local"

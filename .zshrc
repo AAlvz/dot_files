@@ -1,77 +1,24 @@
 #!/bin/zsh
-export OKTA_TEAM=devops-sso
-# TURNOFF dockerbox
-# source $HOME/.dev_environment/bash_functions
+# .zshrc — zsh entry point (macOS primarily).
+# Everything portable lives in .shell_common, shared with .bashrc.
+# Only zsh-specific setup belongs below.
 
-## GOLANG setup
-export GOPATH=$HOME/go-projects
-export PATH=$PATH:$GOPATH/bin
-
-# ## Make ENVKEY WORK
-# export SE_AWS_PRODUCTION_ENVKEY=ek2RHQAPnsX9LRjpE3rxbRLV-pAbt4hfYFyRR7ahajL3jKa
-
-# ENVKEY=ek2RHQAPnsX9LRjpE3rxbRLV-pAbt4hfYFyRR7ahajL3jKa
-
-#export PS1="%n@%m %~ %# "
-#export PS1="%* %1~ # "
-#export PS1=$'\n%* %1~ # '
-
-
-# export PS1="%* # %# "
-
-cd() {
-    builtin cd "$@" && ls -la --color
-}
-
-export TERM=xterm-256color
-
-#alias c='claude --ax-screen-reader'
-export CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1
-alias c='claude'
-alias e='emacsclient -nw -a ""'
-alias kill-emacs='emacsclient -e "(kill-emacs)"'
-alias k='kubectl'
-
-# Use emacsclient for everything — opens in running Emacs, falls back to new Emacs
-export EDITOR="emacsclient -nw -a ''"
-export VISUAL="emacsclient -nw -a ''"
-export KUBE_EDITOR="emacsclient -nw -a ''"
-alias tp='terragrunt plan'
-export LS_OPTIONS='--color=auto'
-alias ls='ls $LS_OPTIONS'
-export OKTA_TEAM=devops-sso
-source $HOME/.dev_environment/bash_functions
-alias emacsu='$(/Applications/Emacs.app/Contents/MacOS/Emacs "$@")'
-
-
-alias stage='k8s_se_stage_2'
-alias prod='k8s_se_prod_2'
-alias ops='k8s_zgny_ops'
-alias oestage='k8s_oe_stage'
-alias oes='k8s_oe_stage'
-alias oeprod='k8s_oe_prod'
-alias oep='k8s_oe_prod'
-
-# k8s aliases:
-
-alias kga='kubectl get all -n'
-alias kgn='kubectl get ns'
-alias kg='kubectl get ns | grep '
-alias kgp='kubectl get pods'
-alias knotrunning='kubectl get pods --all-namespaces --field-selector=status.phase!=Running -o wide'
-alias kn='kubectl config set-context --current --namespace '
-
-# # Added by Antigravity
-# export PATH="/Users/alfonsoa/.antigravity/antigravity/bin:$PATH"
-# eval "$(rbenv init -)"
-
-# alias dk='se dk'
-
-export PATH="$HOME/.local/bin:$PATH"
+[ -f "$HOME/.shell_common" ] && . "$HOME/.shell_common"
 
 # Emacs-style line editing (enables Alt+., Alt+b, Alt+f, etc.)
 bindkey -e
 bindkey '\e.' insert-last-word
 
-# Autosuggestions
-source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+# Autosuggestions — path differs by Homebrew prefix (Apple Silicon vs Intel)
+# and by distro, so probe the known locations instead of hardcoding one.
+for _zsh_autosuggest in \
+  /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh \
+  /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh \
+  /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+do
+  [ -f "$_zsh_autosuggest" ] && . "$_zsh_autosuggest" && break
+done
+unset _zsh_autosuggest
+
+# Machine-specific zsh settings, untracked.
+[ -f "$HOME/.zshrc.local" ] && . "$HOME/.zshrc.local"
