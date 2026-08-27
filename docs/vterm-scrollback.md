@@ -6,6 +6,39 @@ running inside a vterm buffer. Nothing worked — not the wheel, not any key.
 
 Started 2026-08-26. Keep this file updated if the problem comes back.
 
+## Read this first: Claude Code's own output is not scrollable, ever
+
+Five real faults were found and fixed, and scrollback now works in vterm. But
+none of it makes the **Claude Code conversation** scrollable, because those
+lines are never written to the buffer in the first place.
+
+Claude Code runs on the terminal's alternate screen, and libvterm never pushes
+lines scrolled off the alternate screen into scrollback. Measured in the live
+session: the `*vterm*` buffer held **38 lines in a 43-line window** after a long
+conversation, with `vterm-max-scrollback` at 100000. "The top line is always 1"
+is the buffer honestly reporting that there is nothing above.
+
+Demonstrated directly in a scratch vterm:
+
+| Action | Buffer lines |
+|--------|--------------|
+| baseline | 43 |
+| `seq 1 100` | 102 |
+| `printf '\e[?1049h'; seq 1 100; printf '\e[?1049l'` | **103** |
+| `seq 1 100; printf '\e[3J'` | 204 |
+
+100 lines emitted inside the alternate screen grew the buffer by one. The same
+100 lines on the primary screen grew it by 59. `\e[3J` was also ruled out as a
+cause — it does not clear this vterm's scrollback.
+
+So: nothing on the Emacs side can recover Claude Code history. It does not
+exist in Emacs. What does work:
+
+- **Every other vterm use** — bash, `git log`, `less`, build output. Scrollback
+  accumulates normally there and the fixes below apply.
+- **The session transcript on disk**, which is complete and updated live:
+  `~/.claude/projects/<project>/<session-id>.jsonl`.
+
 ## The five faults
 
 They stacked. Any one of them alone was enough to leave scrollback unreachable,
@@ -17,7 +50,8 @@ which is why fixing them one at a time kept looking like no progress.
 | 2 | Every keyboard route swallowed before Emacs saw it | `8c1061a` |
 | 3 | Redraw dragged the window back on every byte of output | `0b7d95c` |
 | 4 | `vterm-copy-mode` could not hold the screen either | `0b7d95c` |
-| 5 | Reloading `.emacs` from a vterm broke that buffer's `major-mode` | `docs commit` |
+| 5 | Reloading `.emacs` from a vterm broke that buffer's `major-mode` | `ef24587` |
+| 6 | Reloading also switched line numbers back on in open vterms | `line-numbers commit` |
 
 ### 1. Wheel bound to event names a tty never sends
 
@@ -91,8 +125,10 @@ so this hazard is not lurking anywhere else — but check again before adding on
   that would.
 - **No scrollback in the buffer.** A plain `seq 1 300` in a vterm produced 303
   buffer lines. Scrollback accumulation works fine.
-- **Claude Code using the alternate screen.** Its binary contains `\e[?1049h`,
-  but a fresh session's small buffer was just a fresh session, not altscreen.
+- ~~**Claude Code using the alternate screen.**~~ This one turned out to be
+  correct, and is the answer — see the top of this file. It was wrongly
+  dismissed early because a small buffer was read as "fresh session" rather
+  than "no scrollback ever".
 
 ## Gotchas worth remembering
 
@@ -122,6 +158,14 @@ Against a vterm printing a line every 50 ms, standing in for a repainting TUI:
   reloaded — scrolling that pre-existing buffer held at `1609`.
 - Finally in the real session (pid 3167): 229 lines of scrollback, scrolled back
   to `window-start 2769`, held across 3 s of streaming output.
+
+### 6. Reload switched line numbers back on in open vterms
+
+The `vterm-mode` hook that disables `display-line-numbers-mode` only runs when a
+vterm buffer is created. Reloading re-ran `global-display-line-numbers-mode`,
+which switched them on in terminals that were already open. The globalized mode
+now skips vterm buffers outright, via `:before-while` advice on
+`display-line-numbers--turn-on`, so reloads are clean.
 
 ## Still open
 

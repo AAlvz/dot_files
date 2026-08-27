@@ -90,6 +90,15 @@
 (add-hook 'find-file-hook 'normal-mode)
 (show-paren-mode 1)
 (setq column-number-mode t)
+;; The vterm-mode hook below turns line numbers off, but only when a vterm
+;; buffer is created.  Reloading this file re-runs the globalized mode, which
+;; switches them back on in terminals that are already open.  Keep the global
+;; mode out of vterm buffers entirely instead.
+(defun my/line-numbers-not-in-vterm ()
+  "Return nil in vterm buffers, so the globalized mode skips them."
+  (not (derived-mode-p 'vterm-mode)))
+(advice-add 'display-line-numbers--turn-on :before-while
+            #'my/line-numbers-not-in-vterm)
 (global-display-line-numbers-mode)
 (electric-pair-mode 1)
 (electric-indent-mode 1)
