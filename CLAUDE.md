@@ -167,6 +167,20 @@ cd ~/Documents/tribu && git pull
 - `EDITOR`, `VISUAL`, `KUBE_EDITOR` all set to `emacsclient -a emacs` in `.zshrc`
 - Use `C-x #` (`server-edit`) to finish editing when a program is waiting (kubectl edit, git commit, crontab -e, etc.)
 - For normal file editing (opened manually), use Emacs as usual — no need for `C-x #`
+- Only the first Emacs to start wins the server socket; other `emacs -nw` instances are unreachable by `emacsclient`
+
+## vterm scrollback
+
+Scrolling back through vterm history was broken by five stacked faults and took
+several rounds to fix. Before touching the vterm or mouse blocks in `.emacs`,
+read [docs/vterm-scrollback.md](docs/vterm-scrollback.md) — it records the
+causes, the dead ends already ruled out, and what is still open.
+
+Two things from it that bite immediately:
+
+- `M-:` does not work inside a vterm (it types into the running program). Use `M-x`.
+- Never plain-`setq` a permanently buffer-local variable in `.emacs` — reloading
+  the file from inside a vterm then clobbers that buffer. Use `setq-default`.
 
 ## Cross-platform notes
 

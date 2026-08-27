@@ -79,7 +79,14 @@
 (save-place-mode 1)
 (put 'set-goal-column 'disabled nil)
 (winner-mode 1)
-(setq major-mode 'text-mode)
+;; `setq-default', NOT `setq'.  `major-mode' is permanently buffer-local, so a
+;; plain setq here sets it for whatever buffer happens to be current -- and when
+;; this file is reloaded with M-x load-file from inside a vterm, that is the
+;; vterm buffer.  Its major-mode then reads as `text-mode' while everything else
+;; about it stays a terminal, and `vterm-copy-mode' refuses to start with
+;; "You cannot enable vterm-copy-mode outside vterm buffers", which takes every
+;; scrollback command down with it.
+(setq-default major-mode 'text-mode)
 (add-hook 'find-file-hook 'normal-mode)
 (show-paren-mode 1)
 (setq column-number-mode t)
