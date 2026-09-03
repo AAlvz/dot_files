@@ -27,7 +27,15 @@
 (eval-when-compile
   (require 'use-package))
 
-(add-to-list 'load-path "~/.emacs.d/lisp/")
+;; Append, do not prepend.  `add-to-list' puts a new entry at the FRONT by
+;; default, and this directory carries vendored copies of libraries that Emacs
+;; and ELPA also ship -- rx, cl-lib, subr-x, idle-highlight-mode.  In front,
+;; those copies win over both, so every machine was silently running a 2011
+;; idle-highlight and a 2024 rx regardless of its own Emacs version, and the
+;; ELPA package installed right next to it never got used.  Appended, the
+;; directory becomes a fallback: it supplies only what nothing else provides
+;; (swap-windows, popon, buffer-move, multi-term, puppet-mode, ...).
+(add-to-list 'load-path "~/.emacs.d/lisp/" t)
 (load "popon")
 (load "subr-x")
 
