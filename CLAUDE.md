@@ -68,11 +68,14 @@ C2 is the Ubuntu XPS 13 used to run the Tribu app. Connection details:
 
 | Machine | Role | IP | User | SSH key comment |
 |---------|------|----|------|-----------------|
-| C1 (Mac) | Editing, git, Claude Code | 192.168.1.90 | alfonsoa | mac2 |
+| C1 (Mac) | Editing, git, Claude Code | 192.168.1.78 | alfonsoa | mac2 |
 | C2 (Ubuntu XPS 13) | Running Tribu app, dev server | 192.168.1.88 | user | alfonso |
-| C3 (`LAPTOP-MCEGUI5B`) | WSL2 Ubuntu-20.04 under Windows Terminal; local editing | WSL NAT (not on the LAN) | user | — |
+| C3 (`LAPTOP-MCEGUI5B`) | WSL2 Ubuntu-20.04 under Windows Terminal; local editing | 192.168.1.80 (Ethernet) / .81 (Wi-Fi) | user | — |
 
-C3 is a standalone WSL machine: it is **not** part of the C1/C2 SSH pair and has no LAN-reachable address, so it syncs through git only. It runs **bash**, not zsh — zsh is not installed there.
+C3 runs **bash**, not zsh — zsh is not installed there. It used to be unreachable
+over the LAN (WSL2 sits behind a NAT), but it now accepts SSH like the others —
+see [Reaching C3 (WSL) over the LAN](#reaching-c3-wsl-over-the-lan) below. C3
+takes the *host* Windows IP, not a WSL-internal `172.x` one.
 
 Both directions between C1 and C2 have key-based SSH auth configured. IPs may change if DHCP reassigns — check with `hostname -I` (Linux) or `ipconfig getifaddr en0` (macOS).
 
@@ -85,10 +88,64 @@ ssh user@192.168.1.88 'hostname && uname -a'
 
 **From C2 (Ubuntu) → C1:**
 ```bash
-ssh-keyscan -t ed25519 192.168.1.90 >> ~/.ssh/known_hosts 2>/dev/null
-ssh alfonsoa@192.168.1.90 'hostname && uname -a'
-# If auth fails: ssh-copy-id -i ~/.ssh/id_ed25519.pub alfonsoa@192.168.1.90
+ssh-keyscan -t ed25519 192.168.1.78 >> ~/.ssh/known_hosts 2>/dev/null
+ssh alfonsoa@192.168.1.78 'hostname && uname -a'
+# If auth fails: ssh-copy-id -i ~/.ssh/id_ed25519.pub alfonsoa@192.168.1.78
 # macOS must have Remote Login enabled (System Settings → General → Sharing → Remote Login)
+```
+
+### Reaching C3 (WSL) over the LAN
+
+WSL2 defaults to a NAT, so a normal sshd inside it listens on a `172.x` address
+nothing else on the LAN can route to. Two pieces make C3 reachable, and both are
+easy to forget:
+
+1. **Mirrored networking.** `C:\Users\alfon\.wslconfig` on the Windows host:
+   ```ini
+   [wsl2]
+   networkingMode=mirrored
+   dnsTunneling=true
+   firewall=true
+   ```
+   WSL then shares the host's LAN IP, so C3 answers on `192.168.1.80` port 22 —
+   no `netsh portproxy`, and nothing to redo when WSL's internal IP changes.
+   Requires Windows 11 22H2+ (C3 is on build 26200). Applying it needs
+   `wsl --shutdown`, which kills any Claude Code session running inside.
+
+2. **Two firewall rules, not one.** In mirrored mode inbound traffic to the VM is
+   governed by the *Hyper-V* firewall, which is separate from the host firewall.
+   Opening only the host one silently fails. As admin:
+   ```powershell
+   $wsl = '{40E0AC32-46A5-438A-A0B2-2B479E8F2E90}'   # WSL's VMCreatorId
+   New-NetFirewallHyperVRule -Name 'WSL-SSH-In' -DisplayName 'WSL SSH (22)' `
+     -Direction Inbound -VMCreatorId $wsl -Protocol TCP -LocalPorts 22 -Action Allow
+   New-NetFirewallRule -Name 'WSL-SSH-Host-In' -DisplayName 'WSL SSH (22)' `
+     -Direction Inbound -Protocol TCP -LocalPort 22 -Action Allow -Profile Private,Domain
+   ```
+   The host rule covers Private/Domain only, so the LAN must not be marked
+   Public — Windows defaults new networks to Public:
+   ```powershell
+   Get-NetConnectionProfile | Set-NetConnectionProfile -NetworkCategory Private
+   ```
+
+Inside C3, Ubuntu 20.04 has no systemd, so sshd needs a boot hook in
+`/etc/wsl.conf` or it comes up dead after every `wsl --shutdown`:
+
+```ini
+[boot]
+command = service ssh start
+```
+
+C3's sshd is key-only (`PasswordAuthentication no`). C1's `mac2` key is in C3's
+`~/.ssh/authorized_keys`. Bootstrapping that pair is a chicken-and-egg problem
+worth remembering: run `ssh-copy-id alfonsoa@192.168.1.78` **from C3** first —
+outbound works through the NAT with no setup at all — then read C1's public key
+over that link and append it to C3's `authorized_keys`. No password auth needs to
+be enabled on either side.
+
+**From C1 (Mac) → C3:**
+```bash
+ssh user@192.168.1.80 'hostname && uname -a'
 ```
 
 Full C2 dev workflow (deploy, logs, app start/stop) is documented in `~/aalvz/tribu/CLAUDE.md` under "Two-Machine Dev Setup".
@@ -97,8 +154,8 @@ Full C2 dev workflow (deploy, logs, app start/stop) is documented in `~/aalvz/tr
 
 When Claude is running on C2 and needs to work with C1:
 - Repos on C1: `~/dot_files`, `~/aalvz/projects`, `~/aalvz/tribu`
-- Pull from C1: `ssh alfonsoa@192.168.1.90 'cd ~/aalvz/tribu && git pull'`
-- Read files on C1: `ssh alfonsoa@192.168.1.90 'cat ~/dot_files/CLAUDE.md'`
+- Pull from C1: `ssh alfonsoa@192.168.1.78 'cd ~/aalvz/tribu && git pull'`
+- Read files on C1: `ssh alfonsoa@192.168.1.78 'cat ~/dot_files/CLAUDE.md'`
 - Tribu repo on C2 is at `/home/user/Documents/tribu/` (symlinked as `/home/user/tribu`)
 
 ### 6. Verify
@@ -114,6 +171,9 @@ test -d ~/dot_files && echo "dot_files: ok" || echo "dot_files: MISSING"
 
 # C2
 ssh -o ConnectTimeout=3 -o BatchMode=yes user@192.168.1.88 'echo "c2: ok"' 2>/dev/null || echo "c2: NOT REACHABLE"
+
+# C3 (WSL; answers on the Windows host IP, see "Reaching C3 (WSL) over the LAN")
+ssh -o ConnectTimeout=3 -o BatchMode=yes user@192.168.1.80 'echo "c3: ok"' 2>/dev/null || echo "c3: NOT REACHABLE"
 ```
 
 ## Project Repos
