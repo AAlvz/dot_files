@@ -63,19 +63,23 @@ git clone git@github.com:AAlvz/tribu.git
 # dot_files is already at ~/dot_files (step 1)
 ```
 
-### 5. Connect to C2 (the other computer)
-C2 is the Ubuntu XPS 13 used to run the Tribu app. Connection details:
+### 5. Connect to the other computers
+C2 is the Ubuntu XPS 13 used to run the Tribu app. C3 is WSL2 on an ASUS Windows laptop. Connection details:
 
 | Machine | Role | IP | User | SSH key comment |
 |---------|------|----|------|-----------------|
 | C1 (Mac) | Editing, git, Claude Code | 192.168.1.78 | alfonsoa | mac2 |
 | C2 (Ubuntu XPS 13) | Running Tribu app, dev server | 192.168.1.88 | user | alfonso |
-| C3 (`LAPTOP-MCEGUI5B`) | WSL2 Ubuntu-20.04 under Windows Terminal; local editing | 192.168.1.80 (Ethernet) / .81 (Wi-Fi) | user | — |
+| C3 (`LAPTOP-MCEGUI5B`) | WSL2 Ubuntu-20.04 under Windows Terminal; local editing | 192.168.1.80 (Ethernet) / .81 (Wi-Fi) | user | alfonso@tinkerware.io |
 
-C3 runs **bash**, not zsh — zsh is not installed there. It used to be unreachable
-over the LAN (WSL2 sits behind a NAT), but it now accepts SSH like the others —
-see [Reaching C3 (WSL) over the LAN](#reaching-c3-wsl-over-the-lan) below. C3
-takes the *host* Windows IP, not a WSL-internal `172.x` one.
+C3 is WSL2 running on an ASUS Windows laptop, and it runs **bash**, not zsh —
+zsh is not installed there. The **Windows host** holds the LAN address
+`192.168.1.80` (Ethernet; `.81` on Wi-Fi), and C3 answers on it: the WSL2 guest
+used to sit behind Windows' NAT with no LAN-reachable address, but mirrored
+networking removed that. Both directions are key-based, no passwords — C3 → C1
+is verified, C1 → C3 is configured and pending its first run.
+See [Reaching C3 (WSL) over the LAN](#reaching-c3-wsl-over-the-lan) below.
+Note the address is the *host* Windows IP, never a WSL-internal `172.x` one.
 
 Both directions between C1 and C2 have key-based SSH auth configured. IPs may change if DHCP reassigns — check with `hostname -I` (Linux) or `ipconfig getifaddr en0` (macOS).
 
@@ -97,8 +101,9 @@ ssh alfonsoa@192.168.1.78 'hostname && uname -a'
 ### Reaching C3 (WSL) over the LAN
 
 WSL2 defaults to a NAT, so a normal sshd inside it listens on a `172.x` address
-nothing else on the LAN can route to. Two pieces make C3 reachable, and both are
-easy to forget:
+nothing else on the LAN can route to. An earlier port scan of `192.168.1.80`
+found every port closed and concluded C1 → C3 was impossible; it isn't, but two
+pieces are needed and both are easy to forget:
 
 1. **Mirrored networking.** `C:\Users\alfon\.wslconfig` on the Windows host:
    ```ini
@@ -108,9 +113,9 @@ easy to forget:
    firewall=true
    ```
    WSL then shares the host's LAN IP, so C3 answers on `192.168.1.80` port 22 —
-   no `netsh portproxy`, and nothing to redo when WSL's internal IP changes.
-   Requires Windows 11 22H2+ (C3 is on build 26200). Applying it needs
-   `wsl --shutdown`, which kills any Claude Code session running inside.
+   no `netsh portproxy`, and nothing to redo when WSL's internal IP changes on
+   the next boot. Requires Windows 11 22H2+ (C3 is on build 26200). Applying it
+   needs `wsl --shutdown`, which kills any Claude Code session running inside.
 
 2. **Two firewall rules, not one.** In mirrored mode inbound traffic to the VM is
    governed by the *Hyper-V* firewall, which is separate from the host firewall.
@@ -136,12 +141,19 @@ Inside C3, Ubuntu 20.04 has no systemd, so sshd needs a boot hook in
 command = service ssh start
 ```
 
-C3's sshd is key-only (`PasswordAuthentication no`). C1's `mac2` key is in C3's
-`~/.ssh/authorized_keys`. Bootstrapping that pair is a chicken-and-egg problem
-worth remembering: run `ssh-copy-id alfonsoa@192.168.1.78` **from C3** first —
-outbound works through the NAT with no setup at all — then read C1's public key
-over that link and append it to C3's `authorized_keys`. No password auth needs to
-be enabled on either side.
+C3's sshd is key-only (`PasswordAuthentication no`), and C1's `mac2` key is in
+C3's `~/.ssh/authorized_keys`. Setting that up is a chicken-and-egg problem
+worth remembering, because the fix is not to enable password auth: C3 → C1 works
+outbound through the NAT with no setup at all, so run `ssh-copy-id` from C3
+first, then read C1's public key back over that link and append it to C3's
+`authorized_keys`. Neither side ever needs a password.
+
+**From C3 (WSL2) → C1:**
+```bash
+test -f ~/.ssh/id_ed25519 || ssh-keygen -t ed25519 -C "c3" -N "" -f ~/.ssh/id_ed25519
+ssh-copy-id -i ~/.ssh/id_ed25519.pub alfonsoa@192.168.1.78
+ssh alfonsoa@192.168.1.78 'hostname'   # ZG-GG32QFWFXC, no password prompt
+```
 
 **From C1 (Mac) → C3:**
 ```bash
