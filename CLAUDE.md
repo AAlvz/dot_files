@@ -70,28 +70,33 @@ C2 is the Ubuntu XPS 13 used to run the Tribu app. C3 is WSL2 on an ASUS Windows
 |---------|------|----|------|-----------------|
 | C1 (Mac) | Editing, git, Claude Code | 192.168.1.78 | alfonsoa | mac2 |
 | C2 (Ubuntu XPS 13) | Running Tribu app, dev server | 192.168.1.88 | user | alfonso |
-| C3 (`LAPTOP-MCEGUI5B`) | WSL2 Ubuntu-20.04 under Windows Terminal; local editing | 192.168.1.80 (mirrored, shared with Windows host) | user | alfonso@tinkerware.io |
+| C3 (`LAPTOP-MCEGUI5B`) | WSL2 Ubuntu-20.04 under Windows Terminal; local editing | 192.168.1.80 (also .81 — mirrored, shared with Windows host) | user | alfonso@tinkerware.io |
 
-C3 is WSL2 on an ASUS Windows laptop, running in **mirrored networking** mode, so
-the WSL2 guest shares the Windows host's LAN address `192.168.1.80` rather than
-sitting behind its own NAT. The SSH link is one-way:
+C3 is WSL2 (Ubuntu 20.04.6, kernel `*-microsoft-standard-WSL2`) on an ASUS
+Windows laptop, running in **mirrored networking** mode. The WSL2 guest shares
+the Windows host's LAN addresses instead of sitting behind its own NAT — it
+answers on both `192.168.1.80` and `192.168.1.81`.
 
-- **C3 → C1 — works.** Verified 2026-09-02: a packet capture on C1 caught the
-  full handshake (`192.168.1.80 > 192.168.1.78.22 [S]` → `[S.]`), and C3's key
-  is installed in C1's `authorized_keys`.
-- **C1 → C3 — does not work.** Mirrored networking gives C3 the LAN IP for
-  *outbound* traffic, but does not open it for inbound. Measured from C1: five
-  consecutive SYNs to `192.168.1.80:22` drew no SYN-ACK, and a full TCP port
-  scan of that address found everything closed/filtered — the signature of
-  Windows Firewall dropping inbound. ARP still resolves (`04:42:1a:86:78:96`,
-  ASUSTek), so the host is up; the traffic is being filtered, not lost.
+**Both directions work with keys** (verified 2026-09-02 with a full
+C1 → C3 → C1 round trip, no password prompts):
 
-  Opening it needs three separate layers on C3 — sshd inside WSL
-  (`sudo apt install -y openssh-server && sudo service ssh start`), a Windows
-  Firewall rule (`New-NetFirewallRule -DisplayName "WSL SSH" -Direction Inbound
-  -Protocol TCP -LocalPort 22 -Action Allow`), and, because mirrored mode adds a
-  Hyper-V firewall, `Set-NetFirewallHyperVVMSetting -Name
-  '{40E0AC32-46A5-438A-A0B2-2B479E8F2E90}' -DefaultInboundAction Allow`.
+```bash
+ssh user@192.168.1.80          # C1 → C3   (C3 authorizes C1's `mac2` key)
+ssh alfonsoa@192.168.1.78      # C3 → C1   (C1 authorizes C3's `alfonso@tinkerware.io` key)
+```
+
+Getting the inbound direction (C1 → C3) working took three separate layers on
+C3, and all three are required — enabling mirrored networking alone is not
+enough, since it opens *outbound* only:
+
+1. sshd inside WSL — `sudo apt install -y openssh-server && sudo service ssh start`
+2. A Windows Firewall rule — `New-NetFirewallRule -DisplayName "WSL SSH" -Direction Inbound -Protocol TCP -LocalPort 22 -Action Allow`
+3. The Hyper-V firewall, which mirrored mode adds on top — `Set-NetFirewallHyperVVMSetting -Name '{40E0AC32-46A5-438A-A0B2-2B479E8F2E90}' -DefaultInboundAction Allow`
+
+**Debugging tip:** while any layer is still closed, `192.168.1.80` answers ARP
+but drops every SYN — the host looks alive at layer 2 while every port reads as
+filtered. A packet capture on C1 (`sudo tcpdump -i en0 -n 'tcp port 22'`) tells
+the two cases apart: SYNs with no SYN-ACK means filtered, not down.
 
 C3 runs **bash**, not zsh — zsh is not installed there.
 
@@ -112,16 +117,20 @@ ssh alfonsoa@192.168.1.78 'hostname && uname -a'
 # macOS must have Remote Login enabled (System Settings → General → Sharing → Remote Login)
 ```
 
-**From C3 (WSL2) → C1:** already set up — C3's key (`alfonso@tinkerware.io`) is
-in C1's `authorized_keys`, so this should not prompt for a password:
+**C1 (Mac) ↔ C3 (WSL2):** both directions are set up with keys.
 ```bash
-ssh alfonsoa@192.168.1.78 'hostname'
+ssh user@192.168.1.80 'hostname'        # from C1
+ssh alfonsoa@192.168.1.78 'hostname'    # from C3
 ```
 
-To redo it on a fresh WSL install (or after C1's IP changes), run **on C3**:
+To redo it on a fresh WSL install (or after an IP change), run **on C3**:
 ```bash
 test -f ~/.ssh/id_ed25519 || ssh-keygen -t ed25519 -C "c3" -N "" -f ~/.ssh/id_ed25519
-ssh-copy-id -i ~/.ssh/id_ed25519.pub alfonsoa@192.168.1.78
+ssh-copy-id -i ~/.ssh/id_ed25519.pub alfonsoa@192.168.1.78   # C3 → C1
+```
+and **on C1**, for the reverse:
+```bash
+ssh-copy-id -i ~/.ssh/id_ed25519.pub user@192.168.1.80       # C1 → C3
 ```
 
 Full C2 dev workflow (deploy, logs, app start/stop) is documented in `~/aalvz/tribu/CLAUDE.md` under "Two-Machine Dev Setup".
