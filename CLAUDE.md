@@ -84,13 +84,14 @@ the host address directly.
   either way — NAT already SNATs outbound WSL traffic to it — so seeing
   `192.168.1.80` on the wire says nothing about which mode is active. Check
   `hostname -I` inside C3 instead: a `172.x` answer means NAT, not mirrored.
-- **C1 → C3 — configured, pending its first run.** Everything it needs is in
-  place (see [Reaching C3 (WSL) over the LAN](#reaching-c3-wsl-over-the-lan)),
-  but mirrored mode only takes effect after a `wsl --shutdown`, which has not
-  happened yet. Until it does, inbound still fails exactly as measured from C1
-  on 2026-09-02: five SYNs to `192.168.1.80:22` drew no SYN-ACK and a full TCP
-  scan found everything closed, while ARP still resolved
-  (`04:42:1a:86:78:96`, ASUSTek) — filtered, not lost.
+- **C1 → C3 — works.** Verified 2026-09-02, after the `wsl --shutdown` that
+  arms mirrored mode: `ssh user@192.168.1.80` from C1 lands on
+  `LAPTOP-MCEGUI5B`, key-only, no prompt. Before that restart the same scan from
+  C1 found port 22 filtered — five SYNs with no SYN-ACK, a full TCP scan closed,
+  ARP still resolving (`04:42:1a:86:78:96`, ASUSTek). So a closed inbound port
+  after a config change means the restart is missing, not the config; the whole
+  stack (see [Reaching C3 (WSL) over the LAN](#reaching-c3-wsl-over-the-lan))
+  only comes alive on the reboot.
 
 Both directions between C1 and C2 have key-based SSH auth configured. IPs may change if DHCP reassigns — check with `hostname -I` (Linux) or `ipconfig getifaddr en0` (macOS).
 
