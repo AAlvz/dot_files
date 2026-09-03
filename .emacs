@@ -495,6 +495,17 @@
 ;; first frame.
 (add-hook 'tty-setup-hook #'my/tty-setup-extra-keys)
 
+;; The hook covers every terminal but the first one.  Emacs sets up the initial
+;; terminal -- and runs `tty-setup-hook' for it -- before it loads this file, so
+;; on a plain `emacs -nw' the entries above are added to a hook that has already
+;; fired, and the starting frame decodes none of them.  Measured on C3: feeding
+;; ctrl+shift+, to `emacs -nw' produced the raw `M-[ 2 7 ; 6 ; 4 4' and no
+;; command, while the same sequence through `emacsclient -nw' produced C-<.
+;; C-<return> hid the problem, since xterm.el defines that one itself.
+;; Apply them once here for the terminal we may already be on.
+(unless (display-graphic-p)
+  (my/tty-setup-extra-keys))
+
 (global-set-key (kbd "C-<return>") 'vterm)
 
 ;; Code folding
