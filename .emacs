@@ -169,10 +169,9 @@
 ;; Grep template - update the search term as needed
 ;; (setq grep-find-template "grep -C2 -ri --color=auto -nH --null -e \"SEARCH_TERM\" --exclude-dir={node_modules,.terraform,.git} .")
 
-;; Idle highlight
-(require 'idle-highlight-mode)
-(add-hook 'after-change-major-mode-hook 'idle-highlight-mode)
-(set-face-attribute 'idle-highlight nil :background "#FFFFCC" :foreground "#333333")
+;; Idle highlight is configured with the other `use-package' forms below.  A
+;; bare `require' here would run before the package is installed, so a fresh
+;; machine dies on this line during its first `emacs' run.
 
 ;;;;;;;;;;;;;;;;;;;
 ;; Use-packages  ;;
@@ -200,9 +199,16 @@
   :ensure t
   :init (global-flycheck-mode))
 
+;; `:hook' makes use-package defer the package, so the face has to be set
+;; through `:custom-face' rather than `set-face-attribute' -- the latter needs
+;; the face to exist already, and it does not until the package loads.
 (use-package idle-highlight-mode
   :ensure t
-  :config (setq idle-highlight-idle-time 0.2)
+  :init
+  (setq idle-highlight-idle-time 0.2)
+  (add-hook 'after-change-major-mode-hook #'idle-highlight-mode)
+  :custom-face
+  (idle-highlight ((t (:background "#FFFFCC" :foreground "#333333"))))
   :hook ((prog-mode text-mode) . idle-highlight-mode))
 
 (use-package savehist
@@ -487,8 +493,11 @@
 (global-set-key (kbd "C-c C-c") 'hs-hide-block)
 (global-set-key (kbd "C-c c") 'hs-show-block)
 
-;; Multiple cursors
-(require 'multiple-cursors)
+;; Multiple cursors.  `use-package' rather than a bare `require': the package
+;; was only ever listed in `package-selected-packages', so a machine that had
+;; not run `package-install-selected-packages' by hand died on the require.
+(use-package multiple-cursors
+  :ensure t)
 (global-set-key (kbd "C-c C-SPC") 'mc/edit-lines)
 (global-set-key (kbd "M-SPC") 'mc/edit-lines)
 (global-set-key (kbd "C-c C-n") 'mc/mark-next-like-this)

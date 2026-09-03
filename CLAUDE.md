@@ -154,7 +154,10 @@ cd ~/Documents/tribu && git pull
 - `.shell_common` — **Shared shell config for bash and zsh, all platforms.** Portable aliases/env go here
 - `.zshrc` — Zsh entry point (macOS); sources `.shell_common`, plus zsh-only setup
 - `.emacs.d/lisp/` — Manual elisp packages (popon, subr-x, swap-windows, etc.)
-- `.emacs.d/elpa/` — Auto-installed packages (not manually managed)
+- `.emacs.d/elpa/` — Auto-installed packages. **Gitignored, not shared.** Each
+  machine compiles its own `.elc` against its own Emacs version, so shipping one
+  machine's `elpa` to another only causes version skew. Packages come from
+  `package-selected-packages` in `.emacs`, which every machine installs itself.
 - `.i3/` — i3 window manager config (Linux)
 - `.bashrc`, `.bash_aliases`, `.bash_profile` — Bash configs (Linux)
 - `.gitconfig` — Git configuration
@@ -205,5 +208,9 @@ Two things from it that bite immediately:
 
 ## Branches
 
-- `master` — main config, cross-platform
-- `win` — older Windows-specific variant (uses corfu instead of company, no windmove)
+- `master` — the only branch. One config for every machine: platform differences
+  are handled by conditionals inside `.emacs` (`my/wsl-p`, `tty-setup-hook`,
+  `xclip`), never by forking the file.
+- `archive/win` (tag, not a branch) — the old Windows-only variant that used
+  corfu instead of company and had no windmove. Deleted as a branch once master
+  went cross-platform; `git show archive/win` still reaches it.
