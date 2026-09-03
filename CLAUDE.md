@@ -43,13 +43,14 @@ git clone git@github.com:AAlvz/tribu.git
 # dot_files is already at ~/dot_files (step 1)
 ```
 
-### 5. Connect to C2 (the other computer)
-C2 is the Ubuntu XPS 13 used to run the Tribu app. Connection details:
+### 5. Connect to the other computers
+C2 is the Ubuntu XPS 13 used to run the Tribu app. C3 is an ASUS box. Connection details:
 
 | Machine | Role | IP | User | SSH key comment |
 |---------|------|----|------|-----------------|
-| C1 (Mac) | Editing, git, Claude Code | 192.168.1.90 | alfonsoa | mac2 |
+| C1 (Mac) | Editing, git, Claude Code | 192.168.1.78 | alfonsoa | mac2 |
 | C2 (Ubuntu XPS 13) | Running Tribu app, dev server | 192.168.1.88 | user | alfonso |
+| C3 (ASUS) | Client — connects into C1 | 192.168.1.80 | user | *(pending)* |
 
 Both directions have key-based SSH auth configured. IPs may change if DHCP reassigns — check with `hostname -I` (Linux) or `ipconfig getifaddr en0` (macOS).
 
@@ -62,11 +63,31 @@ ssh user@192.168.1.88 'hostname && uname -a'
 
 **From C2 (Ubuntu) → C1:**
 ```bash
-ssh-keyscan -t ed25519 192.168.1.90 >> ~/.ssh/known_hosts 2>/dev/null
-ssh alfonsoa@192.168.1.90 'hostname && uname -a'
-# If auth fails: ssh-copy-id -i ~/.ssh/id_ed25519.pub alfonsoa@192.168.1.90
+ssh-keyscan -t ed25519 192.168.1.78 >> ~/.ssh/known_hosts 2>/dev/null
+ssh alfonsoa@192.168.1.78 'hostname && uname -a'
+# If auth fails: ssh-copy-id -i ~/.ssh/id_ed25519.pub alfonsoa@192.168.1.78
 # macOS must have Remote Login enabled (System Settings → General → Sharing → Remote Login)
 ```
+
+**From C3 (ASUS) → C1:**
+
+C1's sshd accepts both password and pubkey, so this works immediately with the
+account password — no setup needed on C1:
+```bash
+ssh alfonsoa@192.168.1.78
+```
+
+For passwordless access, run this **on C3** (generates a key if there isn't one,
+then installs it into C1's `authorized_keys`):
+```bash
+test -f ~/.ssh/id_ed25519 || ssh-keygen -t ed25519 -C "c3" -N "" -f ~/.ssh/id_ed25519
+ssh-copy-id -i ~/.ssh/id_ed25519.pub alfonsoa@192.168.1.78
+ssh alfonsoa@192.168.1.78 'hostname'   # should not prompt for a password
+```
+
+Note: C3 has no sshd of its own — every port is closed/filtered, so C1 → C3 does
+**not** work. The connection is one-way (C3 → C1). Enable Remote Login on C3 if
+the reverse direction is ever needed.
 
 Full C2 dev workflow (deploy, logs, app start/stop) is documented in `~/aalvz/tribu/CLAUDE.md` under "Two-Machine Dev Setup".
 
