@@ -264,6 +264,39 @@ cd ~/Documents/tribu && git pull
 - `.gitconfig` — Git configuration
 - `.Xresources` — X11 terminal settings (Linux)
 
+## Emacs across machines
+
+One `.emacs` for all of them; the machines differ only in what is *around* it.
+
+| | C1 (Mac) | C3 (WSL2) |
+|---|---|---|
+| Emacs | 31.1, Homebrew (`/opt/homebrew/bin`) | 29.4, built from source in `/usr/local` |
+| `~/.emacs` | symlink to this repo | symlink to this repo |
+| `~/.emacs.d/lisp` | symlink to this repo | symlink to this repo |
+| `~/.emacs.d/elpa` | its own, 2026 packages | its own, upgraded to match |
+
+Two things follow from that, and both have already bitten:
+
+- **`.emacs.d/lisp` is a fallback, not an override.** It is *appended* to
+  `load-path`, because it holds old vendored copies of `rx`, `cl-lib`, `subr-x`
+  and `idle-highlight-mode` that Emacs and ELPA also ship. Prepended — which is
+  what plain `add-to-list` does — those copies won on every machine regardless
+  of its Emacs version. Keep the `t` argument. Only add a file here when
+  nothing else provides it (`swap-windows`, `popon`, `buffer-move`).
+- **Some bindings need binaries, not packages.** `M-s r` / `C-c C-s` need
+  `ripgrep`, and `M-s d` needs `fd`. On Debian/Ubuntu the package is `fd-find`
+  and it installs the binary as `fdfind`; consult looks for that name itself, so
+  no config change is needed:
+  ```bash
+  sudo apt install -y fd-find ripgrep     # C3 / C2
+  brew install fd ripgrep                 # C1
+  ```
+
+To check a config change really took effect, measure a running instance rather
+than reading the file — `emacsclient --eval` against the daemon, and for
+anything terminal-related a real pty (`script -qec "emacs -nw ..." /dev/null`),
+since key decoding differs between the two.
+
 ## Emacs server & emacsclient
 
 - `.emacs` runs `(server-start)` automatically
