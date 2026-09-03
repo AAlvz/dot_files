@@ -70,16 +70,27 @@ C2 is the Ubuntu XPS 13 used to run the Tribu app. C3 is WSL2 on an ASUS Windows
 |---------|------|----|------|-----------------|
 | C1 (Mac) | Editing, git, Claude Code | 192.168.1.78 | alfonsoa | mac2 |
 | C2 (Ubuntu XPS 13) | Running Tribu app, dev server | 192.168.1.88 | user | alfonso |
-| C3 (`LAPTOP-MCEGUI5B`) | WSL2 Ubuntu-20.04 under Windows Terminal; local editing | 192.168.1.80 (Ethernet) / .81 (Wi-Fi) | user | alfonso@tinkerware.io |
+| C3 (`LAPTOP-MCEGUI5B`) | WSL2 Ubuntu-20.04 under Windows Terminal; local editing | 192.168.1.80 (Ethernet) / .81 (Wi-Fi), shared with the Windows host | user | alfonso@tinkerware.io |
 
-C3 is WSL2 running on an ASUS Windows laptop, and it runs **bash**, not zsh —
-zsh is not installed there. The **Windows host** holds the LAN address
-`192.168.1.80` (Ethernet; `.81` on Wi-Fi), and C3 answers on it: the WSL2 guest
-used to sit behind Windows' NAT with no LAN-reachable address, but mirrored
-networking removed that. Both directions are key-based, no passwords — C3 → C1
-is verified, C1 → C3 is configured and pending its first run.
-See [Reaching C3 (WSL) over the LAN](#reaching-c3-wsl-over-the-lan) below.
-Note the address is the *host* Windows IP, never a WSL-internal `172.x` one.
+C3 is WSL2 on an ASUS Windows laptop, and it runs **bash**, not zsh — zsh is not
+installed there. The **Windows host** holds the LAN address `192.168.1.80`
+(Ethernet; `.81` on Wi-Fi). By default the WSL2 guest sits behind a NAT with no
+LAN address of its own; mirrored networking removes that and lets C3 answer on
+the host address directly.
+
+- **C3 → C1 — works.** Verified 2026-09-02: a packet capture on C1 caught the
+  full handshake (`192.168.1.80 > 192.168.1.78.22 [S]` → `[S.]`), and C3's key
+  is installed in C1's `authorized_keys`. Note the source address is the host's
+  either way — NAT already SNATs outbound WSL traffic to it — so seeing
+  `192.168.1.80` on the wire says nothing about which mode is active. Check
+  `hostname -I` inside C3 instead: a `172.x` answer means NAT, not mirrored.
+- **C1 → C3 — configured, pending its first run.** Everything it needs is in
+  place (see [Reaching C3 (WSL) over the LAN](#reaching-c3-wsl-over-the-lan)),
+  but mirrored mode only takes effect after a `wsl --shutdown`, which has not
+  happened yet. Until it does, inbound still fails exactly as measured from C1
+  on 2026-09-02: five SYNs to `192.168.1.80:22` drew no SYN-ACK and a full TCP
+  scan found everything closed, while ARP still resolved
+  (`04:42:1a:86:78:96`, ASUSTek) — filtered, not lost.
 
 Both directions between C1 and C2 have key-based SSH auth configured. IPs may change if DHCP reassigns — check with `hostname -I` (Linux) or `ipconfig getifaddr en0` (macOS).
 
@@ -101,9 +112,11 @@ ssh alfonsoa@192.168.1.78 'hostname && uname -a'
 ### Reaching C3 (WSL) over the LAN
 
 WSL2 defaults to a NAT, so a normal sshd inside it listens on a `172.x` address
-nothing else on the LAN can route to. An earlier port scan of `192.168.1.80`
-found every port closed and concluded C1 → C3 was impossible; it isn't, but two
-pieces are needed and both are easy to forget:
+nothing else on the LAN can route to. Two scans from C1 have concluded C3 is
+simply closed for inbound; that reads the symptom correctly and the cause wrong.
+Mirrored networking does expose the guest inbound — it is not outbound-only —
+but it is gated behind a firewall most people never look at. Three layers, and
+missing any one of them looks identical from outside:
 
 1. **Mirrored networking.** `C:\Users\alfon\.wslconfig` on the Windows host:
    ```ini
@@ -114,12 +127,14 @@ pieces are needed and both are easy to forget:
    ```
    WSL then shares the host's LAN IP, so C3 answers on `192.168.1.80` port 22 —
    no `netsh portproxy`, and nothing to redo when WSL's internal IP changes on
-   the next boot. Requires Windows 11 22H2+ (C3 is on build 26200). Applying it
-   needs `wsl --shutdown`, which kills any Claude Code session running inside.
+   the next boot. Requires Windows 11 22H2+ (C3 is on build 26200). It takes
+   effect only after `wsl --shutdown`, which kills any Claude Code session
+   running inside C3 — so this step goes last.
 
 2. **Two firewall rules, not one.** In mirrored mode inbound traffic to the VM is
    governed by the *Hyper-V* firewall, which is separate from the host firewall.
-   Opening only the host one silently fails. As admin:
+   Opening only the host one silently fails, which is what the scans were seeing.
+   As admin:
    ```powershell
    $wsl = '{40E0AC32-46A5-438A-A0B2-2B479E8F2E90}'   # WSL's VMCreatorId
    New-NetFirewallHyperVRule -Name 'WSL-SSH-In' -DisplayName 'WSL SSH (22)' `
@@ -127,19 +142,23 @@ pieces are needed and both are easy to forget:
    New-NetFirewallRule -Name 'WSL-SSH-Host-In' -DisplayName 'WSL SSH (22)' `
      -Direction Inbound -Protocol TCP -LocalPort 22 -Action Allow -Profile Private,Domain
    ```
+   Prefer these over `Set-NetFirewallHyperVVMSetting -DefaultInboundAction Allow`,
+   which opens every port on the VM rather than 22.
+
    The host rule covers Private/Domain only, so the LAN must not be marked
-   Public — Windows defaults new networks to Public:
+   Public — Windows defaults new networks to Public, and both of C3's interfaces
+   were:
    ```powershell
    Get-NetConnectionProfile | Set-NetConnectionProfile -NetworkCategory Private
    ```
 
-Inside C3, Ubuntu 20.04 has no systemd, so sshd needs a boot hook in
-`/etc/wsl.conf` or it comes up dead after every `wsl --shutdown`:
-
-```ini
-[boot]
-command = service ssh start
-```
+3. **sshd, with a boot hook.** Ubuntu 20.04 under WSL has no systemd, so sshd
+   needs `/etc/wsl.conf` or it comes up dead after every `wsl --shutdown` — that
+   is, after the very restart that step 1 requires:
+   ```ini
+   [boot]
+   command = service ssh start
+   ```
 
 C3's sshd is key-only (`PasswordAuthentication no`), and C1's `mac2` key is in
 C3's `~/.ssh/authorized_keys`. Setting that up is a chicken-and-egg problem
@@ -148,16 +167,22 @@ outbound through the NAT with no setup at all, so run `ssh-copy-id` from C3
 first, then read C1's public key back over that link and append it to C3's
 `authorized_keys`. Neither side ever needs a password.
 
-**From C3 (WSL2) → C1:**
+**From C3 (WSL2) → C1:** already set up — C3's key (`alfonso@tinkerware.io`) is
+in C1's `authorized_keys`, so this should not prompt for a password:
+```bash
+ssh alfonsoa@192.168.1.78 'hostname'
+```
+
+To redo it on a fresh WSL install (or after C1's IP changes), run **on C3**:
 ```bash
 test -f ~/.ssh/id_ed25519 || ssh-keygen -t ed25519 -C "c3" -N "" -f ~/.ssh/id_ed25519
 ssh-copy-id -i ~/.ssh/id_ed25519.pub alfonsoa@192.168.1.78
-ssh alfonsoa@192.168.1.78 'hostname'   # ZG-GG32QFWFXC, no password prompt
 ```
 
 **From C1 (Mac) → C3:**
 ```bash
 ssh user@192.168.1.80 'hostname && uname -a'
+```
 ```
 
 Full C2 dev workflow (deploy, logs, app start/stop) is documented in `~/aalvz/tribu/CLAUDE.md` under "Two-Machine Dev Setup".
