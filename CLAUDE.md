@@ -70,19 +70,28 @@ C2 is the Ubuntu XPS 13 used to run the Tribu app. C3 is WSL2 on an ASUS Windows
 |---------|------|----|------|-----------------|
 | C1 (Mac) | Editing, git, Claude Code | 192.168.1.78 | alfonsoa | mac2 |
 | C2 (Ubuntu XPS 13) | Running Tribu app, dev server | 192.168.1.88 | user | alfonso |
-| C3 (`LAPTOP-MCEGUI5B`) | WSL2 Ubuntu-20.04 under Windows Terminal; local editing | WSL NAT — Windows host is 192.168.1.80 | user | *(pending)* |
+| C3 (`LAPTOP-MCEGUI5B`) | WSL2 Ubuntu-20.04 under Windows Terminal; local editing | 192.168.1.80 (mirrored, shared with Windows host) | user | alfonso@tinkerware.io |
 
-C3 is WSL2 running on an ASUS Windows laptop. The **Windows host** holds the LAN
-address `192.168.1.80`; the WSL2 guest sits behind Windows' NAT and has no
-LAN-reachable address of its own. That makes the SSH link one-way:
+C3 is WSL2 on an ASUS Windows laptop, running in **mirrored networking** mode, so
+the WSL2 guest shares the Windows host's LAN address `192.168.1.80` rather than
+sitting behind its own NAT. The SSH link is one-way:
 
-- **C3 → C1 — the direction to use, but not yet tested.** WSL2 NAT permits
-  outbound connections, so C3 should reach C1's sshd on the LAN. C1's side is
-  confirmed ready; the hop itself has never been run.
-- **C1 → C3 — does not work (measured).** A full TCP scan of `192.168.1.80`
-  found every port closed/filtered, and the WSL2 guest isn't exposed regardless.
-  Reaching C3 inbound would need a `netsh interface portproxy` rule plus a
-  Windows Firewall exception.
+- **C3 → C1 — works.** Verified 2026-09-02: a packet capture on C1 caught the
+  full handshake (`192.168.1.80 > 192.168.1.78.22 [S]` → `[S.]`), and C3's key
+  is installed in C1's `authorized_keys`.
+- **C1 → C3 — does not work.** Mirrored networking gives C3 the LAN IP for
+  *outbound* traffic, but does not open it for inbound. Measured from C1: five
+  consecutive SYNs to `192.168.1.80:22` drew no SYN-ACK, and a full TCP port
+  scan of that address found everything closed/filtered — the signature of
+  Windows Firewall dropping inbound. ARP still resolves (`04:42:1a:86:78:96`,
+  ASUSTek), so the host is up; the traffic is being filtered, not lost.
+
+  Opening it needs three separate layers on C3 — sshd inside WSL
+  (`sudo apt install -y openssh-server && sudo service ssh start`), a Windows
+  Firewall rule (`New-NetFirewallRule -DisplayName "WSL SSH" -Direction Inbound
+  -Protocol TCP -LocalPort 22 -Action Allow`), and, because mirrored mode adds a
+  Hyper-V firewall, `Set-NetFirewallHyperVVMSetting -Name
+  '{40E0AC32-46A5-438A-A0B2-2B479E8F2E90}' -DefaultInboundAction Allow`.
 
 C3 runs **bash**, not zsh — zsh is not installed there.
 
@@ -103,23 +112,16 @@ ssh alfonsoa@192.168.1.78 'hostname && uname -a'
 # macOS must have Remote Login enabled (System Settings → General → Sharing → Remote Login)
 ```
 
-**From C3 (WSL2) → C1:** ⚠️ *Not yet verified — C1 and C3 have never been
-connected. The steps below are the intended setup, confirmed only on C1's side
-(sshd is listening on `0.0.0.0:22` and negotiates auth over the LAN IP). The
-C3 → C1 hop itself is still untested.*
-
-C1's sshd accepts both password and pubkey, so no setup is needed on C1 — from
-C3, this should work with the macOS account password:
+**From C3 (WSL2) → C1:** already set up — C3's key (`alfonso@tinkerware.io`) is
+in C1's `authorized_keys`, so this should not prompt for a password:
 ```bash
-ssh alfonsoa@192.168.1.78
+ssh alfonsoa@192.168.1.78 'hostname'
 ```
 
-For passwordless access, run this **on C3** (creates a key if there isn't one,
-then installs it into C1's `authorized_keys`):
+To redo it on a fresh WSL install (or after C1's IP changes), run **on C3**:
 ```bash
 test -f ~/.ssh/id_ed25519 || ssh-keygen -t ed25519 -C "c3" -N "" -f ~/.ssh/id_ed25519
 ssh-copy-id -i ~/.ssh/id_ed25519.pub alfonsoa@192.168.1.78
-ssh alfonsoa@192.168.1.78 'hostname'   # should not prompt for a password
 ```
 
 Full C2 dev workflow (deploy, logs, app start/stop) is documented in `~/aalvz/tribu/CLAUDE.md` under "Two-Machine Dev Setup".
