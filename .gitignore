@@ -3,3 +3,7 @@
 /logs
 /tinker
 /tinker_shared_files
+
+# Emacs auto-installed packages - machine-local, never shared between machines.
+# Each machine compiles its own .elc against its own Emacs version.
+.emacs.d/elpa/

@@ -13,19 +13,39 @@ git clone git@github.com:AAlvz/dot_files.git ~/dot_files
 
 ### 2. Symlink dotfiles
 ```bash
-# macOS
+# Every machine (.shell_common is the shared shell config — link it first)
+ln -sf ~/dot_files/.shell_common ~/.shell_common
 ln -sf ~/dot_files/.emacs ~/.emacs
-ln -sf ~/dot_files/.zshrc ~/.zshrc
 ln -sf ~/dot_files/.gitconfig ~/.gitconfig
 
-# Linux (additional)
+# macOS (zsh)
+ln -sf ~/dot_files/.zshrc ~/.zshrc
+
+# Linux / WSL (bash)
 ln -sf ~/dot_files/.bashrc ~/.bashrc
 ln -sf ~/dot_files/.bash_aliases ~/.bash_aliases
 ln -sf ~/dot_files/.bash_profile ~/.bash_profile
-ln -sf ~/dot_files/.Xresources ~/.Xresources
 ln -sf ~/dot_files/.vimrc ~/.vimrc
+
+# Linux desktop only (not WSL)
+ln -sf ~/dot_files/.Xresources ~/.Xresources
 mkdir -p ~/.i3 && ln -sf ~/dot_files/.i3/config ~/.i3/config
 ```
+
+**One config, every machine.** `.shell_common` holds all shared shell setup —
+aliases, `EDITOR`, PATH, kubectl helpers — and is sourced by both `.zshrc` and
+`.bashrc`, so macOS/zsh and Linux/WSL/bash behave identically. Do not add
+portable config to `.zshrc` or `.bashrc`; it belongs in `.shell_common`.
+
+Anything that exists on only one machine (SDK paths, nvm, cargo, credentials)
+goes in untracked per-machine files, which `.shell_common` and the rc files
+source if present:
+
+| File | Sourced by | Purpose |
+|------|-----------|---------|
+| `~/.shell_local` | `.shell_common` (both shells) | Machine-specific, shell-agnostic |
+| `~/.bashrc.local` | `.bashrc` | Machine-specific bash only |
+| `~/.zshrc.local` | `.zshrc` | Machine-specific zsh only |
 
 ### 3. Emacs setup
 ```bash
@@ -44,15 +64,29 @@ git clone git@github.com:AAlvz/tribu.git
 ```
 
 ### 5. Connect to the other computers
-C2 is the Ubuntu XPS 13 used to run the Tribu app. C3 is an ASUS box. Connection details:
+C2 is the Ubuntu XPS 13 used to run the Tribu app. C3 is WSL2 on an ASUS Windows laptop. Connection details:
 
 | Machine | Role | IP | User | SSH key comment |
 |---------|------|----|------|-----------------|
 | C1 (Mac) | Editing, git, Claude Code | 192.168.1.78 | alfonsoa | mac2 |
 | C2 (Ubuntu XPS 13) | Running Tribu app, dev server | 192.168.1.88 | user | alfonso |
-| C3 (ASUS) | Client — connects into C1 | 192.168.1.80 | user | *(pending)* |
+| C3 (`LAPTOP-MCEGUI5B`) | WSL2 Ubuntu-20.04 under Windows Terminal; local editing | WSL NAT — Windows host is 192.168.1.80 | user | *(pending)* |
 
-Both directions have key-based SSH auth configured. IPs may change if DHCP reassigns — check with `hostname -I` (Linux) or `ipconfig getifaddr en0` (macOS).
+C3 is WSL2 running on an ASUS Windows laptop. The **Windows host** holds the LAN
+address `192.168.1.80`; the WSL2 guest sits behind Windows' NAT and has no
+LAN-reachable address of its own. That makes the SSH link one-way:
+
+- **C3 → C1 — the direction to use, but not yet tested.** WSL2 NAT permits
+  outbound connections, so C3 should reach C1's sshd on the LAN. C1's side is
+  confirmed ready; the hop itself has never been run.
+- **C1 → C3 — does not work (measured).** A full TCP scan of `192.168.1.80`
+  found every port closed/filtered, and the WSL2 guest isn't exposed regardless.
+  Reaching C3 inbound would need a `netsh interface portproxy` rule plus a
+  Windows Firewall exception.
+
+C3 runs **bash**, not zsh — zsh is not installed there.
+
+Both directions between C1 and C2 have key-based SSH auth configured. IPs may change if DHCP reassigns — check with `hostname -I` (Linux) or `ipconfig getifaddr en0` (macOS).
 
 **From C1 (Mac) → C2:**
 ```bash
@@ -69,25 +103,24 @@ ssh alfonsoa@192.168.1.78 'hostname && uname -a'
 # macOS must have Remote Login enabled (System Settings → General → Sharing → Remote Login)
 ```
 
-**From C3 (ASUS) → C1:**
+**From C3 (WSL2) → C1:** ⚠️ *Not yet verified — C1 and C3 have never been
+connected. The steps below are the intended setup, confirmed only on C1's side
+(sshd is listening on `0.0.0.0:22` and negotiates auth over the LAN IP). The
+C3 → C1 hop itself is still untested.*
 
-C1's sshd accepts both password and pubkey, so this works immediately with the
-account password — no setup needed on C1:
+C1's sshd accepts both password and pubkey, so no setup is needed on C1 — from
+C3, this should work with the macOS account password:
 ```bash
 ssh alfonsoa@192.168.1.78
 ```
 
-For passwordless access, run this **on C3** (generates a key if there isn't one,
+For passwordless access, run this **on C3** (creates a key if there isn't one,
 then installs it into C1's `authorized_keys`):
 ```bash
 test -f ~/.ssh/id_ed25519 || ssh-keygen -t ed25519 -C "c3" -N "" -f ~/.ssh/id_ed25519
 ssh-copy-id -i ~/.ssh/id_ed25519.pub alfonsoa@192.168.1.78
 ssh alfonsoa@192.168.1.78 'hostname'   # should not prompt for a password
 ```
-
-Note: C3 has no sshd of its own — every port is closed/filtered, so C1 → C3 does
-**not** work. The connection is one-way (C3 → C1). Enable Remote Login on C3 if
-the reverse direction is ever needed.
 
 Full C2 dev workflow (deploy, logs, app start/stop) is documented in `~/aalvz/tribu/CLAUDE.md` under "Two-Machine Dev Setup".
 
@@ -149,9 +182,13 @@ cd ~/Documents/tribu && git pull
 ## Repository structure
 
 - `.emacs` — Main Emacs config (symlinked from `~/.emacs`)
-- `.zshrc` — Zsh config for macOS (symlinked from `~/.zshrc`)
+- `.shell_common` — **Shared shell config for bash and zsh, all platforms.** Portable aliases/env go here
+- `.zshrc` — Zsh entry point (macOS); sources `.shell_common`, plus zsh-only setup
 - `.emacs.d/lisp/` — Manual elisp packages (popon, subr-x, swap-windows, etc.)
-- `.emacs.d/elpa/` — Auto-installed packages (not manually managed)
+- `.emacs.d/elpa/` — Auto-installed packages. **Gitignored, not shared.** Each
+  machine compiles its own `.elc` against its own Emacs version, so shipping one
+  machine's `elpa` to another only causes version skew. Packages come from
+  `package-selected-packages` in `.emacs`, which every machine installs itself.
 - `.i3/` — i3 window manager config (Linux)
 - `.bashrc`, `.bash_aliases`, `.bash_profile` — Bash configs (Linux)
 - `.gitconfig` — Git configuration
@@ -164,10 +201,36 @@ cd ~/Documents/tribu && git pull
 - `EDITOR`, `VISUAL`, `KUBE_EDITOR` all set to `emacsclient -a emacs` in `.zshrc`
 - Use `C-x #` (`server-edit`) to finish editing when a program is waiting (kubectl edit, git commit, crontab -e, etc.)
 - For normal file editing (opened manually), use Emacs as usual — no need for `C-x #`
+- Only the first Emacs to start wins the server socket; other `emacs -nw` instances are unreachable by `emacsclient`
+
+## vterm scrollback
+
+Scrolling back through vterm history was broken by seven stacked faults and took
+several rounds to fix. Before touching the vterm or mouse blocks in `.emacs`,
+read [docs/vterm-scrollback.md](docs/vterm-scrollback.md) — it records the
+causes, the dead ends already ruled out, and what is still open.
+
+Two things from it that bite immediately:
+
+- Claude Code's own conversation is scrollable only because `.shell_common` exports
+  `CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1`. A `claude` started from a shell without it
+  draws on the alternate screen and leaves no scrollback at all.
+- `M-:` does not work inside a vterm (it types into the running program). Use `M-x`.
+- Never plain-`setq` a permanently buffer-local variable in `.emacs` — reloading
+  the file from inside a vterm then clobbers that buffer. Use `setq-default`.
 
 ## Cross-platform notes
 
 - The `.emacs` file works on both macOS and Linux without OS-specific tweaks
+- **Terminal keybindings:** text terminals cannot encode chords like `C-<return>` or `C-<` —
+  they arrive as plain `RET`, or as nothing. `.emacs` decodes xterm `modifyOtherKeys`
+  sequences (`ESC [ 27 ; mod ; code ~`) back into real key events via `my/tty-key-sequences`
+  and `tty-setup-hook`. The block is inert on terminals that never send those sequences, so
+  it stays cross-platform. The *emitting* side is configured in the terminal emulator, not in
+  this repo — on Windows Terminal, `sendInput` actions in its `settings.json`
+  (`User.sendInput.ctrlEnter`, `User.sendInput.ctrlShiftComma`). Every such chord also has a
+  terminal-safe fallback (`C-c C-p`, `C-c TAB`) that works with no terminal config at all.
+  Note `M-TAB` can never reach Emacs on Windows: the OS claims Alt+Tab first
 - Clipboard: `select-enable-clipboard` handles macOS GUI and X11 natively; `xclip` package handles terminal mode on Linux (harmless on macOS)
 - `exec-path-from-shell` ensures GUI Emacs inherits shell PATH on both OSes
 - Codeium is commented out but kept as a ready-to-uncomment block (requires cloning the repo into `~/.emacs.d/codeium.el/`)
@@ -176,5 +239,9 @@ cd ~/Documents/tribu && git pull
 
 ## Branches
 
-- `master` — main config, cross-platform
-- `win` — older Windows-specific variant (uses corfu instead of company, no windmove)
+- `master` — the only branch. One config for every machine: platform differences
+  are handled by conditionals inside `.emacs` (`my/wsl-p`, `tty-setup-hook`,
+  `xclip`), never by forking the file.
+- `archive/win` (tag, not a branch) — the old Windows-only variant that used
+  corfu instead of company and had no windmove. Deleted as a branch once master
+  went cross-platform; `git show archive/win` still reaches it.

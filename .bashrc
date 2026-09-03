@@ -37,7 +37,7 @@ fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-    xterm-color) color_prompt=yes;;
+    xterm-color|*-256color) color_prompt=yes;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
@@ -59,7 +59,7 @@ fi
 if [ "$color_prompt" = yes ]; then
     PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 else
-      PS1='${debian_chroot:+($debian_chroot)}\u@\h[\W] '
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
 unset color_prompt force_color_prompt
 
@@ -111,3 +111,10 @@ fi
 
 # Caps lock as ctrl
 #/bin/sh /home/$USER/scripts/keyboard/capslock_as_ctrl
+
+# Shared config for bash and zsh (aliases, editor, PATH). Single source of
+# truth, sourced last so it wins over the distro defaults above.
+[ -f "$HOME/.shell_common" ] && . "$HOME/.shell_common"
+
+# Machine-specific, untracked: SDK paths, nvm, cargo, credentials.
+[ -f "$HOME/.bashrc.local" ] && . "$HOME/.bashrc.local"
