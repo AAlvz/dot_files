@@ -43,7 +43,16 @@ cd() {
 export EDITOR='emacsclient -nw -a ""'
 export VISUAL="$EDITOR"
 export KUBE_EDITOR="$EDITOR"
-alias e='emacsclient -nw -a ""'
+# A plain `emacsclient -nw -a ""` alias loses a race on a cold machine: -a ""
+# does spawn the daemon, but a config this size takes longer to load than
+# emacsclient is willing to wait, so the first call dies on "can't find socket"
+# and only the second one connects. Start the daemon ourselves and block until
+# it is actually up. No-op once a daemon is running.
+e() {
+    emacsclient -nw -a "" "$@" 2>/dev/null && return
+    emacs --daemon >/dev/null 2>&1
+    emacsclient -nw -a "" "$@"
+}
 alias kill-emacs='emacsclient -e "(kill-emacs)"'
 
 # --------------------------------------------------------------------- path --
