@@ -68,12 +68,12 @@ C2 is the Ubuntu XPS 13 used to run the Tribu app. C3 is WSL2 on an ASUS Windows
 
 | Machine | Role | IP | User | SSH key comment |
 |---------|------|----|------|-----------------|
-| C1 (Mac) | Editing, git, Claude Code | 192.168.1.78 | alfonsoa | mac2 |
+| C1 (Mac) | Editing, git, Claude Code | 192.168.1.75 | alfonsoa | mac2 |
 | C2 (Ubuntu XPS 13) | Running Tribu app, dev server | 192.168.1.88 | user | alfonso |
-| C3 (`LAPTOP-MCEGUI5B`) | WSL2 Ubuntu-20.04 under Windows Terminal; local editing | 192.168.1.80 (Ethernet) / .81 (Wi-Fi), shared with the Windows host | user | alfonso@tinkerware.io |
+| C3 (`LAPTOP-MCEGUI5B`) | WSL2 Ubuntu-20.04 under Windows Terminal; local editing | 192.168.1.82 (Ethernet) / .83 (Wi-Fi), shared with the Windows host | user | alfonso@tinkerware.io |
 
 C3 is WSL2 on an ASUS Windows laptop, and it runs **bash**, not zsh — zsh is not
-installed there. The **Windows host** holds the LAN address `192.168.1.80`
+installed there. The **Windows host** holds the LAN address `192.168.1.82`
 (Ethernet; `.81` on Wi-Fi). By default the WSL2 guest sits behind a NAT with no
 LAN address of its own; mirrored networking removes that and lets C3 answer on
 the host address directly.
@@ -85,7 +85,7 @@ the host address directly.
   `192.168.1.80` on the wire says nothing about which mode is active. Check
   `hostname -I` inside C3 instead: a `172.x` answer means NAT, not mirrored.
 - **C1 → C3 — works.** Verified 2026-09-02, after the `wsl --shutdown` that
-  arms mirrored mode: `ssh user@192.168.1.80` from C1 lands on
+  arms mirrored mode: `ssh user@192.168.1.82` from C1 lands on
   `LAPTOP-MCEGUI5B`, key-only, no prompt. Before that restart the same scan from
   C1 found port 22 filtered — five SYNs with no SYN-ACK, a full TCP scan closed,
   ARP still resolving (`04:42:1a:86:78:96`, ASUSTek). So a closed inbound port
@@ -97,7 +97,37 @@ Confirmed end to end on 2026-09-02 with a C1 → C3 → C1 round trip — `ssh` 
 C3, then straight back into C1 from there, both hops key-only under
 `BatchMode=yes`, so neither could have silently fallen back to a password.
 
-Both directions between C1 and C2 have key-based SSH auth configured. IPs may change if DHCP reassigns — check with `hostname -I` (Linux) or `ipconfig getifaddr en0` (macOS).
+Both directions between C1 and C2 have key-based SSH auth configured.
+
+**The IPs in the table above go stale — assume they are wrong.** DHCP reassigned
+every machine three times between 2026-09-02 and 2026-09-17 (C1 `.90` → `.78` →
+`.75`, C3 `.80/.81` → `.82/.83`), and each move silently broke every hardcoded
+address in this file. On the machine itself, `hostname -I` (Linux) or
+`ipconfig getifaddr en0` (macOS) gives the current one.
+
+To find a *peer* whose address moved, look it up by MAC — those do not change:
+
+| Machine | MAC |
+|---------|-----|
+| C1 (Mac, en0) | `56:c1:d5:76:e9:51` |
+| C3 (ASUS host) | `04:42:1a:86:78:96` |
+
+```bash
+# Nudge the whole subnet so the ARP table fills in, then match the MAC.
+for i in $(seq 1 254); do ping -c1 -W 400 192.168.1.$i >/dev/null 2>&1 & done; wait
+arp -a -n | grep -i '4:42:1a:86:78:96'      # macOS prints MACs without leading zeros
+```
+
+Or just sweep for anything answering on 22 — the SSH banner identifies each host,
+since C1 runs OpenSSH 10.x on macOS and C2/C3 run 8.2p1 on Ubuntu:
+```bash
+for i in $(seq 1 254); do (nc -G 1 -w 1 192.168.1.$i 22 </dev/null 2>/dev/null | head -1 \
+  | grep -q SSH && echo "192.168.1.$i") & done; wait
+```
+
+mDNS is **not** a way around this. `ZG-GG32QFWFXC.local` resolves from C1 itself,
+but C3 has no `nss-mdns` in `/etc/nsswitch.conf`, so `.local` names do not resolve
+there at all. Fixing that needs `libnss-mdns` installed with root on C3.
 
 **From C1 (Mac) → C2:**
 ```bash
@@ -108,9 +138,9 @@ ssh user@192.168.1.88 'hostname && uname -a'
 
 **From C2 (Ubuntu) → C1:**
 ```bash
-ssh-keyscan -t ed25519 192.168.1.78 >> ~/.ssh/known_hosts 2>/dev/null
-ssh alfonsoa@192.168.1.78 'hostname && uname -a'
-# If auth fails: ssh-copy-id -i ~/.ssh/id_ed25519.pub alfonsoa@192.168.1.78
+ssh-keyscan -t ed25519 192.168.1.75 >> ~/.ssh/known_hosts 2>/dev/null
+ssh alfonsoa@192.168.1.75 'hostname && uname -a'
+# If auth fails: ssh-copy-id -i ~/.ssh/id_ed25519.pub alfonsoa@192.168.1.75
 # macOS must have Remote Login enabled (System Settings → General → Sharing → Remote Login)
 ```
 
@@ -130,7 +160,7 @@ missing any one of them looks identical from outside:
    dnsTunneling=true
    firewall=true
    ```
-   WSL then shares the host's LAN IP, so C3 answers on `192.168.1.80` port 22 —
+   WSL then shares the host's LAN IP, so C3 answers on `192.168.1.82` port 22 —
    no `netsh portproxy`, and nothing to redo when WSL's internal IP changes on
    the next boot. Requires Windows 11 22H2+ (C3 is on build 26200). It takes
    effect only after `wsl --shutdown`, which kills any Claude Code session
@@ -175,8 +205,8 @@ first, then read C1's public key back over that link and append it to C3's
 **C1 (Mac) ↔ C3 (WSL2):** both directions are set up with keys and need no
 password:
 ```bash
-ssh user@192.168.1.80 'hostname && uname -a'    # from C1
-ssh alfonsoa@192.168.1.78 'hostname'            # from C3
+ssh user@192.168.1.82 'hostname && uname -a'    # from C1
+ssh alfonsoa@192.168.1.75 'hostname'            # from C3
 ```
 
 To rebuild the pair on a fresh WSL install, run both steps **from C3** — that is
@@ -185,8 +215,8 @@ so `ssh-copy-id` from C1 cannot work; C3 → C1 is the only link that opens
 unaided, and C1's key has to travel back across it:
 ```bash
 test -f ~/.ssh/id_ed25519 || ssh-keygen -t ed25519 -C "c3" -N "" -f ~/.ssh/id_ed25519
-ssh-copy-id -i ~/.ssh/id_ed25519.pub alfonsoa@192.168.1.78          # C3 → C1
-ssh alfonsoa@192.168.1.78 'cat ~/.ssh/id_ed25519.pub' >> ~/.ssh/authorized_keys   # C1 → C3
+ssh-copy-id -i ~/.ssh/id_ed25519.pub alfonsoa@192.168.1.75          # C3 → C1
+ssh alfonsoa@192.168.1.75 'cat ~/.ssh/id_ed25519.pub' >> ~/.ssh/authorized_keys   # C1 → C3
 ```
 
 Full C2 dev workflow (deploy, logs, app start/stop) is documented in `~/aalvz/tribu/CLAUDE.md` under "Two-Machine Dev Setup".
@@ -195,8 +225,8 @@ Full C2 dev workflow (deploy, logs, app start/stop) is documented in `~/aalvz/tr
 
 When Claude is running on C2 and needs to work with C1:
 - Repos on C1: `~/dot_files`, `~/aalvz/projects`, `~/aalvz/tribu`
-- Pull from C1: `ssh alfonsoa@192.168.1.78 'cd ~/aalvz/tribu && git pull'`
-- Read files on C1: `ssh alfonsoa@192.168.1.78 'cat ~/dot_files/CLAUDE.md'`
+- Pull from C1: `ssh alfonsoa@192.168.1.75 'cd ~/aalvz/tribu && git pull'`
+- Read files on C1: `ssh alfonsoa@192.168.1.75 'cat ~/dot_files/CLAUDE.md'`
 - Tribu repo on C2 is at `/home/user/Documents/tribu/` (symlinked as `/home/user/tribu`)
 
 ### 6. Verify
@@ -214,7 +244,7 @@ test -d ~/dot_files && echo "dot_files: ok" || echo "dot_files: MISSING"
 ssh -o ConnectTimeout=3 -o BatchMode=yes user@192.168.1.88 'echo "c2: ok"' 2>/dev/null || echo "c2: NOT REACHABLE"
 
 # C3 (WSL; answers on the Windows host IP, see "Reaching C3 (WSL) over the LAN")
-ssh -o ConnectTimeout=3 -o BatchMode=yes user@192.168.1.80 'echo "c3: ok"' 2>/dev/null || echo "c3: NOT REACHABLE"
+ssh -o ConnectTimeout=3 -o BatchMode=yes user@192.168.1.82 'echo "c3: ok"' 2>/dev/null || echo "c3: NOT REACHABLE"
 ```
 
 ## Project Repos
