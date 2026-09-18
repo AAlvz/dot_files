@@ -189,9 +189,6 @@
   :ensure t
   :bind ("C-x g" . magit-status))
 
-(use-package kubernetes
-  :ensure t)
-
 (use-package company
   :ensure t
   :defer 0.1
@@ -654,7 +651,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    '(avy cmake-mode company consult embark embark-consult
-         exec-path-from-shell flycheck idle-highlight-mode kubernetes
+         exec-path-from-shell flycheck idle-highlight-mode
          magit marginalia multiple-cursors orderless treemacs vertico
          vterm wgrep which-key xclip)))
 
