@@ -296,17 +296,45 @@
           ("C-x C-q" . wgrep-change-to-wgrep-mode)
           ("C-c C-c" . wgrep-finish-edit)))
 
-;; LSP - disabled (uncomment to re-enable)
-;; (use-package lsp-mode
-;;   :init (setq lsp-keymap-prefix "C-c l")
-;;   :hook ((python-mode . lsp)
-;;          (python-ts-mode . lsp)
-;;          (yaml-mode . lsp))
-;;   :commands lsp)
-;; (use-package lsp-pyright
-;;   :after lsp-mode
-;;   :hook ((python-mode . (lambda () (require 'lsp-pyright)))
-;;          (python-ts-mode . (lambda () (require 'lsp-pyright)))))
+;; LSP via Eglot, which ships with Emacs — nothing to install for the client
+;; side, and it drives the editor's own machinery (flymake, eldoc, xref,
+;; completion-at-point) rather than bringing its own. This replaces a
+;; commented-out lsp-mode block that was never got working; two LSP clients
+;; fighting over the same buffers is not worth the trouble, so only one stays.
+;;
+;; Eglot already knows ~55 servers by major mode, so a language needs no config
+;; here — only its server installed and on PATH. `M-x eglot' starts the right
+;; one. Servers worth having for this machine:
+;;
+;;   terraform-ls          brew install hashicorp/tap/terraform-ls
+;;   yaml-language-server  npm i -g yaml-language-server
+;;   bash-language-server  npm i -g bash-language-server
+;;
+;; Autostart is deliberately limited to modes whose server is actually
+;; installed, and whose major mode exists here: a missing binary otherwise
+;; prompts for one on every file you open. Only yaml-ts-mode qualifies today —
+;; yaml-mode and terraform-mode are not installed on this machine, and hooking
+;; a mode that does not exist just hides the fact that nothing happens.
+;; yaml-ts-mode is built in but inert without its tree-sitter grammar, which is
+;; a compiled artifact and therefore machine-local, like .emacs.d/elpa. Record
+;; where to get it so a new machine only needs:
+;;     M-x treesit-install-language-grammar RET yaml RET
+(setq treesit-language-source-alist
+      '((yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))))
+
+(use-package eglot
+  :ensure nil                           ; built in since Emacs 29
+  :defer t
+  :hook ((yaml-ts-mode . eglot-ensure))
+  :custom
+  ;; Do not let a language server hijack the modeline or spam events.
+  (eglot-autoshutdown t)
+  (eglot-events-buffer-config '(:size 0 :format full))
+  :bind ( :map eglot-mode-map
+          ("C-c l r" . eglot-rename)
+          ("C-c l a" . eglot-code-actions)
+          ("C-c l f" . eglot-format)
+          ("C-c l d" . eldoc)))
 
 (defun my/vterm-kill-ring-pop ()
   "Browse kill ring with completing-read and send selection to vterm."
@@ -550,7 +578,10 @@
   :ensure t
   :bind (("C-c M-x" . consult-mode-command)
          ("C-c h" . consult-history)
-         ("C-c k" . consult-kmacro)
+         ;; Shifted, because `C-c k' now opens kubed's prefix map. Both wanted
+         ;; the same key and this one loses: kubed gets used daily, while this
+         ;; picks from the keyboard macros, of which there are none.
+         ("C-c K" . consult-kmacro)
          ("C-c m" . consult-man)
          ("C-c i" . consult-info)
          ([remap Info-search] . consult-info)
