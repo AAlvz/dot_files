@@ -217,9 +217,23 @@
    company-minimum-prefix-length 0
    company-frontends '(company-pseudo-tooltip-frontend company-preview-frontend)))
 
-(use-package flycheck
-  :ensure t
-  :init (global-flycheck-mode))
+;; Flymake, not flycheck. Eglot reports exclusively through flymake, so running
+;; flycheck alongside it meant `C-c !' opened flycheck's error list — reliably
+;; empty, while the real diagnostics sat in flymake with no key bound to them.
+;; One diagnostics system, and it is the one the LSP client feeds.
+;;
+;; flymake-mode-map ships empty apart from a fringe click and a menu entry, so
+;; the C-c ! prefix has to be claimed explicitly; it is the familiar one and
+;; flycheck is no longer here to want it.
+(use-package flymake
+  :ensure nil                           ; built in
+  :hook (prog-mode . flymake-mode)      ; flycheck was global; keep the parity
+  :bind ( :map flymake-mode-map
+          ("C-c ! l" . flymake-show-buffer-diagnostics)
+          ("C-c ! L" . flymake-show-project-diagnostics)
+          ("C-c ! n" . flymake-goto-next-error)
+          ("C-c ! p" . flymake-goto-prev-error)
+          ("C-c ! s" . flymake-start)))
 
 ;; `:hook' makes use-package defer the package, so the face has to be set
 ;; through `:custom-face' rather than `set-face-attribute' -- the latter needs
@@ -723,7 +737,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    '(avy cmake-mode company consult embark embark-consult
-         exec-path-from-shell flycheck idle-highlight-mode kubed magit
+         exec-path-from-shell idle-highlight-mode kubed magit
          marginalia multiple-cursors orderless treemacs vertico vterm
          wgrep which-key xclip)))
 
