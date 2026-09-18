@@ -327,9 +327,25 @@
   :defer t
   :hook ((yaml-ts-mode . eglot-ensure))
   :custom
-  ;; Do not let a language server hijack the modeline or spam events.
+  ;; Shut a server down once its last buffer is gone.
   (eglot-autoshutdown t)
-  (eglot-events-buffer-config '(:size 0 :format full))
+  ;; Keep the event log. Setting :size 0 turns off LSP logging entirely, which
+  ;; is exactly what you need when a server is silently not sending
+  ;; diagnostics — `M-x eglot-events-buffer' is the only way to see whether the
+  ;; schema config actually reached it.
+  (eglot-events-buffer-config '(:size 2000000 :format short))
+  ;; Without a schema, yaml-language-server only checks that the YAML parses —
+  ;; `contaners:' is perfectly well-formed YAML, so a typo'd field name draws
+  ;; nothing. `kubernetes' is a reserved schema name in the server; pointing it
+  ;; at _infra trees means manifests get validated while .gitlab-ci.yml and
+  ;; friends are left alone. Set globally rather than through per-repo
+  ;; .dir-locals.el, so this travels with the dotfiles instead of needing a
+  ;; file dropped into every work repo.
+  (eglot-workspace-configuration
+   '(:yaml (:schemas (:kubernetes ["**/_infra/**/*.yaml" "**/_infra/**/*.yml"])
+            :validate t
+            :completion t
+            :hover t)))
   :bind ( :map eglot-mode-map
           ("C-c l r" . eglot-rename)
           ("C-c l a" . eglot-code-actions)
