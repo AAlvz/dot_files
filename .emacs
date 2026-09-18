@@ -189,6 +189,23 @@
   :ensure t
   :bind ("C-x g" . magit-status))
 
+;; Kubernetes, via kubed (GNU ELPA). Replaces kubernetes.el, whose CRD and
+;; create/apply gaps were never closed. Needs only kubectl — no other deps.
+;;
+;; The kubectl on PATH here is the dockerbox wrapper, which does not accept
+;; --context and misparses -n, so kubed must be pointed at a real binary.
+;; Probe the known locations and fall back to PATH on machines that only have
+;; a normal kubectl.
+(use-package kubed
+  :ensure t
+  :defer t
+  :custom
+  (kubed-kubectl-program
+   (or (seq-find #'file-executable-p
+                 '("/usr/local/bin/kubectl" "/opt/homebrew/bin/kubectl"))
+       "kubectl"))
+  :bind-keymap ("C-c k" . kubed-prefix-map))
+
 (use-package company
   :ensure t
   :defer 0.1
@@ -651,9 +668,9 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    '(avy cmake-mode company consult embark embark-consult
-         exec-path-from-shell flycheck idle-highlight-mode
-         magit marginalia multiple-cursors orderless treemacs vertico
-         vterm wgrep which-key xclip)))
+         exec-path-from-shell flycheck idle-highlight-mode kubed magit
+         marginalia multiple-cursors orderless treemacs vertico vterm
+         wgrep which-key xclip)))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
