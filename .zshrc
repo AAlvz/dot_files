@@ -3,7 +3,16 @@
 # Everything portable lives in .shell_common, shared with .bashrc.
 # Only zsh-specific setup belongs below.
 
-[ -f "$HOME/.shell_common" ] && . "$HOME/.shell_common"
+# Load the shared config. This used to be a bare `[ -f ... ] && .` guard, which
+# fails silently: C1 was missing the ~/.shell_common symlink for two weeks and
+# just came up with no aliases, no e, no c, and nothing to explain why. Fall
+# back to the repo so a skipped symlink step is survivable, and complain if
+# neither path is there rather than starting a crippled shell in silence.
+for _sc in "$HOME/.shell_common" "$HOME/dot_files/.shell_common"; do
+  if [ -f "$_sc" ]; then . "$_sc"; _sc_loaded=1; break; fi
+done
+[ -n "$_sc_loaded" ] || print -u2 "dot_files: .shell_common not found — aliases and PATH are missing"
+unset _sc _sc_loaded
 
 # Emacs-style line editing (enables Alt+., Alt+b, Alt+f, etc.)
 bindkey -e

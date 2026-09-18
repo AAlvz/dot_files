@@ -234,6 +234,14 @@ When Claude is running on C2 and needs to work with C1:
 # Dotfiles
 test -L ~/.emacs && echo "emacs: ok" || echo "emacs: MISSING"
 test -L ~/.zshrc && echo "zshrc: ok" || echo "zshrc: MISSING"
+test -L ~/.shell_common && echo "shell_common: ok" || echo "shell_common: MISSING"
+
+# Aliases actually resolving is the real test — the symlinks can all be in
+# place while the shared config still fails to load. C1 ran for two weeks with
+# no ~/.shell_common and therefore no aliases at all, and nothing surfaced it.
+for a in e c k ll; do
+  command -v "$a" >/dev/null 2>&1 && echo "alias $a: ok" || echo "alias $a: MISSING"
+done
 
 # Repos
 test -d ~/aalvz/projects && echo "projects: ok" || echo "projects: MISSING"
