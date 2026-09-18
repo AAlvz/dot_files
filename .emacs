@@ -334,6 +334,7 @@
   ;; diagnostics — `M-x eglot-events-buffer' is the only way to see whether the
   ;; schema config actually reached it.
   (eglot-events-buffer-config '(:size 2000000 :format short))
+  :init
   ;; Without a schema, yaml-language-server only checks that the YAML parses —
   ;; `contaners:' is perfectly well-formed YAML, so a typo'd field name draws
   ;; nothing. `kubernetes' is a reserved schema name in the server; pointing it
@@ -341,11 +342,18 @@
   ;; friends are left alone. Set globally rather than through per-repo
   ;; .dir-locals.el, so this travels with the dotfiles instead of needing a
   ;; file dropped into every work repo.
-  (eglot-workspace-configuration
-   '(:yaml (:schemas (:kubernetes ["**/_infra/**/*.yaml" "**/_infra/**/*.yml"])
-            :validate t
-            :completion t
-            :hover t)))
+  ;;
+  ;; `setq-default', and NOT use-package's `:custom'. This variable is a plain
+  ;; `defvar-local', not a defcustom, so `:custom' sets nothing at all and does
+  ;; so silently — the server kept asking for configuration and Eglot kept
+  ;; answering nil. Being automatically buffer-local, it also needs the default
+  ;; binding rather than a bare `setq', which would only reach one buffer.
+  (setq-default eglot-workspace-configuration
+                '(:yaml (:schemas (:kubernetes ["**/_infra/**/*.yaml"
+                                                "**/_infra/**/*.yml"])
+                         :validate t
+                         :completion t
+                         :hover t)))
   :bind ( :map eglot-mode-map
           ("C-c l r" . eglot-rename)
           ("C-c l a" . eglot-code-actions)
