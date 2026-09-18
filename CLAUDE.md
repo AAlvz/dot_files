@@ -12,25 +12,39 @@ git clone git@github.com:AAlvz/dot_files.git ~/dot_files
 ```
 
 ### 2. Symlink dotfiles
+
 ```bash
-# Every machine (.shell_common is the shared shell config — link it first)
-ln -sf ~/dot_files/.shell_common ~/.shell_common
-ln -sf ~/dot_files/.emacs ~/.emacs
-ln -sf ~/dot_files/.gitconfig ~/.gitconfig
-
-# macOS (zsh)
-ln -sf ~/dot_files/.zshrc ~/.zshrc
-
-# Linux / WSL (bash)
-ln -sf ~/dot_files/.bashrc ~/.bashrc
-ln -sf ~/dot_files/.bash_aliases ~/.bash_aliases
-ln -sf ~/dot_files/.bash_profile ~/.bash_profile
-ln -sf ~/dot_files/.vimrc ~/.vimrc
-
-# Linux desktop only (not WSL)
-ln -sf ~/dot_files/.Xresources ~/.Xresources
-mkdir -p ~/.i3 && ln -sf ~/dot_files/.i3/config ~/.i3/config
+cd ~/dot_files && ./install.sh
 ```
+
+That is the whole step. The script detects macOS / Linux / WSL, links only what
+that platform should have, and verifies the result — including whether the
+aliases actually resolve, which is the check that matters. Options:
+
+| Command | Does |
+|---------|------|
+| `./install.sh` | Link everything for this machine, then verify |
+| `./install.sh --dry-run` | Show what would change, touch nothing |
+| `./install.sh --check` | Verify an existing install, no changes |
+
+Re-running is safe: correct symlinks are left alone, and anything real in the
+way is moved to `<name>.backup.<timestamp>` rather than overwritten. The repo
+path comes from the script's own location, so it works wherever you cloned it.
+
+What it links, by platform:
+
+| | macOS | Linux desktop | WSL |
+|---|:---:|:---:|:---:|
+| `.shell_common`, `.emacs`, `.gitconfig`, `.emacs.d/lisp` | ✓ | ✓ | ✓ |
+| `.zshrc` | ✓ | if zsh | if zsh |
+| `.bashrc`, `.bash_profile`, `.bash_aliases` | if bash | ✓ | ✓ |
+| `.vimrc` | — | ✓ | ✓ |
+| `.Xresources`, `.i3/config` | — | ✓ | **no** |
+
+The X11 and i3 files are deliberately withheld from WSL. Linking the desktop
+set there is what broke C3 for two weeks: `.bash_profile`'s `exec startx` found
+no X server, killed the login shell, and left the machine with no PATH, no
+aliases and no colors.
 
 **One config, every machine.** `.shell_common` holds all shared shell setup —
 aliases, `EDITOR`, PATH, kubectl helpers — and is sourced by both `.zshrc` and
