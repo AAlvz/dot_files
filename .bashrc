@@ -114,7 +114,15 @@ fi
 
 # Shared config for bash and zsh (aliases, editor, PATH). Single source of
 # truth, sourced last so it wins over the distro defaults above.
-[ -f "$HOME/.shell_common" ] && . "$HOME/.shell_common"
+#
+# A bare `[ -f ... ] &&` guard here fails silently: a machine missing the
+# ~/.shell_common symlink comes up with no aliases and no PATH, and nothing
+# says why. Fall back to the repo, and complain if neither path exists.
+for _sc in "$HOME/.shell_common" "$HOME/dot_files/.shell_common"; do
+  if [ -f "$_sc" ]; then . "$_sc"; _sc_loaded=1; break; fi
+done
+[ -n "$_sc_loaded" ] || echo "dot_files: .shell_common not found — aliases and PATH are missing" >&2
+unset _sc _sc_loaded
 
 # Machine-specific, untracked: SDK paths, nvm, cargo, credentials.
 [ -f "$HOME/.bashrc.local" ] && . "$HOME/.bashrc.local"
