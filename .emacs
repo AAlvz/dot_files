@@ -349,13 +349,22 @@
   ;; schema config actually reached it.
   (eglot-events-buffer-config '(:size 2000000 :format short))
   :init
-  ;; Without a schema, yaml-language-server only checks that the YAML parses —
-  ;; `contaners:' is perfectly well-formed YAML, so a typo'd field name draws
-  ;; nothing. `kubernetes' is a reserved schema name in the server; pointing it
-  ;; at _infra trees means manifests get validated while .gitlab-ci.yml and
-  ;; friends are left alone. Set globally rather than through per-repo
-  ;; .dir-locals.el, so this travels with the dotfiles instead of needing a
-  ;; file dropped into every work repo.
+  ;; No Kubernetes schema is bound to a path here, on purpose. Every _infra
+  ;; tree in ~/zillow holds nothing but kustomize/, and kustomize sources are
+  ;; not valid standalone manifests: `commonLabels' generates
+  ;; spec.selector.matchLabels at build time, so every Deployment base gets
+  ;; flagged `Missing property "selector"' against the real k8s schema. The
+  ;; only true manifest is the output of `kustomize build'.
+  ;;
+  ;; Excluding kustomize from the glob is not an option: the server prepends
+  ;; `**/' to every pattern (yamlSchemaService.js), which turns a leading `!'
+  ;; into a literal and kills the negation. Extglob — `_infra/!(kustomize)/**'
+  ;; — does work, but with every tree being kustomize it would match nothing.
+  ;;
+  ;; So schema validation is opt-in per file, via the server's modeline:
+  ;;     # yaml-language-server: $schema=<url>
+  ;; which also covers .gitlab-ci.yml and GitHub workflows. What stays on
+  ;; globally is YAML syntax checking, completion and hover.
   ;;
   ;; `setq-default', and NOT use-package's `:custom'. This variable is a plain
   ;; `defvar-local', not a defcustom, so `:custom' sets nothing at all and does
@@ -363,9 +372,7 @@
   ;; answering nil. Being automatically buffer-local, it also needs the default
   ;; binding rather than a bare `setq', which would only reach one buffer.
   (setq-default eglot-workspace-configuration
-                '(:yaml (:schemas (:kubernetes ["**/_infra/**/*.yaml"
-                                                "**/_infra/**/*.yml"])
-                         :validate t
+                '(:yaml (:validate t
                          :completion t
                          :hover t)))
   :bind ( :map eglot-mode-map
