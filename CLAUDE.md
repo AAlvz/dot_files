@@ -303,6 +303,9 @@ cd ~/Documents/tribu && git pull
 
 ## Repository structure
 
+- `install.sh` — **Machine setup.** Links the dotfiles below into `$HOME` for
+  this platform and verifies the result. `--dry-run` to preview, `--check` to
+  verify without changing anything. Start here on a new machine
 - `.emacs` — Main Emacs config (symlinked from `~/.emacs`)
 - `.shell_common` — **Shared shell config for bash and zsh, all platforms.** Portable aliases/env go here
 - `.zshrc` — Zsh entry point (macOS); sources `.shell_common`, plus zsh-only setup
