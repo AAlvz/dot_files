@@ -349,22 +349,17 @@
   ;; schema config actually reached it.
   (eglot-events-buffer-config '(:size 2000000 :format short))
   :init
-  ;; No Kubernetes schema is bound to a path here, on purpose. Every _infra
-  ;; tree in ~/zillow holds nothing but kustomize/, and kustomize sources are
-  ;; not valid standalone manifests: `commonLabels' generates
-  ;; spec.selector.matchLabels at build time, so every Deployment base gets
-  ;; flagged `Missing property "selector"' against the real k8s schema. The
-  ;; only true manifest is the output of `kustomize build'.
+  ;; Validate _infra manifests against the real Kubernetes schema. This is a
+  ;; server-side glob over file paths, so nothing has to be dropped into the
+  ;; repos themselves — these are shared with the rest of the team and are no
+  ;; place for one person's editor config. The same rules out .dir-locals.el
+  ;; and the `# yaml-language-server: $schema=' modeline.
   ;;
-  ;; Excluding kustomize from the glob is not an option: the server prepends
-  ;; `**/' to every pattern (yamlSchemaService.js), which turns a leading `!'
-  ;; into a literal and kills the negation. Extglob — `_infra/!(kustomize)/**'
-  ;; — does work, but with every tree being kustomize it would match nothing.
-  ;;
-  ;; So schema validation is opt-in per file, via the server's modeline:
-  ;;     # yaml-language-server: $schema=<url>
-  ;; which also covers .gitlab-ci.yml and GitHub workflows. What stays on
-  ;; globally is YAML syntax checking, completion and hover.
+  ;; The required-property noise this would otherwise cause is handled by
+  ;; `my/eglot-drop-kustomize-required-diags' below rather than by narrowing
+  ;; the glob, because narrowing cannot work here: the server prepends `**/'
+  ;; to every pattern (yamlSchemaService.js), turning a leading `!' into a
+  ;; literal, and every _infra tree in ~/zillow is kustomize anyway.
   ;;
   ;; `setq-default', and NOT use-package's `:custom'. This variable is a plain
   ;; `defvar-local', not a defcustom, so `:custom' sets nothing at all and does
@@ -372,9 +367,40 @@
   ;; answering nil. Being automatically buffer-local, it also needs the default
   ;; binding rather than a bare `setq', which would only reach one buffer.
   (setq-default eglot-workspace-configuration
-                '(:yaml (:validate t
+                '(:yaml (:schemas (:kubernetes ["**/_infra/**/*.yaml"
+                                                "**/_infra/**/*.yml"])
+                         :validate t
                          :completion t
                          :hover t)))
+
+  :config
+  ;; Kustomize sources are not standalone manifests, so every required-property
+  ;; complaint against them is noise: `commonLabels' generates
+  ;; spec.selector.matchLabels at build time, and overlays are partial patches
+  ;; by definition. Only `kustomize build' output can satisfy `required'.
+  ;;
+  ;; Drop just those, and only under kustomize/. Everything the schema is
+  ;; actually useful for survives — unknown fields (`contaners:'), wrong types
+  ;; (replicas as a string), bad enum values. Eglot exposes no diagnostic
+  ;; filter, so this wraps flymake's documented backend protocol instead.
+  (defun my/eglot-drop-kustomize-required-diags (orig report-fn &rest args)
+    "Call ORIG, filtering required-property diagnostics under kustomize/."
+    (let ((kustomize-p (and buffer-file-name
+                            (string-match-p "/kustomize/" buffer-file-name))))
+      (apply orig
+             (if (not kustomize-p)
+                 report-fn
+               (lambda (diags &rest more)
+                 (apply report-fn
+                        (seq-remove
+                         (lambda (d)
+                           (string-match-p "Missing property"
+                                           (flymake-diagnostic-text d)))
+                         diags)
+                        more)))
+             args)))
+  (advice-add 'eglot-flymake-backend :around
+              #'my/eglot-drop-kustomize-required-diags)
   :bind ( :map eglot-mode-map
           ("C-c l r" . eglot-rename)
           ("C-c l a" . eglot-code-actions)
