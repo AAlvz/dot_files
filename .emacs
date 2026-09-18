@@ -483,6 +483,26 @@
             (set-window-point win pt)))))))
 (advice-add 'vterm--delayed-redraw :around #'my/vterm-hold-view-during-redraw)
 
+;; k9s in a vterm buffer. It covers the thing kubed deliberately does not:
+;; kubed polls and redraws a tabulated list on demand, while k9s holds an open
+;; watch and repaints as the cluster changes — which is what you want during a
+;; deploy or an incident. vterm is a real terminal emulator, so a full-screen
+;; TUI behaves exactly as it does outside Emacs.
+;;
+;; Runs k9s as the shell rather than typing it into one, so quitting k9s
+;; closes the buffer instead of dropping into a stray prompt.
+(defun my/k9s ()
+  "Open k9s in a dedicated vterm buffer, or switch to the running one."
+  (interactive)
+  (let ((buf "*k9s*")
+        (k9s (executable-find "k9s")))
+    (cond
+     ((get-buffer buf) (pop-to-buffer buf))
+     ((not k9s) (user-error "k9s not found on exec-path (brew install k9s)"))
+     (t (let ((vterm-shell k9s))
+          (vterm buf))))))
+(global-set-key (kbd "C-c 9") #'my/k9s)
+
 (use-package vterm
   :ensure t
   :custom
