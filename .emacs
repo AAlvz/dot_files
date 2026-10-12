@@ -516,6 +516,10 @@
   (define-key vterm-mode-map (kbd "M-TAB") nil)
   (define-key vterm-mode-map (kbd "M-y") #'my/vterm-kill-ring-pop)
   (define-key vterm-mode-map (kbd "C-g") 'vterm-send-escape)
+  ;; C-c C-x → forward raw C-x to the terminal so Claude Code's C-x prefix
+  ;; works inside vterm without clobbering Emacs's own C-x prefix elsewhere.
+  (define-key vterm-mode-map (kbd "C-c C-x")
+    (lambda () (interactive) (vterm-send-key "x" nil nil t)))
   ;; Keyboard: Alt-PageUp/PageDown.  Windows Terminal leaves these alone,
   ;; unlike Shift-PageUp, and vterm does not forward them to the shell.
   (define-key vterm-mode-map (kbd "M-<prior>") #'my/vterm-scroll-back)
