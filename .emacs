@@ -634,7 +634,10 @@ directory being listed.  With a prefix argument, always start a new vterm."
    ("a"   . dirvish-quick-access)
    ("f"   . dirvish-file-info-menu)
    ("y"   . dirvish-yank-menu)
-   ("N"   . dirvish-narrow)             ; live filter, uses orderless
+   ("N"   . dirvish-narrow)             ; live filter, uses orderless; `g' clears it
+   ;; Backspace goes up, as in most file managers.  It was dired's
+   ;; `dired-unmark-backward', which `u' and `U' cover well enough.
+   ("DEL" . dired-up-directory)
    ("h"   . dirvish-history-jump)       ; recently visited dirs
    ("s"   . dirvish-quicksort)
    ("v"   . dirvish-vc-menu)
