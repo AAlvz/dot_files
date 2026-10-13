@@ -102,9 +102,13 @@
 ;; buffer is created.  Reloading this file re-runs the globalized mode, which
 ;; switches them back on in terminals that are already open.  Keep the global
 ;; mode out of vterm buffers entirely instead.
+;;
+;; Directory listings too.  The parent and directory-preview panes of
+;; dirvish's full-frame layout are not dired buffers but have a mode of their
+;; own, so a hook on `dired-mode' alone leaves them numbered.
 (defun my/line-numbers-not-in-vterm ()
-  "Return nil in vterm buffers, so the globalized mode skips them."
-  (not (derived-mode-p 'vterm-mode)))
+  "Return nil in vterm and directory buffers, so the global mode skips them."
+  (not (derived-mode-p 'vterm-mode 'dired-mode 'dirvish-directory-view-mode)))
 (advice-add 'display-line-numbers--turn-on :before-while
             #'my/line-numbers-not-in-vterm)
 (global-display-line-numbers-mode)
@@ -543,6 +547,106 @@
   (define-key vterm-copy-mode-map (kbd "<wheel-down>") #'my/vterm-wheel-down)
   (define-key vterm-copy-mode-map (kbd "q") #'vterm-copy-mode))
 
+;; Dirvish: dired with a header line, previews, subtrees and transient menus.
+;; It is a skin over dired, not a replacement -- every dired key, wdired
+;; (C-x C-q) and `dired-dwim-target' still work, and `C-x d' / `C-x C-j' open
+;; dirvish because of `dirvish-override-dired-mode'.  Emacs starts on it, so
+;; it is also the launcher: browse to a project, then RET a file or C-RET a
+;; terminal.  `?' in any dirvish buffer lists the menus.
+;;
+;; The listing switches below are GNU ls flags.  macOS ls is BSD and rejects
+;; them, which leaves dired with an empty buffer and an "ls: illegal option"
+;; error, so use gls when Homebrew's coreutils provides it and fall back to
+;; Emacs's own ls emulation when it does not.  Linux has GNU ls already.
+(when (eq system-type 'darwin)
+  (if-let* ((gls (executable-find "gls")))
+      (setq insert-directory-program gls)
+    (setq ls-lisp-use-insert-directory-program nil
+          ls-lisp-dirs-first t)
+    (require 'ls-lisp)))
+
+(defun my/vterm-in-dired-dir ()
+  "Open a vterm in the directory at point, or switch to the one already there.
+On a directory line that is the directory itself; on a file line it is the
+directory being listed.  With a prefix argument, always start a new vterm."
+  (interactive)
+  (let* ((file (dired-get-filename nil t))
+         (dir (file-name-as-directory
+               (if (and file (file-directory-p file)) file default-directory)))
+         (name (format "*vterm %s*" (abbreviate-file-name dir)))
+         (buf (get-buffer name))
+         (dv (dirvish-curr)))
+    ;; In the full-frame layout the selected window is one of three panes, and
+    ;; the terminal would open squeezed into it.  Collapse to a single pane
+    ;; first; `dirvish-quit' would bury the listing, so `C-c p' from the
+    ;; terminal would no longer lead back to it.
+    (when (and dv (dv-curr-layout dv))
+      (dirvish-layout-toggle))
+    (if (and buf (not current-prefix-arg)
+             (process-live-p (get-buffer-process buf)))
+        (pop-to-buffer-same-window buf)
+      ;; Bound only now: `default-directory' is buffer-local, so a binding
+      ;; made before the layout changed buffers would not have reached vterm.
+      (let ((default-directory dir))
+        (vterm name)))))
+
+(defun my/startup-directory ()
+  "First of the usual project roots that exists on this machine."
+  (seq-find #'file-directory-p '("~/zillow/" "~/aalvz/" "~/")))
+
+(use-package dirvish
+  :ensure t
+  :init
+  (dirvish-override-dired-mode)
+  ;; A function here is also what `emacsclient -c' / `e' with no file uses,
+  ;; so both a plain `emacs' and a fresh client frame land on dirvish.
+  (setq initial-buffer-choice
+        (lambda () (dired-noselect (my/startup-directory))))
+  :custom
+  (dired-listing-switches
+   "-l --almost-all --human-readable --group-directories-first --no-group")
+  (dired-dwim-target t)                 ; copy/move defaults to the other pane
+  (dired-recursive-copies 'always)
+  (dired-recursive-deletes 'top)
+  (delete-by-moving-to-trash t)
+  ;; `a' then a letter.  Machines without one of these just skip the entry.
+  (dirvish-quick-access-entries
+   '(("h" "~/"                 "Home")
+     ("z" "~/zillow/"          "Zillow repos")
+     ("p" "~/aalvz/"           "Personal projects")
+     ("d" "~/dot_files/"       "Dotfiles")
+     ("c" "~/claude-generic/"  "Claude tooling")
+     ("D" "~/Downloads/"       "Downloads")
+     ("t" "~/.Trash/"          "Trash")))
+  ;; No icons: they need a Nerd Font in the terminal, and this config runs in
+  ;; terminals that do not have one.  Add `nerd-icons' here once they do.
+  (dirvish-attributes '(subtree-state collapse vc-state git-msg file-size file-time))
+  (dirvish-mode-line-format '(:left (sort symlink) :right (omit yank index)))
+  (dirvish-header-line-format '(:left (path) :right (free-space)))
+  :config
+  (dirvish-peek-mode)                   ; preview files while picking in find-file
+  ;; Deliberately not M-e/M-n/M-h/M-i (windmove) or M-s (consult's prefix).
+  :bind
+  (("C-c f" . dirvish)                  ; full-frame layout with preview pane
+   ("C-c F" . dirvish-fd)               ; find files recursively, results in dirvish
+   :map dirvish-mode-map
+   ("?"   . dirvish-dispatch)           ; menu of everything
+   ("a"   . dirvish-quick-access)
+   ("f"   . dirvish-file-info-menu)
+   ("y"   . dirvish-yank-menu)
+   ("N"   . dirvish-narrow)             ; live filter, uses orderless
+   ("h"   . dirvish-history-jump)       ; recently visited dirs
+   ("s"   . dirvish-quicksort)
+   ("v"   . dirvish-vc-menu)
+   ("TAB" . dirvish-subtree-toggle)     ; expand a dir inline
+   ("M-f" . dirvish-history-go-forward)
+   ("M-b" . dirvish-history-go-backward)
+   ("M-l" . dirvish-ls-switches-menu)
+   ("M-m" . dirvish-mark-menu)
+   ("M-t" . dirvish-layout-toggle)      ; single pane <-> full frame
+   ("M-j" . dirvish-fd-jump)
+   ("C-<return>" . my/vterm-in-dired-dir)))
+
 (use-package cmake-mode
   :ensure t)
 
@@ -795,7 +899,7 @@
  '(package-selected-packages
    '(avy cmake-mode company consult embark embark-consult
          exec-path-from-shell idle-highlight-mode kubed magit
-         marginalia multiple-cursors orderless treemacs vertico vterm
+         dirvish marginalia multiple-cursors orderless treemacs vertico vterm
          wgrep which-key xclip)))
 
 (custom-set-faces
