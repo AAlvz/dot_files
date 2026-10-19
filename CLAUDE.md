@@ -356,7 +356,8 @@ since key decoding differs between the two.
 
 - `.emacs` runs `(server-start)` automatically
 - `alias e='emacsclient -nw -a ""'` — opens in the terminal; `-a ""` auto-starts a background daemon if none is running
-- `EDITOR`, `VISUAL`, `KUBE_EDITOR` all set to `emacsclient -a emacs` in `.zshrc`
+- `EDITOR`, `VISUAL`, `KUBE_EDITOR` are set in `.shell_common`: `emacsclient -nw -a ""`, but plain `emacsclient` when `$INSIDE_EMACS` is set
+- **Never `emacsclient -nw` from inside a vterm.** The daemon opens a tty frame on its own vterm pty and deadlocks in `tcdrain()`, which freezes every frame. This is what happens when Claude Code's external editor (`ctrl+g` / `ctrl+x ctrl+e`) runs in a vterm. Cause, the safe way to unstick it, and why both `.emacs` and `.shell_common` need the fix: [docs/vterm-emacsclient-deadlock.md](docs/vterm-emacsclient-deadlock.md)
 - Use `C-x #` (`server-edit`) to finish editing when a program is waiting (kubectl edit, git commit, crontab -e, etc.)
 - For normal file editing (opened manually), use Emacs as usual — no need for `C-x #`
 - Only the first Emacs to start wins the server socket; other `emacs -nw` instances are unreachable by `emacsclient`

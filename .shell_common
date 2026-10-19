@@ -41,6 +41,9 @@ cd() {
 # emacsclient reuses a running Emacs; -a "" starts a daemon if none exists.
 # Identical on every platform, which is the whole point.
 export EDITOR='emacsclient -nw -a ""'
+# Inside an Emacs terminal (vterm) -nw makes the daemon open a tty frame on its
+# own pty and deadlock in tcdrain; open a plain buffer instead (finish: C-x #).
+[ -n "$INSIDE_EMACS" ] && EDITOR='emacsclient'
 export VISUAL="$EDITOR"
 export KUBE_EDITOR="$EDITOR"
 # A plain `emacsclient -nw -a ""` alias loses a race on a cold machine: -a ""

@@ -512,6 +512,11 @@
   :custom
   (vterm-always-compile-module t)
   (vterm-max-scrollback 100000)
+  ;; Never `emacsclient -nw' inside vterm: the daemon would open a tty frame
+  ;; on its own vterm pty and deadlock in tcdrain() waiting for itself to
+  ;; read the output.  Plain emacsclient opens a buffer; finish with C-x #.
+  (vterm-environment '("EDITOR=emacsclient" "VISUAL=emacsclient"
+                       "KUBE_EDITOR=emacsclient"))
   :hook
   (vterm-mode . (lambda () (display-line-numbers-mode -1)))
   :config
