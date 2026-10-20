@@ -552,6 +552,129 @@
   (define-key vterm-copy-mode-map (kbd "<wheel-down>") #'my/vterm-wheel-down)
   (define-key vterm-copy-mode-map (kbd "q") #'vterm-copy-mode))
 
+;; Notepad: a scratch that pops up over whatever is being read, mainly to take
+;; notes on long Claude or terminal output without bouncing in and out of
+;; `vterm-copy-mode' for every note.  C-c j opens it at the bottom, quoting the
+;; line at point (or the region) when reading -- in a vterm that means copy
+;; mode, since point in a live vterm is just the prompt.  C-c j again (or
+;; C-c C-c) hides it and returns to the same window and position.  Notes
+;; accumulate until C-c J pastes them all: into a vterm as one bracketed paste,
+;; so the newlines do not submit, leaving copy mode first if needed.  The paste
+;; then clears the notepad (C-u C-c J keeps it), and the text stays on the kill
+;; ring either way.  Backed by a file, so notes outlive an Emacs restart.
+(defvar my/notepad-file (locate-user-emacs-file "notepad.md")
+  "File behind the notepad buffer.")
+
+(defvar my/notepad-return-window nil
+  "Window that was selected when the notepad was opened.")
+
+(defvar my/notepad--pending nil
+  "(START . TEXT) of the quote inserted on the last open, until written under.")
+
+(defvar-keymap my/notepad-mode-map
+  "C-c C-c" #'my/notepad-hide)
+
+(define-minor-mode my/notepad-mode
+  "Minor mode for the pop-up notepad buffer."
+  :lighter " Notepad")
+
+(defun my/notepad-buffer ()
+  "Return the notepad buffer, visiting `my/notepad-file' if needed."
+  (let ((buf (find-file-noselect my/notepad-file)))
+    (with-current-buffer buf
+      (unless my/notepad-mode (my/notepad-mode 1)))
+    buf))
+
+(defun my/notepad--quote ()
+  "Return the region, or the line at point, as `> ' quoted lines, or nil.
+Nil in a live vterm without a region: point there is the prompt, not text
+being read.  Box-drawing borders from TUIs such as Claude Code are trimmed."
+  (when (or (use-region-p)
+            (not (derived-mode-p 'vterm-mode))
+            (bound-and-true-p vterm-copy-mode))
+    (let* ((text (if (use-region-p)
+                     (buffer-substring-no-properties (region-beginning) (region-end))
+                   (buffer-substring-no-properties (line-beginning-position)
+                                                   (line-end-position))))
+           (trim "[ \t│┃║]+")
+           (lines (seq-remove #'string-empty-p
+                              (mapcar (lambda (l) (string-trim l trim trim))
+                                      (split-string text "\n")))))
+      (when lines
+        (mapconcat (lambda (l) (concat "> " l)) lines "\n")))))
+
+(defun my/notepad-toggle (&optional no-quote)
+  "Pop up the notepad, quoting the line at point; hide it if already in it.
+With a prefix argument NO-QUOTE, open it without quoting anything."
+  (interactive "P")
+  (let* ((buf (my/notepad-buffer))
+         (win (get-buffer-window buf)))
+    (if (and win (eq win (selected-window)))
+        (my/notepad-hide)
+      (let ((quoted (unless no-quote (my/notepad--quote))))
+        (when (use-region-p) (deactivate-mark))
+        (setq my/notepad-return-window (selected-window))
+        (select-window
+         (display-buffer buf '((display-buffer-in-side-window)
+                               (side . bottom)
+                               (window-height . 0.3))))
+        ;; Normalise the tail so repeated toggles never pile up blank lines.
+        (goto-char (point-max))
+        (skip-chars-backward " \t\n")
+        (delete-region (point) (point-max))
+        (let ((start (point)))
+          (unless (bobp) (insert (if quoted "\n\n" "\n")))
+          (when quoted (insert quoted "\n"))
+          (setq my/notepad--pending
+                (and quoted (cons start (buffer-substring start (point))))))))))
+
+(defun my/notepad-hide ()
+  "Save and hide the notepad, returning to the window it was opened from."
+  (interactive)
+  (let ((buf (my/notepad-buffer)))
+    (with-current-buffer buf
+      ;; Opened and closed without writing anything: drop that quote, so a
+      ;; quick look does not leave a dangling one behind.
+      (pcase my/notepad--pending
+        (`(,start . ,text)
+         (when (and (<= start (point-max))
+                    (equal (buffer-substring start (point-max)) text))
+           (delete-region start (point-max)))))
+      (setq my/notepad--pending nil)
+      (when (buffer-modified-p)
+        (let ((save-silently t)) (save-buffer))))
+    (when-let* ((win (get-buffer-window buf)))
+      (quit-window nil win))
+    (when (window-live-p my/notepad-return-window)
+      (select-window my/notepad-return-window))))
+
+(defun my/notepad-paste (&optional keep)
+  "Paste the whole notepad at point, then clear it.
+In a vterm, leave copy mode and send it as one bracketed paste.  With a
+prefix argument KEEP, leave the notepad as it is."
+  (interactive "P")
+  (let* ((buf (my/notepad-buffer))
+         (text (string-trim (with-current-buffer buf
+                              (buffer-substring-no-properties (point-min) (point-max))))))
+    (when (string-empty-p text)
+      (user-error "Notepad is empty"))
+    (when (eq (current-buffer) buf)
+      (my/notepad-hide))
+    (kill-new text)
+    (if (derived-mode-p 'vterm-mode)
+        (progn
+          (when (bound-and-true-p vterm-copy-mode) (vterm-copy-mode -1))
+          (vterm-send-string text t))
+      (insert text))
+    (unless keep
+      (with-current-buffer buf
+        (erase-buffer)
+        (let ((save-silently t)) (save-buffer))))
+    (message "Notepad pasted%s" (if keep "" " and cleared"))))
+
+(global-set-key (kbd "C-c j") #'my/notepad-toggle)
+(global-set-key (kbd "C-c J") #'my/notepad-paste)
+
 ;; Dirvish: dired with a header line, previews, subtrees and transient menus.
 ;; It is a skin over dired, not a replacement -- every dired key, wdired
 ;; (C-x C-q) and `dired-dwim-target' still work, and `C-x d' / `C-x C-j' open
