@@ -554,12 +554,26 @@
 
 ;; jot: a pop-up notepad for taking notes while reading, mainly long Claude or
 ;; terminal output, without bouncing in and out of `vterm-copy-mode' for every
-;; note.  C-c j quotes the line at point and opens it; C-c j again goes back;
-;; C-c J pastes every note (into a vterm as one bracketed paste) and clears it.
-;; It is our own package, https://github.com/AAlvz/jot.  A checkout at
-;; ~/aalvz/jot wins, so edits there are live; otherwise it is installed from
-;; GitHub once.  `package-vc-install' rather than use-package's :vc, because
-;; :vc needs Emacs 30 and C3 is on 29.
+;; note.  Our own package: https://github.com/AAlvz/jot (README has the full
+;; manual, CHANGELOG.md what changed).
+;;
+;;   C-c j      pop the notepad up under the line at point, quoting it (or the
+;;              region); again, or C-c C-c inside it, goes back to reading
+;;   C-u C-c j  pop it up without quoting
+;;   C-c J      paste every note at point -- into a vterm as one bracketed
+;;              paste, leaving copy mode first -- and clear the notepad
+;;   C-u C-c J  paste but keep the notes
+;;
+;; The pop-up is a child frame, which terminal Emacs has only since 31: C1
+;; gets the pop-up, C3 (Emacs 29) quietly gets the bottom side window instead.
+;; It shows the whole notepad opened on the newest note, so scroll or C-r in it
+;; to reach older ones.  Notes live in ~/.emacs.d/jot.md.
+;;
+;; Where it comes from: a checkout at ~/aalvz/jot wins, so edits there are live
+;; on the next load (and whatever branch is checked out is what runs).
+;; Otherwise it is installed from GitHub once; `M-x package-vc-upgrade RET jot'
+;; pulls later releases.  `package-vc-install' rather than use-package's :vc,
+;; because :vc needs Emacs 30 and C3 is on 29.
 (let ((checkout (expand-file-name "~/aalvz/jot")))
   (cond ((file-exists-p (expand-file-name "jot.el" checkout))
          (add-to-list 'load-path checkout))
@@ -570,7 +584,16 @@
 (use-package jot
   :ensure nil
   :bind (("C-c j" . jot-toggle)
-         ("C-c J" . jot-paste)))
+         ("C-c J" . jot-paste))
+  ;; These are jot's defaults, spelled out so they are easy to tweak.
+  :custom
+  (jot-display 'popup)          ; or 'side for the docked window everywhere
+  (jot-popup-width 60)          ; columns; shrinks to fit small windows
+  (jot-popup-height 8)          ; lines; never more than half the window
+  (jot-window-side 'bottom)     ; where the side window docks (fallback)
+  (jot-window-size 0.3))        ; side window: fraction of the frame
+;; The pop-up's colors come from the `jot-popup' face (inherits `tooltip'):
+;;   M-x customize-face RET jot-popup RET
 
 ;; Dirvish: dired with a header line, previews, subtrees and transient menus.
 ;; It is a skin over dired, not a replacement -- every dired key, wdired
