@@ -70,6 +70,12 @@
 (setq scroll-conservatively 101)
 (load-theme 'misterioso)
 
+;; Selection: misterioso draws it #2d4948 on a #2d3743 background, close
+;; enough to vanish.  Dark gold is a different hue from that background and
+;; from jot's gray, blue and green pop-ups, and keeps white text readable.
+(set-face-attribute 'region nil
+                    :background "#8a6d1f" :foreground "#ffffff" :extend t)
+
 ;; Active window: bright blue mode line
 (set-face-attribute 'mode-line nil
                     :background "#2257A0"
