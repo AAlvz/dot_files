@@ -216,6 +216,10 @@
        "kubectl"))
   :bind-keymap ("C-c k" . kubed-prefix-map))
 
+;; Completion pop-up while typing.  It offers words once two characters of one
+;; are typed: with a minimum prefix of 0 it guessed from nothing at every pause
+;; (the odd `$test' suggestions).  In the pop-up, M-n/M-p move, RET or TAB
+;; completes, C-g dismisses; M-x company-complete asks for it on demand.
 (use-package company
   :ensure t
   :defer 0.1
@@ -224,7 +228,7 @@
   (setq-default
    company-idle-delay 0.9
    company-require-match nil
-   company-minimum-prefix-length 0
+   company-minimum-prefix-length 2
    company-frontends '(company-pseudo-tooltip-frontend company-preview-frontend)))
 
 ;; Flymake, not flycheck. Eglot reports exclusively through flymake, so running
