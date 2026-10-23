@@ -216,20 +216,41 @@
        "kubectl"))
   :bind-keymap ("C-c k" . kubed-prefix-map))
 
-;; Completion pop-up while typing.  It offers words once two characters of one
-;; are typed: with a minimum prefix of 0 it guessed from nothing at every pause
-;; (the odd `$test' suggestions).  In the pop-up, M-n/M-p move, RET or TAB
-;; completes, C-g dismisses; M-x company-complete asks for it on demand.
+;; Completion pop-up while typing: it offers words once two characters of one
+;; are typed (with 0 it guessed from nothing at every pause, hence `$test').
+;; In the pop-up, C-n/C-p move, TAB completes, RET takes the selection, C-g
+;; dismisses; M-x company-complete asks for it on demand.
+;;
+;; - Not in terminals or directory listings: there is nothing to complete in a
+;;   vterm, dired or dirvish buffer, only a pop-up in the way.
+;; - Company's default frontends.  `company-preview-frontend' alone drew the
+;;   top candidate as grey ghost text at point all the time; the default only
+;;   previews when there is a single candidate.
+;; - Words from other buffers keep their case: `ConfigMap', not `configmap'.
+;; - Only sources that exist here: capf (eglot, elisp, any mode's own
+;;   completion), file names, keywords and words from code, then any buffer.
+;;   bbdb, semantic, cmake, clang, oddmuse, gtags and etags were never set up.
+;; - M-0..M-9 stay tab switching: company binds them in its pop-up to pick a
+;;   candidate, which took the tab keys away whenever it showed.
 (use-package company
   :ensure t
   :defer 0.1
   :config
-  (global-company-mode t)
   (setq-default
-   company-idle-delay 0.9
+   company-idle-delay 0.3
    company-require-match nil
    company-minimum-prefix-length 2
-   company-frontends '(company-pseudo-tooltip-frontend company-preview-frontend)))
+   company-global-modes '(not vterm-mode dired-mode dirvish-directory-view-mode)
+   company-dabbrev-downcase nil
+   company-dabbrev-ignore-case nil
+   company-tooltip-align-annotations t
+   company-backends '(company-capf
+                      company-files
+                      (company-dabbrev-code company-keywords)
+                      company-dabbrev))
+  (dotimes (i 10)
+    (define-key company-active-map (kbd (format "M-%d" i)) nil))
+  (global-company-mode t))
 
 ;; Flymake, not flycheck. Eglot reports exclusively through flymake, so running
 ;; flycheck alongside it meant `C-c !' opened flycheck's error list — reliably
