@@ -573,6 +573,8 @@
 ;;   C-c J      paste every note at point -- into a vterm as one bracketed
 ;;              paste, leaving copy mode first -- and clear the notepad
 ;;   C-u C-c J  paste but keep the notes
+;;   C-c a      ask Claude about the line or region (jot-ask, below); type the
+;;              question, C-c C-a sends it, the answer lands under it
 ;;
 ;; The pop-up is a child frame, which terminal Emacs has only since 31: C1
 ;; gets the pop-up, C3 (Emacs 29) quietly gets the bottom side window instead.
@@ -602,6 +604,17 @@
   (jot-popup-height 8)          ; lines; never more than half the window
   (jot-window-side 'bottom)     ; where the side window docks (fallback)
   (jot-window-size 0.3))        ; side window: fraction of the frame
+;; jot-ask: questions to Claude Code (`claude -p') from a note.  Its own
+;; use-package, so `C-c a' loads jot-ask.el and not just jot.el.  In the
+;; notepad: C-c C-a sends, C-c C-p switches quick/project, C-c C-d picks the
+;; project directory.  Quick questions run from ~/.emacs.d/jot-ask/ with no
+;; tools; project ones read the project but never change it.
+(use-package jot-ask
+  :ensure nil
+  :bind ("C-c a" . jot-ask)
+  :custom
+  (jot-ask-default-mode 'quick)  ; or 'project
+  (jot-ask-model nil))          ; nil = Claude Code's usual model
 ;; The pop-up's colors come from the `jot-popup' face (inherits `tooltip'):
 ;;   M-x customize-face RET jot-popup RET
 
