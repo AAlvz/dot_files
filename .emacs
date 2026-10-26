@@ -361,9 +361,9 @@
 ;;
 ;; Autostart is deliberately limited to modes whose server is actually
 ;; installed, and whose major mode exists here: a missing binary otherwise
-;; prompts for one on every file you open. Only yaml-ts-mode qualifies today —
-;; yaml-mode and terraform-mode are not installed on this machine, and hooking
-;; a mode that does not exist just hides the fact that nothing happens.
+;; prompts for one on every file you open. yaml-ts-mode and terraform-mode
+;; qualify today — yaml-mode is not installed, and hooking a mode that does not
+;; exist just hides the fact that nothing happens.
 ;; yaml-ts-mode is built in but inert without its tree-sitter grammar, which is
 ;; a compiled artifact and therefore machine-local, like .emacs.d/elpa. Record
 ;; where to get it so a new machine only needs:
@@ -371,10 +371,21 @@
 (setq treesit-language-source-alist
       '((yaml . ("https://github.com/ikatyang/tree-sitter-yaml"))))
 
+;; Terraform: the major mode comes from MELPA (Emacs has none built in) and
+;; claims .tf/.tfvars; eglot already maps it to `terraform-ls serve'. The mode
+;; only highlights and indents; syntax errors, validation, completion of
+;; resource/attribute names and jump-to-module all come from terraform-ls.
+;; Formatting is `C-c l f' (eglot-format → terraform fmt rules), not the mode's
+;; own format-on-save, which shells out to the dockerbox terraform wrapper.
+(use-package terraform-mode
+  :ensure t
+  :defer t)
+
 (use-package eglot
   :ensure nil                           ; built in since Emacs 29
   :defer t
-  :hook ((yaml-ts-mode . eglot-ensure))
+  :hook ((yaml-ts-mode . eglot-ensure)
+         (terraform-mode . eglot-ensure))
   :custom
   ;; Shut a server down once its last buffer is gone.
   (eglot-autoshutdown t)
@@ -994,8 +1005,8 @@ directory being listed.  With a prefix argument, always start a new vterm."
  '(package-selected-packages
    '(avy cmake-mode company consult embark embark-consult
          exec-path-from-shell idle-highlight-mode kubed magit
-         dirvish marginalia multiple-cursors orderless treemacs vertico vterm
-         wgrep which-key xclip)))
+         dirvish marginalia multiple-cursors orderless terraform-mode
+         treemacs vertico vterm wgrep which-key xclip)))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
