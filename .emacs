@@ -549,6 +549,59 @@
           (vterm buf))))))
 (global-set-key (kbd "C-c 9") #'my/k9s)
 
+;; Matrix screensaver: cmatrix full-frame in a vterm, any key ends it and puts
+;; the windows back.  Same trick as k9s -- cmatrix is the shell, so when -s
+;; makes it exit on a keypress the buffer goes with it.  Needs the binary:
+;; brew install cmatrix / sudo apt install cmatrix.
+(defvar my/matrix-command "cmatrix -s -b -u 6"
+  "Command line the matrix screensaver runs.")
+(defvar my/matrix-idle-seconds 300
+  "Idle time before the matrix starts on its own.")
+(defvar my/matrix--winconf nil
+  "Window configuration to restore when the matrix exits.")
+
+(defun my/matrix ()
+  "Run cmatrix full-frame in a vterm; any key exits and restores the windows."
+  (interactive)
+  (cond
+   ((get-buffer "*matrix*") (switch-to-buffer "*matrix*"))
+   ((not (executable-find "cmatrix"))
+    (user-error "cmatrix not found on exec-path (brew install cmatrix)"))
+   (t (setq my/matrix--winconf (current-window-configuration))
+      (delete-other-windows)
+      (let ((vterm-shell my/matrix-command))
+        (vterm "*matrix*")))))
+(global-set-key (kbd "C-c M") #'my/matrix)
+
+(defun my/matrix--restore (buffer _event)
+  "Put the windows back once the *matrix* BUFFER's process exits."
+  (when (and my/matrix--winconf (equal (buffer-name buffer) "*matrix*"))
+    (set-window-configuration my/matrix--winconf)
+    (setq my/matrix--winconf nil)))
+(add-hook 'vterm-exit-functions #'my/matrix--restore)
+
+;; The daemon keeps an invisible frame of its own; starting cmatrix there
+;; would burn CPU for nobody, so only fire on a real client frame.
+(defun my/matrix--when-idle ()
+  (when (and (executable-find "cmatrix")
+             (not (get-buffer "*matrix*"))
+             (not (active-minibuffer-window))
+             (or (not (daemonp)) (frame-parameter nil 'client)))
+    (my/matrix)))
+
+(defvar my/matrix--idle-timer nil)
+(defun my/matrix-idle-toggle ()
+  "Turn the idle matrix screensaver on or off."
+  (interactive)
+  (if my/matrix--idle-timer
+      (progn (cancel-timer my/matrix--idle-timer)
+             (setq my/matrix--idle-timer nil)
+             (message "Matrix screensaver off"))
+    (setq my/matrix--idle-timer
+          (run-with-idle-timer my/matrix-idle-seconds t #'my/matrix--when-idle))
+    (message "Matrix screensaver on after %ds idle" my/matrix-idle-seconds)))
+(unless my/matrix--idle-timer (my/matrix-idle-toggle))
+
 (use-package vterm
   :ensure t
   :custom
