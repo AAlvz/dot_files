@@ -390,9 +390,18 @@
   :defer t
   :custom (markdown-command "pandoc -f gfm"))
 
+;; The package's default look is Solarized Dark. Use GitHub's own dark
+;; stylesheet instead (it targets the `markdown-body' article the preview page
+;; already uses), plus a dark page background and full window width — the
+;; stock GitHub layout is a narrow 980px centred column.
+;; `:config' + setq rather than `:custom': this is a plain defvar.
 (use-package markdown-preview-mode
   :ensure t
-  :defer t)
+  :defer t
+  :config
+  (setq markdown-preview-stylesheets
+        '("https://cdn.jsdelivr.net/npm/github-markdown-css@5/github-markdown-dark.min.css"
+          "<style>body{background:#0d1117;margin:0} .markdown-body{box-sizing:border-box;max-width:none;margin:0;padding:24px 32px}</style>")))
 
 (use-package eglot
   :ensure nil                           ; built in since Emacs 29
