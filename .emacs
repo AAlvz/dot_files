@@ -381,6 +381,19 @@
   :ensure t
   :defer t)
 
+;; Markdown: `M-x markdown-preview-mode' in a .md buffer starts a small local
+;; web server and opens the rendered page (GitHub-style CSS) in the browser,
+;; refreshing it on every save. Rendering is done by pandoc, which must be on
+;; PATH: brew install pandoc.
+(use-package markdown-mode
+  :ensure t
+  :defer t
+  :custom (markdown-command "pandoc -f gfm"))
+
+(use-package markdown-preview-mode
+  :ensure t
+  :defer t)
+
 (use-package eglot
   :ensure nil                           ; built in since Emacs 29
   :defer t
