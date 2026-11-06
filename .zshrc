@@ -29,5 +29,15 @@ do
 done
 unset _zsh_autosuggest
 
+# Unset CLAUDE_CODE_CHILD_SESSION so interactive `claude` sessions save transcripts.
+# Claude Code sets this var when spawning subagents; if a new terminal inherits it,
+# Claude treats the session as a child and skips writing transcripts to ~/.claude/sessions/.
+alias claude='env -u CLAUDE_CODE_CHILD_SESSION claude'
+
 # Machine-specific zsh settings, untracked.
 [ -f "$HOME/.zshrc.local" ] && . "$HOME/.zshrc.local"
+export PATH="$HOME/.local/bin:$PATH"
+
+# k9s shells out to the first `kubectl` in PATH for shell/attach/port-forward.
+# The dockerbox kubectl (added by ~/.dev_environment/bash_functions) breaks on --context/-it, so force the system one.
+alias k9s='PATH=/usr/local/bin:$PATH k9s'
