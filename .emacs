@@ -882,10 +882,29 @@ directory being listed.  With a prefix argument, always start a new vterm."
             (message "No URL found at point or in clipboard")))))))
 (global-set-key (kbd "C-c C-v") 'browse-url-smart)
 (global-set-key (kbd "C-x O") 'previous-multiframe-window)
-(global-set-key (kbd "M-e") 'windmove-up)
-(global-set-key (kbd "M-n") 'windmove-down)
-(global-set-key (kbd "M-h") 'windmove-left)
-(global-set-key (kbd "M-i") 'windmove-right)
+;; colemak-nav: move between windows with Alt+Shift and the right hand's
+;; inverted T -- M-U up, M-N left, M-E down, M-I right.  Our own package:
+;; https://github.com/AAlvz/colemak-nav.  It only binds Meta+Shift letters,
+;; which stock Emacs leaves free, so M-u/M-n/M-e/M-i/M-h keep their defaults
+;; (they used to be windmove here, which died in vterm and stole minibuffer
+;; history).  It is a minor mode, so it wins over vterm too.  S-arrows (above)
+;; still work.  Same load rule as jot: a checkout at ~/aalvz/colemak-nav wins,
+;; otherwise it is installed from GitHub once.
+(let ((checkout (expand-file-name "~/aalvz/colemak-nav")))
+  (cond ((file-exists-p (expand-file-name "colemak-nav.el" checkout))
+         (add-to-list 'load-path checkout))
+        ((not (package-installed-p 'colemak-nav))
+         (condition-case err
+             (package-vc-install "https://github.com/AAlvz/colemak-nav")
+           (error (message "colemak-nav: install failed: %s"
+                           (error-message-string err)))))))
+(use-package colemak-nav
+  :ensure nil
+  :custom
+  (colemak-nav-layout 'colemak)       ; qwerty, colemak-dh, dvorak, workman
+  (colemak-nav-scheme 'inverted-t)    ; or 'positional for vim's h n e i
+  :config
+  (colemak-nav-mode 1))
 
 ;; Buffers & navigation
 (global-set-key (kbd "C-c n") 'next-buffer)
