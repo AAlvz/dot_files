@@ -756,7 +756,7 @@ directory being listed.  With a prefix argument, always start a new vterm."
          (dv (dirvish-curr)))
     ;; In the full-frame layout the selected window is one of three panes, and
     ;; the terminal would open squeezed into it.  Collapse to a single pane
-    ;; first; `dirvish-quit' would bury the listing, so `C-c p' from the
+    ;; first; `dirvish-quit' would bury the listing, so `M-L' from the
     ;; terminal would no longer lead back to it.
     (when (and dv (dv-curr-layout dv))
       (dirvish-layout-toggle))
@@ -883,7 +883,9 @@ directory being listed.  With a prefix argument, always start a new vterm."
 (global-set-key (kbd "C-c C-v") 'browse-url-smart)
 (global-set-key (kbd "C-x O") 'previous-multiframe-window)
 ;; colemak-nav: move between windows with Alt+Shift and the right hand's
-;; inverted T -- M-U up, M-N left, M-E down, M-I right.  Our own package:
+;; inverted T -- M-U up, M-N left, M-E down, M-I right -- and switch buffers
+;; with the keys around it: M-L previous, M-Y next, M-H back to the last
+;; buffer (again to return; per window).  Our own package:
 ;; https://github.com/AAlvz/colemak-nav.  It only binds Meta+Shift letters,
 ;; which stock Emacs leaves free, so M-u/M-n/M-e/M-i/M-h keep their defaults
 ;; (they used to be windmove here, which died in vterm and stole minibuffer
@@ -906,10 +908,8 @@ directory being listed.  With a prefix argument, always start a new vterm."
   :config
   (colemak-nav-mode 1))
 
-;; Buffers & navigation
-(global-set-key (kbd "C-c n") 'next-buffer)
-(global-set-key (kbd "C-c p") 'previous-buffer)
-(global-set-key (kbd "C-c e") 'previous-buffer)
+;; Buffers & navigation.  Previous/next buffer are colemak-nav's M-L / M-Y
+;; (and M-H flips back to the last one), which freed C-c n, C-c p and C-c e.
 (global-set-key (kbd "C-x K") 'recentf-open-most-recent-file)
 (global-set-key (kbd "C-x C-r") 'consult-recent-file)
 ;; Text terminals cannot encode most Ctrl/Shift chords: C-<return> and RET both
