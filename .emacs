@@ -667,7 +667,12 @@
   (define-key vterm-copy-mode-map (kbd "<mouse-5>")   #'my/vterm-wheel-down)
   (define-key vterm-copy-mode-map (kbd "<wheel-up>")  #'my/vterm-wheel-up)
   (define-key vterm-copy-mode-map (kbd "<wheel-down>") #'my/vterm-wheel-down)
-  (define-key vterm-copy-mode-map (kbd "q") #'vterm-copy-mode))
+  (define-key vterm-copy-mode-map (kbd "q") #'vterm-copy-mode)
+  ;; C-t toggles read (copy) mode: one chord in, the same chord (or q) out.
+  ;; The terminal no longer gets C-t (zsh transpose-chars, Claude Code's task
+  ;; list); `M-x vterm-send-next-key RET C-t' still sends one.  C-c C-t works too.
+  (define-key vterm-mode-map (kbd "C-t") #'vterm-copy-mode)
+  (define-key vterm-copy-mode-map (kbd "C-t") #'vterm-copy-mode))
 
 ;; jot: a pop-up notepad for taking notes while reading, mainly long Claude or
 ;; terminal output, without bouncing in and out of `vterm-copy-mode' for every
