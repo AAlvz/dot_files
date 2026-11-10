@@ -909,6 +909,39 @@ directory being listed.  With a prefix argument, always start a new vterm."
   :config
   (colemak-nav-mode 1))
 
+;; Faster line movement while a key is held.  macOS already repeats keys at
+;; its fastest setting (30 ms, KeyRepeat 2), so the speed-up happens here: once
+;; C-n / C-p (or the arrows) have repeated `my/hold-move-after' times in a row,
+;; each repeat moves `my/hold-move-step' lines instead of one.  Single taps and
+;; C-u N C-n are untouched.  Advice rather than new commands, so `next-line'
+;; keeps its goal column.  Tweak live: (setq my/hold-move-step 3).
+(defvar my/hold-move-step 2
+  "Lines moved per key repeat once a line-movement key is held down.")
+(defvar my/hold-move-after 6
+  "Repeats before the faster step starts; 6 is about 0.2 s of holding.")
+(defvar my/hold-move-gap 0.1
+  "Seconds between two events for them to count as one held key.")
+(defvar my/hold-move--count 0)
+(defvar my/hold-move--last 0.0)
+
+(defun my/hold-move--filter (args)
+  "Multiply the line count in ARGS while C-n / C-p is held down."
+  (if (not (and (memq this-command '(next-line previous-line))
+                (null current-prefix-arg)))
+      args
+    (let ((now (float-time)))
+      (setq my/hold-move--count
+            (if (and (eq last-command this-command)
+                     (< (- now my/hold-move--last) my/hold-move-gap))
+                (1+ my/hold-move--count)
+              0)
+            my/hold-move--last now)
+      (if (>= my/hold-move--count my/hold-move-after)
+          (cons (* my/hold-move-step (or (car args) 1)) (cdr args))
+        args))))
+(advice-add 'next-line :filter-args #'my/hold-move--filter)
+(advice-add 'previous-line :filter-args #'my/hold-move--filter)
+
 ;; Buffers & navigation.  Previous/next buffer are colemak-nav's M-L / M-Y
 ;; (and M-H flips back to the last one), which freed C-c n, C-c p and C-c e.
 (global-set-key (kbd "C-x K") 'recentf-open-most-recent-file)
