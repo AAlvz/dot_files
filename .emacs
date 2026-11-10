@@ -674,12 +674,12 @@
 ;; note.  Our own package: https://github.com/AAlvz/jot (README has the full
 ;; manual, CHANGELOG.md what changed).
 ;;
-;;   C-c j      pop the notepad up under the line at point, quoting it (or the
+;;   C-c n      pop the notepad up under the line at point, quoting it (or the
 ;;              region); again, or C-c C-c inside it, goes back to reading
-;;   C-u C-c j  pop it up without quoting
-;;   C-c J      paste every note at point -- into a vterm as one bracketed
+;;   C-u C-c n  pop it up without quoting
+;;   C-c N      paste every note at point -- into a vterm as one bracketed
 ;;              paste, leaving copy mode first -- and clear the notepad
-;;   C-u C-c J  paste but keep the notes
+;;   C-u C-c N  paste but keep the notes
 ;;   C-c a      ask Claude about the line or region (jot-ask, below); type the
 ;;              question, C-c C-a sends it, the answer lands under it
 ;;
@@ -702,8 +702,8 @@
            (error (message "jot: install failed: %s" (error-message-string err)))))))
 (use-package jot
   :ensure nil
-  :bind (("C-c j" . jot-toggle)
-         ("C-c J" . jot-paste))
+  :bind (("C-c n" . jot-toggle)
+         ("C-c N" . jot-paste))
   ;; These are jot's defaults, spelled out so they are easy to tweak.
   :custom
   (jot-display 'popup)          ; or 'side for the docked window everywhere
