@@ -885,7 +885,8 @@ directory being listed.  With a prefix argument, always start a new vterm."
 ;; colemak-nav: move between windows with Alt+Shift and the right hand's
 ;; inverted T -- M-U up, M-N left, M-E down, M-I right -- and switch buffers
 ;; with the keys around it: M-L previous, M-Y next, M-H back to the last
-;; buffer (again to return; per window).  Our own package:
+;; buffer (again to return; per window); and tabs with the bottom row: M-K
+;; previous, M-M next (M-TAB still flips to the last tab).  Our own package:
 ;; https://github.com/AAlvz/colemak-nav.  It only binds Meta+Shift letters,
 ;; which stock Emacs leaves free, so M-u/M-n/M-e/M-i/M-h keep their defaults
 ;; (they used to be windmove here, which died in vterm and stole minibuffer
