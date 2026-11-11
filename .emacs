@@ -640,6 +640,7 @@
   (dotimes (i 10)
     (define-key vterm-mode-map (kbd (format "M-%d" i)) nil))
   (define-key vterm-mode-map (kbd "M-TAB") nil)
+  (define-key vterm-mode-map (kbd "M-S") nil)      ; scratch toggle
   (define-key vterm-mode-map (kbd "M-y") #'my/vterm-kill-ring-pop)
   (define-key vterm-mode-map (kbd "C-g") 'vterm-send-escape)
   ;; C-c C-x → forward raw C-x to the terminal so Claude Code's C-x prefix
@@ -955,6 +956,21 @@ Only when COMMAND is the key's own command: `right-char' calls
 
 ;; Buffers & navigation.  Previous/next buffer are colemak-nav's M-L / M-Y
 ;; (and M-H flips back to the last one), which freed C-c n, C-c p and C-c e.
+;; M-S toggles *scratch*: jump there, press again to return to the buffer
+;; you came from.  Free under colemak-nav, which skips S.  Also unbound in vterm.
+(defvar-local my/scratch-return nil
+  "Buffer to go back to from *scratch*, set by `my/scratch-toggle'.")
+(defun my/scratch-toggle ()
+  "Switch to *scratch*, or back to the buffer it was entered from."
+  (interactive)
+  (if (equal (buffer-name) "*scratch*")
+      (switch-to-buffer (if (buffer-live-p my/scratch-return)
+                            my/scratch-return
+                          (other-buffer)))
+    (let ((from (current-buffer)))
+      (scratch-buffer)
+      (setq my/scratch-return from))))
+(global-set-key (kbd "M-S") #'my/scratch-toggle)
 (global-set-key (kbd "C-x K") 'recentf-open-most-recent-file)
 (global-set-key (kbd "C-x C-r") 'consult-recent-file)
 ;; Text terminals cannot encode most Ctrl/Shift chords: C-<return> and RET both
