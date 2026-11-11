@@ -956,6 +956,12 @@ Only when COMMAND is the key's own command: `right-char' calls
 
 ;; Buffers & navigation.  Previous/next buffer are colemak-nav's M-L / M-Y
 ;; (and M-H flips back to the last one), which freed C-c n, C-c p and C-c e.
+;; Log buffers are skipped by M-L / M-Y (previous-buffer / next-buffer) and
+;; when a killed buffer is replaced.  They still exist: C-h e opens *Messages*,
+;; and M-H can flip back to one you opened on purpose.
+(setq switch-to-prev-buffer-skip-regexp
+      "\\`\\*\\(Messages\\|Warnings\\|Compile-Log\\|Async-native-compile-log\\)\\*\\'")
+
 ;; M-S toggles *scratch*: jump there, press again to return to the buffer
 ;; you came from.  Free under colemak-nav, which skips S.  Also unbound in vterm.
 (defvar-local my/scratch-return nil
