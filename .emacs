@@ -43,7 +43,9 @@
 ;; Defaults & built-in modes ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(windmove-default-keybindings)
+;; No `windmove-default-keybindings': colemak-nav moves between windows on
+;; Alt+Shift letters (see below), and Shift+arrows stay free for shift-select and for programs
+;; running in vterm (k9s uses Shift+Left/Right).
 
 ;; Mouse & scrolling on a text terminal (Windows Terminal, xterm, ...).
 ;; A tty never sends `wheel-up'/`wheel-down' -- those are GUI-only event
@@ -641,6 +643,7 @@
     (define-key vterm-mode-map (kbd (format "M-%d" i)) nil))
   (define-key vterm-mode-map (kbd "M-TAB") nil)
   (define-key vterm-mode-map (kbd "M-S") nil)      ; scratch toggle
+  (define-key vterm-mode-map (kbd "M-:") nil)      ; eval-expression
   (define-key vterm-mode-map (kbd "M-y") #'my/vterm-kill-ring-pop)
   (define-key vterm-mode-map (kbd "C-g") 'vterm-send-escape)
   ;; C-c C-x → forward raw C-x to the terminal so Claude Code's C-x prefix
@@ -673,7 +676,11 @@
   ;; The terminal no longer gets C-t (zsh transpose-chars, Claude Code's task
   ;; list); `M-x vterm-send-next-key RET C-t' still sends one.  C-c C-t works too.
   (define-key vterm-mode-map (kbd "C-t") #'vterm-copy-mode)
-  (define-key vterm-copy-mode-map (kbd "C-t") #'vterm-copy-mode))
+  (define-key vterm-copy-mode-map (kbd "C-t") #'vterm-copy-mode)
+  ;; Shift+arrows go to the terminal program with Shift kept.  Left unbound,
+  ;; Emacs would drop the Shift and send a plain arrow.
+  (dolist (key '("S-<left>" "S-<right>" "S-<up>" "S-<down>"))
+    (define-key vterm-mode-map (kbd key) #'vterm--self-insert)))
 
 ;; jot: a pop-up notepad for taking notes while reading, mainly long Claude or
 ;; terminal output, without bouncing in and out of `vterm-copy-mode' for every
@@ -888,16 +895,15 @@ directory being listed.  With a prefix argument, always start a new vterm."
             (message "No URL found at point or in clipboard")))))))
 (global-set-key (kbd "C-c C-v") 'browse-url-smart)
 (global-set-key (kbd "C-x O") 'previous-multiframe-window)
-;; colemak-nav: move between windows with Alt+Shift and the right hand's
-;; inverted T -- M-U up, M-N left, M-E down, M-I right -- and switch buffers
-;; with the keys around it: M-L previous, M-Y next, M-H back to the last
-;; buffer (again to return; per window); and tabs with the bottom row: M-K
-;; previous, M-M next (M-TAB still flips to the last tab).  Our own package:
+;; colemak-nav, all on Alt+Shift: windows with M-U up, M-E down, M-K left,
+;; M-M right, or with the left hand M-F up, M-R left, M-T right (no down, so
+;; M-S stays the scratch toggle); tabs on M-N previous, M-I next (M-TAB still
+;; flips to the last tab); buffers on M-L previous, M-Y next, M-H back to the
+;; last buffer (again to return; per window).  Our own package:
 ;; https://github.com/AAlvz/colemak-nav.  It only binds Meta+Shift letters,
 ;; which stock Emacs leaves free, so M-u/M-n/M-e/M-i/M-h keep their defaults
 ;; (they used to be windmove here, which died in vterm and stole minibuffer
-;; history).  It is a minor mode, so it wins over vterm too.  S-arrows (above)
-;; still work.  Same load rule as jot: a checkout at ~/aalvz/colemak-nav wins,
+;; history).  It is a minor mode, so it wins over vterm too.  Same load rule as jot: a checkout at ~/aalvz/colemak-nav wins,
 ;; otherwise it is installed from GitHub once.
 (let ((checkout (expand-file-name "~/aalvz/colemak-nav")))
   (cond ((file-exists-p (expand-file-name "colemak-nav.el" checkout))
@@ -963,7 +969,8 @@ Only when COMMAND is the key's own command: `right-char' calls
       "\\`\\*\\(Messages\\|Warnings\\|Compile-Log\\|Async-native-compile-log\\)\\*\\'")
 
 ;; M-S toggles *scratch*: jump there, press again to return to the buffer
-;; you came from.  Free under colemak-nav, which skips S.  Also unbound in vterm.
+;; you came from.  colemak-nav's left-hand keys leave S free on purpose.  Also
+;; unbound in vterm.
 (defvar-local my/scratch-return nil
   "Buffer to go back to from *scratch*, set by `my/scratch-toggle'.")
 (defun my/scratch-toggle ()
